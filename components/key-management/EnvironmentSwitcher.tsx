@@ -64,7 +64,7 @@ export default function EnvironmentSwitcher({
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
   const { setApiKey } = useApiKey();
-  
+
   const {
     accounts,
     addAccount,
@@ -110,7 +110,7 @@ export default function EnvironmentSwitcher({
                   key={account.accountName}
                   heading={
                     <div className="flex h-16 items-center">
-                      <div className="pr-10">{account.accountName}</div>
+                      <div className="pr-10 font-bold text-lg">{account.accountName}</div>
 
                       <div className="ml-auto flex items-center space-x-4">
                         <DialogTrigger asChild>
@@ -143,7 +143,7 @@ export default function EnvironmentSwitcher({
                           }}
                         >
                           <MinusCircledIcon className={cn("ml-auto h-4 w-4")} />
-                          Remove Account
+                          Account
                         </Button>
                       </div>
                     </div>
@@ -151,7 +151,7 @@ export default function EnvironmentSwitcher({
                 >
                   {account.environments.map((env) => (
                     <CommandItem
-                      key={env.envName}
+                      key={`${account.accountName} ${env.envName}`}
                       onSelect={() => {
                         setSelectedAccount(account);
                         setSelectedEnv(env);
@@ -160,8 +160,8 @@ export default function EnvironmentSwitcher({
                       }}
                       className="text-sm ml-4"
                     >
+                      <span className="hidden">{account.accountName}</span>
                       {env.envName}
-
                       <div className="ml-auto flex items-center space-x-4">
                         <CheckIcon
                           className={cn(
@@ -186,6 +186,7 @@ export default function EnvironmentSwitcher({
                           }}
                         >
                           <MinusCircledIcon className={cn("ml-auto h-4 w-4")} />
+                          Env
                         </Button>
                       </div>
                     </CommandItem>

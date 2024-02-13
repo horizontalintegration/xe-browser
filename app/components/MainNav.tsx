@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { tailwindVariants } from "./MainNavStyles";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 type NavLink = {
   href: string;
@@ -27,19 +28,23 @@ export function MainNav({
       content: "Layout Query",
     },
   ];
-  const { baseStyle, linkStyle } = tailwindVariants();
+  const { baseStyle } = tailwindVariants();
 
   return (
     <nav className={cn(baseStyle(), className)} {...props}>
       {links.map((x) => {
         return (
-          <Link
+          <Button
             key={x.href}
-            href={x.href}
-            className={linkStyle({ active: pathName === x.href })}
+            asChild
+            variant={pathName === x.href ? "default" : "ghost"}
           >
-            {x.content}
-          </Link>
+            <Link
+              href={x.href}
+            >
+              {x.content}
+            </Link>
+          </Button>
         );
       })}
     </nav>
