@@ -42,7 +42,7 @@ const renderField = (field: JsonField) => {
     case "DateField":
       return <DateFieldView field={field as DateField} />;
     case "TextField":
-      if (typeof field.jsonValue.value === "string") {
+      if (typeof field.jsonValue?.value === "string") {
         return <TextFieldView field={field as TextField} />;
       } else {
         return (
@@ -72,38 +72,40 @@ const renderField = (field: JsonField) => {
 };
 
 const TextFieldView = ({ field }: { field: TextField }) => {
-  return field.jsonValue.value;
+  return field.jsonValue?.value;
 };
 
 const RichTextFieldView = ({ field }: { field: RichTextField }) => {
   return (
-    <div dangerouslySetInnerHTML={{ __html: field.jsonValue.value }}></div>
+    <div
+      dangerouslySetInnerHTML={{ __html: field.jsonValue?.value ?? "" }}
+    ></div>
   );
 };
 
 const DateFieldView = ({ field }: { field: DateField }) => {
-  const dateNumber = Date.parse(field.jsonValue.value);
+  const dateNumber = Date.parse(field.jsonValue?.value ?? "");
   if (Number.isNaN(dateNumber)) {
-    return `Invalid date: ${field.jsonValue.value}`;
+    return `Invalid date: ${field.jsonValue?.value}`;
   }
   const date = new Date(dateNumber);
   return date.toLocaleString();
 };
 
 const CheckboxFieldView = ({ field }: { field: CheckboxField }) => {
-  return <Switch checked={field.jsonValue.value} disabled />; // field.jsonValue.value.toString();
+  return <Switch checked={field.jsonValue?.value} disabled />;
 };
 
 const NumberFieldView = ({ field }: { field: NumberField }) => {
-  return field.jsonValue.value.toString();
+  return field.jsonValue?.value.toString();
 };
 
 const LinkFieldView = ({ field }: { field: LinkField }) => {
-  return <JsonView data={field.jsonValue.value} />;
+  return <JsonView data={field.jsonValue?.value as object} />;
 };
 
 const ImageFieldView = ({ field }: { field: ImageField }) => {
-  const imgData = field.jsonValue.value;
+  const imgData = field.jsonValue?.value;
 
   const { src, alt, width, height } = imgData ?? {};
   const renderImage = !!src;
@@ -139,9 +141,18 @@ const LookupFieldView = ({ field }: { field: LookupField }) => {
 };
 
 const MultilistFieldView = ({ field }: { field: MultilistField }) => {
+  if (!field.jsonValue?.map) {
+    return (
+      <div>
+        Item is not part of a site, could not get proper JSON value, displaying
+        raw values
+        <JsonView data={field.jsonValue as object} />
+      </div>
+    );
+  }
   return (
     <ol>
-      {field.jsonValue.map((x) => {
+      {field.jsonValue?.map((x) => {
         return (
           <li key={x.id}>
             {x.name}:

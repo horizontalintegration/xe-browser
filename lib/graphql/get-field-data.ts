@@ -27,13 +27,13 @@ const GetFieldData = gql`
 export interface UnknownField {
   __typename: string;
   name: string;
-  jsonValue: any;
+  jsonValue?: any;
 }
 
 export interface TextField {
   __typename: "TextField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: string;
   };
 }
@@ -41,7 +41,7 @@ export interface TextField {
 export interface RichTextField {
   __typename: "RichTextField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: string;
   };
 }
@@ -49,7 +49,7 @@ export interface RichTextField {
 export interface DateField {
   __typename: "DateField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: string;
   };
 }
@@ -57,7 +57,7 @@ export interface DateField {
 export interface CheckboxField {
   __typename: "CheckboxField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: boolean;
   };
 }
@@ -65,14 +65,14 @@ export interface CheckboxField {
 export interface NumberField {
   __typename: "NumberField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: number;
   };
 }
 export interface LinkField {
   __typename: "LinkField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value: {
       text: string;
       anchor: string;
@@ -90,7 +90,7 @@ export interface LinkField {
 export interface ImageField {
   __typename: "ImageField";
   name: string;
-  jsonValue: {
+  jsonValue?: {
     value?: {
       src?: string;
       alt?: string;
@@ -109,7 +109,7 @@ export interface LookupField {
 export interface MultilistField {
   __typename: "MultilistField";
   name: string;
-  jsonValue: ItemResponse[];
+  jsonValue?: ItemResponse[];
 }
 
 export type JsonField =
