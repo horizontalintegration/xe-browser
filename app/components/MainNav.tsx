@@ -27,6 +27,10 @@ export function MainNav({
       href: "/layout",
       content: "Layout Query",
     },
+    {
+      href: "/graphql",
+      content: "GraphQL Browser",
+    },
   ];
   const { baseStyle } = tailwindVariants();
 
