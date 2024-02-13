@@ -10,6 +10,7 @@ import { getLayoutData } from "@/lib/graphql/get-layout-data";
 import { deepSearch } from "@/lib/utils/object-utils";
 import { ComponentResponse } from "@/lib/graphql/types";
 import ComponentsJsonView from "../../../components/viewers/ComponentJsonView";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export type DataJsonViewProps = {
   siteName: string;
@@ -26,6 +27,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
 
   const client = useGraphQLClientContext();
 
+  const { itemLanguage } = useLanguage();
   useEffect(() => {
     async function innerFetch() {
       let data;
@@ -33,7 +35,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
         case "sitecore-context":
         case "components":
         case "route":
-          data = await getLayoutData(client, siteName, routePath);
+          data = await getLayoutData(client, itemLanguage, siteName, routePath);
 
           const componentData = deepSearch<ComponentResponse>(
             data,
@@ -48,7 +50,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
       }
     }
     innerFetch();
-  }, [client, siteName, routePath, selectedTab]);
+  }, [client, itemLanguage, siteName, routePath, selectedTab]);
 
   return (
     <Tabs

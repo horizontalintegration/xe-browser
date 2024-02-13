@@ -4,24 +4,36 @@ import { getDataUtil } from "./util";
 
 export const getItemMetaData = async (
   client: ApolloClientType,
+  itemLanguage: string,
   itemId?: string
 ) => {
   const data = await getDataUtil<MetaResponse>(client, GetMetaData, {
     path: itemId,
+    itemLanguage,
   });
 
+  console.log("getItemMetaData", itemId, itemLanguage, data?.item?.language);
   return data;
 };
 
 const GetMetaData = gql`
-  query GetItemData($path: String! = "/sitecore", $language: String! = "en") {
-    item(path: $path, language: $language) {
+  query GetItemData($path: String! = "/sitecore", $itemLanguage: String!) {
+    item(path: $path, language: $itemLanguage) {
       id
       name
       path
+      url {
+        url
+        path
+      }
+      version
       template {
         id
         name
+      }
+      language {
+        name
+        englishName
       }
     }
   }
@@ -32,9 +44,18 @@ interface MetaResponse {
     id: string;
     name: string;
     path: string;
+    url: {
+      url: string;
+      path: string;
+    };
+    version: number;
     template: {
       id: string;
       name: string;
+    };
+    language: {
+      name: string;
+      englishName: string;
     };
   };
 }

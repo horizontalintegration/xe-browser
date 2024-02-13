@@ -4,14 +4,15 @@ import React, { useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
 import { SiteInfo, SiteSwitcher } from "./SiteSwitcher";
 import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const GetLayout = gql`
   query GetLayout(
     $site: String!
     $routePath: String! = "/"
-    $language: String! = "en"
+    $systemLanguage: String!
   ) {
-    layout(site: $site, routePath: $routePath, language: $language) {
+    layout(site: $site, routePath: $routePath, language: $systemLanguage) {
       item {
         id
         name
@@ -65,7 +66,7 @@ interface LayoutData {
 }
 
 export type LayoutTreeViewProps = {
-  onItemSelected: (siteName: SiteInfo, routePath: string) => void;
+  onItemSelected: (siteName: SiteInfo, itemId: string, routePath: string) => void;
 };
 const root: ItemNode = {
   id: "root",
@@ -79,15 +80,14 @@ interface ItemNode extends BaseItemNode<ItemNode> {
   routePath: string;
 }
 
-const LayoutTreeView = ({
-  onItemSelected: onElementSelected,
-}: LayoutTreeViewProps) => {
+const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
   const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const [site, setSite] = useState<SiteInfo>();
   const item = { ...root };
 
   const client = useGraphQLClientContext();
+  const { systemLanguage } = useLanguage();
   const fetchData = async (item: ItemNode) => {
     if (!client || !site) {
       return;
@@ -100,6 +100,7 @@ const LayoutTreeView = ({
       variables: {
         site: site.siteName,
         routePath: item.routePath,
+        systemLanguage: systemLanguage,
       },
     });
 
@@ -127,7 +128,7 @@ const LayoutTreeView = ({
           item={item}
           onItemSelected={(item) => {
             setSelectedItem(item);
-            onElementSelected(site, item.routePath);
+            onItemSelected(site, item.id, item.routePath);
           }}
           isSelected={(item) => selectedItem?.routePath === item.routePath}
           fetchData={fetchData}

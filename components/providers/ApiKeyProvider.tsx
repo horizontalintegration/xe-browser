@@ -13,6 +13,7 @@ const ApiKeyContext = createContext<ApiKeyContextType>({
 export function useApiKey() {
   return useContext(ApiKeyContext);
 }
+
 export function ApiKeyProvider({ children }: React.PropsWithChildren) {
   const [apiKey, setApiKey] = useState<string>();
 

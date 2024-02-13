@@ -3,9 +3,10 @@ import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
 import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 const GetItems = gql`
-  query GetItem($path: String! = "/sitecore", $language: String! = "en") {
-    item(path: $path, language: $language) {
+  query GetItem($path: String! = "/sitecore", $systemLanguage: String!) {
+    item(path: $path, language: $systemLanguage) {
       id
       name
       rendered
@@ -58,15 +59,14 @@ const root: ItemNode = {
   hasChildren: true,
 };
 
-interface ItemNode extends BaseItemNode<ItemNode> {
-  
-}
+interface ItemNode extends BaseItemNode<ItemNode> {}
 
 const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
   const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const item = { ...root };
   const client = useGraphQLClientContext();
+  const { systemLanguage } = useLanguage();
   const fetchData = async (item: ItemNode) => {
     if (!client) {
       return;
@@ -78,6 +78,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
       query: GetItems,
       variables: {
         path: item.id,
+        systemLanguage: systemLanguage,
       },
     });
 

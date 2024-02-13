@@ -18,54 +18,19 @@ import { ComponentResponse, Fields } from "@/lib/graphql/types";
 import FieldDataView from "./FieldDataView";
 import { deepSearch } from "@/lib/utils/object-utils";
 import ComponentsJsonView from "@/components/viewers/ComponentJsonView";
-
-const GetMetaData = gql`
-  query GetItemData($path: String! = "/sitecore", $language: String! = "en") {
-    item(path: $path, language: $language) {
-      id
-      name
-      path
-      template {
-        id
-        name
-      }
-    }
-  }
-`;
-
-const GetFieldData = gql`
-  query GetItemData($path: String! = "/sitecore", $language: String! = "en") {
-    item(path: $path, language: $language) {
-      fields {
-        name
-        jsonValue
-      }
-    }
-  }
-`;
-
-const GetLayoutData = gql`
-  query GetItemData($path: String! = "/sitecore", $language: String! = "en") {
-    item(path: $path, language: $language) {
-      rendered
-    }
-  }
-`;
-
-const queryLookup: {
-  [K in QueryType]: DocumentNode;
-} = {
-  meta: GetMetaData,
-  fields: GetFieldData,
-  layout: GetLayoutData,
-};
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export type DataJsonViewProps = {
   itemId?: string;
 };
 
 export type QueryType = "meta" | "fields" | "layout";
-export type SelectedTabValue = "meta" | "fields" | "sitecore-context" | "route" | "components";
+export type SelectedTabValue =
+  | "meta"
+  | "fields"
+  | "sitecore-context"
+  | "route"
+  | "components";
 
 const DataJsonView = ({ itemId }: DataJsonViewProps) => {
   const [metaData, setMetaData] = useState<any>();
@@ -77,23 +42,26 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
 
   const client = useGraphQLClientContext();
 
+  const { itemLanguage } = useLanguage();
   useEffect(() => {
     async function innerFetch() {
       let data;
+
+      console.log("fetching data for", selectedTab, itemLanguage);
       switch (selectedTab) {
         case "meta":
-          data = await getItemMetaData(client, itemId);
+          data = await getItemMetaData(client, itemLanguage, itemId);
           setMetaData(data);
           break;
         case "fields":
-          data = await getFieldData(client, itemId);
+          data = await getFieldData(client, itemLanguage, itemId);
           setFieldData(data);
           break;
         case "sitecore-context":
         case "route":
         case "components":
-          data = await getLayoutItemData(client, itemId);
-          console.log('layout data', data)
+          data = await getLayoutItemData(client, itemLanguage, itemId);
+
           const componentData = deepSearch<ComponentResponse>(
             data,
             (x) => !!x?.componentName
@@ -105,12 +73,14 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
           setRouteData(data?.route ?? { error: "Item does not have layout" });
           break;
       }
+      console.log("data", data);
     }
     innerFetch();
-  }, [client, itemId, selectedTab]);
+  }, [client, itemLanguage, itemId, selectedTab]);
 
   return (
     <Tabs
+      key={itemId + itemLanguage}
       defaultValue={selectedTab}
       onValueChange={(value) => setSelectedTab(value as SelectedTabValue)}
     >
@@ -133,9 +103,8 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
       <TabsContent value="route">
         <JsonView data={routeData} shouldExpandNode={collapseAllNested} />
       </TabsContent>
-
       <TabsContent value="components">
-        <ComponentsJsonView key={itemId} components={componentsData} />
+        <ComponentsJsonView components={componentsData} />
       </TabsContent>
     </Tabs>
   );

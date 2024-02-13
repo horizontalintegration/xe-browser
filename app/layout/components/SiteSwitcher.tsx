@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { gql } from "@apollo/client";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const GetSites = gql`
   query GetSites {
@@ -33,7 +34,7 @@ interface SiteCollectionData {
 
 const GetSitesLegacy = gql`
   # Write your query or mutation here
-  query getSites {
+  query getSites($systemLanguage: String!) {
     search(
       where: {
         AND: [
@@ -44,7 +45,7 @@ const GetSitesLegacy = gql`
             # /sitecore/templates/Foundation/JSS Experience Accelerator/Multisite/Site
             value: "{E46F3AF2-39FA-4866-A157-7017C4B2A40C}"
           }
-          { name: "_language", value: "en" }
+          { name: "_language", value: $systemLanguage }
         ]
       }
       first: 100
@@ -91,6 +92,7 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     }
   };
 
+  const { systemLanguage } = useLanguage();
   const fetchData = async () => {
     if (!client) {
       return;
@@ -109,6 +111,9 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     } catch {
       const { data } = await client.query<LegacySiteData>({
         query: GetSitesLegacy,
+        variables: {
+          systemLanguage,
+        },
       });
 
       if (data) {

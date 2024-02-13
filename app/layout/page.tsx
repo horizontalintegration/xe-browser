@@ -8,9 +8,12 @@ import {
 } from "@/components/ui/resizable";
 import { useState } from "react";
 import { SiteInfo } from "./components/SiteSwitcher";
+import { ItemLangageSwitcher } from "../../components/language/ItemLangageSwitcher";
 
 export default function Page() {
-  const [selectedItem, setSelectedItem] = useState<string>();
+  const [selectedItemId, setSelectedItemId] = useState<string>();
+
+  const [selectedRoutePath, setSelectedRoutePath] = useState<string>();
   const [selectedSite, setSelectedSite] = useState<SiteInfo>();
 
   return (
@@ -18,17 +21,19 @@ export default function Page() {
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel>
           <LayoutTreeView
-            onItemSelected={(siteInfo, item) => {
+            onItemSelected={(siteInfo, itemId, routePath) => {
               setSelectedSite(siteInfo);
-              setSelectedItem(item);
+              setSelectedItemId(itemId);
+              setSelectedRoutePath(routePath);
             }}
           />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          {selectedItem && selectedSite?.siteName ? (
+          <ItemLangageSwitcher itemId={selectedItemId} />
+          {selectedRoutePath && selectedSite?.siteName ? (
             <DataJsonView
-              routePath={selectedItem}
+              routePath={selectedRoutePath}
               siteName={selectedSite?.siteName}
             />
           ) : null}

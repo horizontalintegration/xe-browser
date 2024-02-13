@@ -11,9 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
@@ -42,7 +40,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
-import { useApiKey } from "@/app/components/ApiKeyProvider";
+import { useApiKey } from "@/components/providers/ApiKeyProvider";
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
@@ -55,9 +53,7 @@ type ErrorMessage = {
 
 interface EnvironmentSwitcherProps extends PopoverTriggerProps {}
 
-export default function EnvironmentSwitcher({
-  className,
-}: EnvironmentSwitcherProps) {
+export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogType, setDialogType] = useState<DialogType>();
@@ -88,14 +84,14 @@ export default function EnvironmentSwitcher({
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} {...props}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
             aria-label="Select a team"
-            className={cn("w-auto justify-between", className)}
+            className={cn("w-auto justify-between")}
           >
             {selectedAccount?.accountName ?? "No Account"}:{" "}
             {selectedEnv?.envName ?? "No Environment"}
@@ -110,7 +106,9 @@ export default function EnvironmentSwitcher({
                   key={account.accountName}
                   heading={
                     <div className="flex h-16 items-center">
-                      <div className="pr-10 font-bold text-lg">{account.accountName}</div>
+                      <div className="pr-10 font-bold text-lg">
+                        {account.accountName}
+                      </div>
 
                       <div className="ml-auto flex items-center space-x-4">
                         <DialogTrigger asChild>
