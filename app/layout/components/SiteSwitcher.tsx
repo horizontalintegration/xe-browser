@@ -143,7 +143,7 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
         )}
         aria-label="Select site"
       >
-        <SelectValue placeholder="Select an site">
+        <SelectValue placeholder="Select site">
           <span className={cn("ml-2")}>
             {sites.find((site) => site.siteName === selectedSite)?.siteName}
           </span>

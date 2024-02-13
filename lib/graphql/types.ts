@@ -7,7 +7,7 @@ export interface Params {
 }
 
 export interface Fields {
-  [fieldName: string]: any;
+  [fieldName: string]: { value: any };
 }
 
 export interface Placeholders {
@@ -20,6 +20,13 @@ export interface ComponentResponse {
   params?: Params;
   fields: Fields;
   placeholders?: Placeholders;
+}
+
+export interface ItemResponse {
+  id: string;
+  url: string;
+  name: string;
+  fields: Fields;
 }
 
 export interface LayoutResponse {

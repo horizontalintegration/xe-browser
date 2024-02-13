@@ -2,13 +2,8 @@
 import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
-import { Button } from "../../../components/ui/button";
-import {
-  ArrowBottomRightIcon,
-  ArrowRightIcon,
-  FileTextIcon,
-} from "@radix-ui/react-icons";
 import { SiteInfo, SiteSwitcher } from "./SiteSwitcher";
+import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
 
 const GetLayout = gql`
   query GetLayout(
@@ -44,8 +39,8 @@ const GetLayout = gql`
 `;
 
 interface LayoutData {
-  layout: {
-    item: {
+  layout?: {
+    item?: {
       id: string;
       name: string;
       url: {
@@ -73,74 +68,31 @@ export type LayoutTreeViewProps = {
   onItemSelected: (siteName: SiteInfo, routePath: string) => void;
 };
 const root: ItemNode = {
+  id: "root",
   routePath: "/",
-  name: "sitecore",
+  name: "Home",
+  hasLayout: true,
   hasChildren: true,
 };
 
-interface ItemNode {
+interface ItemNode extends BaseItemNode<ItemNode> {
   routePath: string;
-  name: string;
-  hasChildren: boolean;
-  children?: ItemNode[];
 }
 
 const LayoutTreeView = ({
   onItemSelected: onElementSelected,
 }: LayoutTreeViewProps) => {
   const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
-
+  const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const [site, setSite] = useState<SiteInfo>();
   const item = { ...root };
 
-  return (
-    <div>
-      <SiteSwitcher onSiteSelected={setSite} />
-      {site ? (
-        <RenderItem
-          site={site}
-          item={item}
-          onItemSelected={(item) => {
-            onElementSelected(site, item.routePath);
-          }}
-          loadedIds={loadedIds}
-          setLoadedIds={setLoadedIds}
-        />
-      ) : (
-        <p>Select a site</p>
-      )}
-    </div>
-  );
-};
-
-export default LayoutTreeView;
-
-type RenderItemProps = {
-  site: SiteInfo;
-  item: ItemNode;
-  onItemSelected: (item: ItemNode) => void;
-  loadedIds: Set<string>;
-  setLoadedIds: (value: Set<string>) => void;
-};
-
-function RenderItem({
-  site,
-  item,
-  onItemSelected,
-  loadedIds,
-  setLoadedIds,
-}: RenderItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [children, setChildren] = useState<ItemNode[] | undefined>(
-    item.children
-  );
-
   const client = useGraphQLClientContext();
   const fetchData = async (item: ItemNode) => {
-    if (!client) {
+    if (!client || !site) {
       return;
     }
-    if (loadedIds.has(item.routePath)) {
+    if (item.id && loadedIds.has(item.id)) {
       return;
     }
     const { data } = await client.query<LayoutData>({
@@ -151,61 +103,40 @@ function RenderItem({
       },
     });
 
-    if (data) {
-      loadedIds.add(item.routePath);
+    const loadedItem = data.layout?.item;
+    if (loadedItem) {
+      loadedIds.add(loadedItem.id);
       setLoadedIds(loadedIds);
-      item.children = data.layout.item.children.results.map((x) => ({
+      item.id = loadedItem.id;
+      item.children = data.layout?.item?.children.results.map((x) => ({
         id: x.id,
         name: x.name,
         routePath: x.url.path,
+        hasLayout: true,
         hasChildren: x.children.results.length > 0,
       }));
-      setChildren(item.children);
+      return item.children;
     }
   };
-  if (!client) {
-    return (
-      <p>
-        No environment selected, or selected environment has invalid API key.
-        Editing environments are not supported currently, delete and recreate
-        it.
-      </p>
-    );
-  }
   return (
-    <div className="space-y-1 ml-4">
-      <Button
-        variant="secondary"
-        className="w-full justify-start"
-        onClick={() => {
-          setIsExpanded(!isExpanded);
-          onItemSelected(item);
-          fetchData(item);
-        }}
-      >
-        {isExpanded ? (
-          <ArrowBottomRightIcon
-            className={item.hasChildren ? "" : "collapse"}
-          />
-        ) : (
-          <ArrowRightIcon className={item.hasChildren ? "" : "collapse"} />
-        )}
-
-        <FileTextIcon />
-        {item.name}
-      </Button>
-
-      {isExpanded &&
-        children?.map((x) => (
-          <RenderItem
-            key={x.routePath}
-            site={site}
-            item={x}
-            onItemSelected={onItemSelected}
-            loadedIds={loadedIds}
-            setLoadedIds={setLoadedIds}
-          />
-        ))}
+    <div>
+      <SiteSwitcher onSiteSelected={setSite} />
+      {site ? (
+        <TreeViewer<ItemNode>
+          key={site.siteName}
+          item={item}
+          onItemSelected={(item) => {
+            setSelectedItem(item);
+            onElementSelected(site, item.routePath);
+          }}
+          isSelected={(item) => selectedItem?.routePath === item.routePath}
+          fetchData={fetchData}
+        />
+      ) : (
+        <p>Select a site</p>
+      )}
     </div>
   );
-}
+};
+
+export default LayoutTreeView;

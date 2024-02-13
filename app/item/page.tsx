@@ -1,6 +1,6 @@
 "use client";
-import DataJsonView from "@/app/item/components/DataJsonView";
-import ItemTreeView from "@/app/item/components/ItemTreeView";
+import DataJsonView from "./components/DataJsonView";
+import ItemTreeView from "./components/ItemTreeView";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -12,18 +12,16 @@ export default function Home() {
   const [selectedItemId, setSelectedItemId] = useState<string>();
 
   return (
-    <main>
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel>
-          <ItemTreeView
-            onElementSelected={(element) => setSelectedItemId(element)}
-          />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel>
-          <DataJsonView itemId={selectedItemId} />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </main>
+    <ResizablePanelGroup direction="horizontal" className="h-full !overflow-y-auto">
+      <ResizablePanel className="h-full !overflow-y-auto">
+        <ItemTreeView
+          onElementSelected={(element) => setSelectedItemId(element)}
+        />
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel className="h-full !overflow-y-auto">
+        <DataJsonView itemId={selectedItemId} />
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }

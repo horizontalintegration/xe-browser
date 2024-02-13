@@ -29,7 +29,7 @@ import {
   AccountEnvironment,
   useAccounts,
 } from "@/lib/hooks/use-accounts";
-import { ComponentPropsWithoutRef, useState } from "react";
+import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import AddAccountDialog from "./dialogs/AddAccountDialog";
 import AddEnvDialog from "./dialogs/AddEnvDialog";
 import {
@@ -42,6 +42,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
+import { useApiKey } from "@/app/components/ApiKeyProvider";
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
@@ -52,19 +53,18 @@ type ErrorMessage = {
   description: string;
 };
 
-interface EnvironmentSwitcherProps extends PopoverTriggerProps {
-  setApiKey: (apiKey: string) => void;
-}
+interface EnvironmentSwitcherProps extends PopoverTriggerProps {}
 
 export default function EnvironmentSwitcher({
   className,
-  setApiKey,
 }: EnvironmentSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogType, setDialogType] = useState<DialogType>();
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
+  const { setApiKey } = useApiKey();
+  
   const {
     accounts,
     addAccount,
@@ -80,9 +80,12 @@ export default function EnvironmentSwitcher({
     AccountEnvironment | undefined
   >("selectedEnvironment", undefined);
 
-  if (selectedEnv?.apiKey) {
-    setApiKey(selectedEnv?.apiKey);
-  }
+  useEffect(() => {
+    if (selectedEnv?.apiKey) {
+      setApiKey(selectedEnv?.apiKey);
+    }
+  }, [selectedEnv?.apiKey, setApiKey]);
+
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <Popover open={open} onOpenChange={setOpen}>

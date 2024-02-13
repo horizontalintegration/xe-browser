@@ -12,8 +12,12 @@ import {
   TabsTrigger,
 } from "../../../components/ui/tabs";
 import { getLayoutItemData } from "@/lib/graphql/get-layout-data";
-import { getFieldData } from "@/lib/graphql/get-field-data";
+import { FieldResponse, getFieldData } from "@/lib/graphql/get-field-data";
 import { getItemMetaData } from "@/lib/graphql/get-meta-data";
+import { ComponentResponse, Fields } from "@/lib/graphql/types";
+import FieldDataView from "./FieldDataView";
+import { deepSearch } from "@/lib/utils/object-utils";
+import ComponentsJsonView from "@/components/viewers/ComponentJsonView";
 
 const GetMetaData = gql`
   query GetItemData($path: String! = "/sitecore", $language: String! = "en") {
@@ -61,12 +65,13 @@ export type DataJsonViewProps = {
 };
 
 export type QueryType = "meta" | "fields" | "layout";
-export type SelectedTabValue = "meta" | "fields" | "sitecore-context" | "route";
+export type SelectedTabValue = "meta" | "fields" | "sitecore-context" | "route" | "components";
 
 const DataJsonView = ({ itemId }: DataJsonViewProps) => {
   const [metaData, setMetaData] = useState<any>();
-  const [fieldData, setFieldData] = useState<any>();
+  const [fieldData, setFieldData] = useState<FieldResponse | null>(null);
   const [sitecoreContextData, setSitecoreContextData] = useState<any>();
+  const [componentsData, setComponentsData] = useState<ComponentResponse[]>([]);
   const [routeData, setRouteData] = useState<any>();
   const [selectedTab, setSelectedTab] = useState<SelectedTabValue>("meta");
 
@@ -86,7 +91,14 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
           break;
         case "sitecore-context":
         case "route":
+        case "components":
           data = await getLayoutItemData(client, itemId);
+          console.log('layout data', data)
+          const componentData = deepSearch<ComponentResponse>(
+            data,
+            (x) => !!x?.componentName
+          );
+          setComponentsData(componentData);
           setSitecoreContextData(
             data?.context ?? { error: "Item does not have layout" }
           );
@@ -107,18 +119,23 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
         <TabsTrigger value="fields">Fields</TabsTrigger>
         <TabsTrigger value="sitecore-context">Sitecore Context</TabsTrigger>
         <TabsTrigger value="route">Route</TabsTrigger>
+        <TabsTrigger value="components">Components</TabsTrigger>
       </TabsList>
       <TabsContent value="meta">
         <JsonView data={metaData} />
       </TabsContent>
       <TabsContent value="fields">
-        <JsonView data={fieldData} />
+        <FieldDataView data={fieldData} />
       </TabsContent>
       <TabsContent value="sitecore-context">
         <JsonView data={sitecoreContextData} />
       </TabsContent>
       <TabsContent value="route">
         <JsonView data={routeData} shouldExpandNode={collapseAllNested} />
+      </TabsContent>
+
+      <TabsContent value="components">
+        <ComponentsJsonView key={itemId} components={componentsData} />
       </TabsContent>
     </Tabs>
   );

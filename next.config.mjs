@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    dangerouslyAllowSVG: true,
+    remotePatterns: [
+      {
+        hostname: "edge.sitecorecloud.io",
+        protocol: "https",
+      },
+    ],
+  },
+};
 
 export default nextConfig;

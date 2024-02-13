@@ -1,13 +1,15 @@
+"use client";
+import { useApiKey } from "@/app/components/ApiKeyProvider";
 import {
   ApolloClient,
   InMemoryCache,
   NormalizedCacheObject,
   gql,
 } from "@apollo/client";
+import React from "react";
 import { useState, useEffect, createContext, useContext } from "react";
 
 export type GraphQLClientProviderProps = Readonly<{
-  apiKey: string;
   children: React.ReactNode;
 }>;
 
@@ -22,13 +24,12 @@ export const useGraphQLClientContext = () => {
 };
 
 export default function GraphQLClientProvider({
-  apiKey,
   children,
 }: GraphQLClientProviderProps) {
   const [client, setClient] = useState<
     ApolloClient<NormalizedCacheObject> | undefined
   >(undefined);
-
+  const { apiKey } = useApiKey();
   useEffect(() => {
     if (!apiKey) {
       return;
@@ -63,10 +64,8 @@ export default function GraphQLClientProvider({
     return () => client.stop();
   }, [apiKey]);
   return (
-    <div>
-      <GraphQLClientContext.Provider value={client}>
-        <div key={apiKey}>{children}</div>
-      </GraphQLClientContext.Provider>
-    </div>
+    <GraphQLClientContext.Provider value={client}>
+      <React.Fragment key={apiKey}>{children}</React.Fragment>
+    </GraphQLClientContext.Provider>
   );
 }
