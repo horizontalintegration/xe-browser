@@ -35,24 +35,24 @@ export default function GraphQLClientProvider({
   const { apiKey } = useApiKey();
   const { systemLanguage } = useLanguage();
 
-  const cache = new InMemoryCache({
-    dataIdFromObject(responseObject) {
-      switch (responseObject.__typename) {
-        default:
-          return (
-            defaultDataIdFromObject(responseObject) +
-            // Add language to the cache key.  The was cahsing an issue
-            // where the wrong language version would get returned
-            (responseObject?.language as any)?.name
-          );
-      }
-    },
-  });
   useEffect(() => {
     if (!apiKey) {
       return;
     }
     let client: ApolloClient<NormalizedCacheObject>;
+    const cache = new InMemoryCache({
+      dataIdFromObject(responseObject) {
+        switch (responseObject.__typename) {
+          default:
+            return (
+              defaultDataIdFromObject(responseObject) +
+              // Add language to the cache key.  The was cahsing an issue
+              // where the wrong language version would get returned
+              (responseObject?.language as any)?.name
+            );
+        }
+      },
+    });
     const getClient = async () => {
       client = new ApolloClient({
         uri: "https://edge.sitecorecloud.io/api/graphql/v1/",

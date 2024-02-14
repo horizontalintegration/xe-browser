@@ -1,17 +1,31 @@
 "use client";
 import { useApiKey } from "@/components/providers/ApiKeyProvider";
-import { createGraphiQLFetcher } from "@graphiql/toolkit";
+import { createGraphiQLFetcher, Fetcher } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.css";
+import { useEffect, useState } from "react";
+
+// useState doesn't like functions as direct objects apparently because it calls the function
+// when setState is called (with no arguments which fails).
+type FetcherWrapper = { fetcher: Fetcher };
 
 export default function GraphQL() {
   const { apiKey } = useApiKey();
-  const fetcher = createGraphiQLFetcher({
-    url: "https://edge.sitecorecloud.io/api/graphql/v1/",
-    headers: {
-      sc_apikey: apiKey ?? "",
-    },
-  });
+  const [fetcherWrapper, setFetcherWrapper] = useState<FetcherWrapper>();
+
+  useEffect(() => {
+    if (!apiKey) {
+      return;
+    }
+    const newFetcher = createGraphiQLFetcher({
+      url: "https://edge.sitecorecloud.io/api/graphql/v1/",
+      headers: {
+        sc_apikey: apiKey ?? "",
+      },
+    });
+    setFetcherWrapper({ fetcher: newFetcher });
+  }, [apiKey]);
+
   if (!apiKey) {
     return (
       <p>
@@ -21,9 +35,12 @@ export default function GraphQL() {
       </p>
     );
   }
+  if (!fetcherWrapper) {
+    return <p>Loading GraphQL Fetcher</p>;
+  }
   return (
     <div className="h-full">
-      <GraphiQL fetcher={fetcher} />
+      <GraphiQL fetcher={fetcherWrapper.fetcher} />
     </div>
   );
 }
