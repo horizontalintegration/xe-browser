@@ -3,6 +3,16 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import BaseEditDialog from "./BaseEditDialog";
 import { EditAccountInfo } from "@/lib/hooks/use-accounts";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AccountThemes } from "@/components/providers/ThemeProvider";
 
 export type EditAccountDialogProps = {
   account?: EditAccountInfo;
@@ -18,6 +28,9 @@ const EditAccountDialog = ({
   onDeleteAccount,
 }: EditAccountDialogProps) => {
   const [accountName, setAccountName] = useState(account?.accountName ?? "");
+  const [accountTheme, setAccountTheme] = useState<AccountThemes>(
+    account?.accountTheme ?? "default"
+  );
   if (!account) {
     return <></>;
   }
@@ -27,7 +40,11 @@ const EditAccountDialog = ({
       description="Edit account details"
       onCancel={onCancel}
       onSave={() =>
-        onSaveAccount({ accountId: account.accountId, accountName })
+        onSaveAccount({
+          accountId: account.accountId,
+          accountName,
+          accountTheme,
+        })
       }
       saveButtonText="Save Account"
       onDelete={() => onDeleteAccount(account)}
@@ -44,6 +61,25 @@ const EditAccountDialog = ({
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
           />
+        </div>
+        <div className="space-y-2">
+          <Select
+            value={accountTheme}
+            onValueChange={(e) => setAccountTheme(e as AccountThemes)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a color scheme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Color</SelectLabel>
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="red">Red</SelectItem>
+                <SelectItem value="green">Green</SelectItem>
+                <SelectItem value="blue">Blue</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </BaseEditDialog>

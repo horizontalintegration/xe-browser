@@ -36,7 +36,7 @@ const GetLanguages = gql`
 `;
 
 interface ItemLanguageData {
-  item: {
+  item?: {
     languages: {
       language: {
         name: string;
@@ -80,7 +80,7 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
       variables: { itemId, systemLanguage },
     });
 
-    if (data) {
+    if (data.item) {
       const foundLanguages = data.item.languages.map<LanguageInfo>((x) => {
         return {
           isoCode: x.language.name,

@@ -36,6 +36,7 @@ import { useApiKey } from "@/components/providers/ApiKeyProvider";
 import { Alert } from "../helpers/Alert";
 import EditAccountDialog from "./dialogs/EditAccountDialog";
 import EditEnvDialog from "./dialogs/EditEnvDialog";
+import { useAccountTheme } from "../providers/ThemeProvider";
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
@@ -60,6 +61,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
   const { setApiKey } = useApiKey();
+  const { setAccountTheme } = useAccountTheme();
 
   const {
     accounts,
@@ -84,9 +86,17 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
 
   useEffect(() => {
     if (selectedEnv?.apiKey) {
-      setApiKey(selectedEnv?.apiKey);
+      setApiKey(selectedEnv.apiKey);
     }
-  }, [selectedEnv?.apiKey, setApiKey]);
+    if (selectedAccount?.accountTheme) {
+      setAccountTheme(selectedAccount.accountTheme);
+    }
+  }, [
+    selectedAccount?.accountTheme,
+    selectedEnv?.apiKey,
+    setAccountTheme,
+    setApiKey,
+  ]);
 
   const openDialog = (dialogType: DialogType) => {
     setIsDropDownOpen(false);
@@ -99,6 +109,15 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     setDialogType(undefined);
   };
 
+  const onAccountSelect = (account?: Account) => {
+    setSelectedAccount(account);
+    setAccountTheme(account?.accountTheme ?? "default");
+  };
+
+  const onEnvSelect = (env?: AccountEnvironment) => {
+    setSelectedEnv(env);
+    setApiKey(env?.apiKey ?? "");
+  };
   return (
     <Dialog open={isDialogVisible} onOpenChange={setIsDialogVisible}>
       <Popover
@@ -126,7 +145,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                 <CommandGroup
                   key={account.accountId}
                   heading={
-                    <div className="flex h-16 items-center">
+                    <div className="flex px-2 h-16 items-center">
                       <div className="pr-10 font-bold text-lg">
                         {account.accountName}
                       </div>
@@ -136,9 +155,10 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                           <Button
                             variant={"outline"}
                             size={"xs"}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setIsDropDownOpen(false);
-                              setSelectedAccount(account);
+                              onAccountSelect(account);
                               openDialog("create-env");
                             }}
                           >
@@ -148,7 +168,8 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                         </DialogTrigger>
                         <Button
                           size={"xs"}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setEditingAccount(account);
                             openDialog("edit-account");
                           }}
@@ -163,10 +184,9 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                     <CommandItem
                       key={`${account.accountId} ${env.envId}`}
                       onSelect={() => {
-                        setSelectedAccount(account);
-                        setSelectedEnv(env);
+                        onAccountSelect(account);
+                        onEnvSelect(env);
                         setIsDropDownOpen(false);
-                        setApiKey(env.apiKey);
                       }}
                       className="text-sm ml-4"
                     >
@@ -184,7 +204,8 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                         />
                         <Button
                           size={"xs"}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setEditingEnv({
                               accountId: account.accountId,
                               ...env,
@@ -235,8 +256,8 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
               return;
             }
             const createdAccount = addAccount(account);
-            setSelectedAccount(createdAccount);
-            setSelectedEnv(undefined);
+            onAccountSelect(createdAccount);
+            onEnvSelect(undefined);
             closeDialog();
           }}
         />
@@ -261,8 +282,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
               return;
             }
             const createdEnv = addEnvironment(env);
-            setSelectedEnv(createdEnv);
-            setApiKey(env.apiKey);
+            onEnvSelect(createdEnv);
             closeDialog();
           }}
         />
@@ -272,13 +292,13 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
           onCancel={closeDialog}
           onSaveAccount={(account) => {
             const result = editAccount(account);
-            setSelectedAccount(result);
+            onAccountSelect(result);
             closeDialog();
           }}
           onDeleteAccount={(account) => {
             if (account.accountId === selectedAccount?.accountId) {
-              setSelectedAccount(undefined);
-              setSelectedEnv(undefined);
+              onAccountSelect(undefined);
+              onEnvSelect(undefined);
             }
             removeAccount(account.accountId);
             closeDialog();
@@ -290,13 +310,13 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
           onCancel={closeDialog}
           onSaveEnv={(env) => {
             const result = editEnvironment(env);
-            setSelectedEnv(result);
+            onEnvSelect(result);
             closeDialog();
           }}
           onDeleteEnv={(env) => {
             if (env.accountId === selectedAccount?.accountId) {
-              setSelectedAccount(undefined);
-              setSelectedEnv(undefined);
+              onAccountSelect(undefined);
+              onEnvSelect(undefined);
             }
             removeEnvironment(env.accountId, env.envId);
             closeDialog();

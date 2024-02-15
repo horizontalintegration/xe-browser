@@ -10,6 +10,16 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { CreateAccountInfo } from "@/lib/hooks/use-accounts";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AccountThemes } from "@/components/providers/ThemeProvider";
 
 export type AddAccountDialogProps = {
   onCancel: () => void;
@@ -20,6 +30,7 @@ const AddAccountDialog = ({
   onCreateAccount,
 }: AddAccountDialogProps) => {
   const [accountName, setAccountName] = useState("");
+  const [accountTheme, setAccountTheme] = useState<AccountThemes>("default");
   return (
     <DialogContent>
       <DialogHeader>
@@ -31,7 +42,7 @@ const AddAccountDialog = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCreateAccount({ accountName });
+          onCreateAccount({ accountName, accountTheme });
         }}
       >
         <div>
@@ -44,6 +55,24 @@ const AddAccountDialog = ({
                 value={accountName}
                 onChange={(e) => setAccountName(e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <Select
+                value={accountTheme}
+                onValueChange={(e) => setAccountTheme(e as AccountThemes)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a color scheme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Color</SelectLabel>
+                    <SelectItem value="red">Red</SelectItem>
+                    <SelectItem value="green">Green</SelectItem>
+                    <SelectItem value="blue">Blue</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

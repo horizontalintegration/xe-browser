@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import useLocalStorage from "./use-local-storage";
 import { nanoid } from "nanoid";
+import { AccountThemes } from "@/components/providers/ThemeProvider";
+
+
 
 export interface AccountEnvironment {
   envId: string;
@@ -11,11 +14,13 @@ export interface AccountEnvironment {
 export interface Account {
   accountId: string;
   accountName: string;
+  accountTheme: AccountThemes;
   environments: AccountEnvironment[];
 }
 
 export interface CreateAccountInfo {
   accountName: string;
+  accountTheme: AccountThemes;
 }
 
 export interface EditAccountInfo extends CreateAccountInfo {
@@ -39,6 +44,7 @@ export const useAccounts = () => {
     const newAccount = {
       accountId: nanoid(),
       accountName: account.accountName,
+      accountTheme: account.accountTheme,
       environments: [],
     };
     setAccounts([...accounts, newAccount]);
@@ -49,6 +55,7 @@ export const useAccounts = () => {
     const found = accounts.find((x) => x.accountId === account.accountId);
     if (found) {
       found.accountName = account.accountName;
+      found.accountTheme = account.accountTheme;
       setAccounts(accounts);
       return found;
     }
