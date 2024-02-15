@@ -9,8 +9,9 @@ import { ApiKeyProvider } from "@/components/providers/ApiKeyProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { SystemLangageSwitcher } from "../components/language/SystemLangageSwitcher";
 import { ContentWrapper } from "./components/ContentWrapper";
-import { InfoTooltip } from "@/components/helpers/Info";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { XeTooltip } from "@/components/helpers/Tooltip";
+import { DarkModeToggle } from "./components/DarkModeToggle";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                     </div>
                     <div className="ml-auto flex items-center space-x-4">
                       <span>System language</span>
-                      <InfoTooltip>
+                      <XeTooltip>
                         <p>
                           Note: This is the default language for your Sitecore
                           instance.
@@ -45,9 +46,11 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                           It is assumed that every item exists in this language.
                           It should be rare to need to change this
                         </p>
-                      </InfoTooltip>
+                      </XeTooltip>
 
                       <SystemLangageSwitcher />
+
+                      <DarkModeToggle />
                     </div>
                   </div>
                   <div className="space-y-4 p-8 pt-6 flex flex-col flex-auto overflow-y-auto">

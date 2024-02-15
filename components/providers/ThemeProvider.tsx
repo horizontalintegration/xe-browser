@@ -4,6 +4,9 @@ import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type ThemeProviderProps } from "next-themes/dist/types";
 
+// This exists purely so Tailwind knows that the class is used and doesn't strip out the class
+export type DarkMode = "dark";
+
 export type AccountThemes = "default" | "red" | "blue" | "green";
 
 type ThemeProviderContextType = {

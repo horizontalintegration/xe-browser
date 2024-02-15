@@ -5,15 +5,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { ReactNode } from "react";
 
-export type InfoTooltipProps = React.PropsWithChildren;
-export function InfoTooltip({ children }: InfoTooltipProps) {
+export type XeTooltipProps = React.PropsWithChildren<{
+  trigger?: ReactNode;
+}>;
+export function XeTooltip({
+  trigger = <InfoIcon />,
+  children,
+}: XeTooltipProps) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
-          <InfoIcon />
-        </TooltipTrigger>
+        <TooltipTrigger>{trigger}</TooltipTrigger>
         <TooltipContent>{children}</TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -3,8 +3,6 @@ import useLocalStorage from "./use-local-storage";
 import { nanoid } from "nanoid";
 import { AccountThemes } from "@/components/providers/ThemeProvider";
 
-
-
 export interface AccountEnvironment {
   envId: string;
   envName: string;
@@ -52,6 +50,9 @@ export const useAccounts = () => {
   };
 
   const editAccount = (account: EditAccountInfo) => {
+    if (!account.accountId) {
+      throw new Error("editAccount missing accountId");
+    }
     const found = accounts.find((x) => x.accountId === account.accountId);
     if (found) {
       found.accountName = account.accountName;
@@ -66,6 +67,10 @@ export const useAccounts = () => {
   };
 
   const addEnvironment = (env: CreateEnvInfo) => {
+    if (!env.accountId) {
+      throw new Error("addEnvironment missing accountId");
+    }
+
     const account = accounts.find((x) => x.accountId === env.accountId);
     if (!account) {
       throw new Error(`Unable to find account: ${env.accountId}`);
@@ -81,6 +86,14 @@ export const useAccounts = () => {
   };
 
   const editEnvironment = (env: EditEnvInfo) => {
+    if (!env.accountId) {
+      throw new Error("editEnvironment missing accountId");
+    }
+
+    if (!env.envId) {
+      throw new Error("editEnvironment missing envId");
+    }
+
     const account = accounts.find((x) => x.accountId === env.accountId);
     if (!account) {
       throw new Error(`Unable to find account: ${env.accountId}`);
@@ -92,7 +105,6 @@ export const useAccounts = () => {
       setAccounts(accounts);
       return foundEnv;
     }
-
   };
 
   const removeEnvironment = (accountId: string, envId: string) => {
@@ -120,12 +132,13 @@ export const useAccounts = () => {
           updated = true;
         }
       });
+
     });
     if (updated) {
       setAccounts(accounts);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accounts]);
 
   return {
     accounts,
