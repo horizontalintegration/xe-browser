@@ -12,7 +12,6 @@ export const getItemMetaData = async (
     itemLanguage,
   });
 
-  console.log("getItemMetaData", itemId, itemLanguage, data?.item?.language);
   return data;
 };
 

@@ -6,20 +6,14 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { CreateAccountInfo } from "@/lib/hooks/use-accounts";
 
 export type AddAccountDialogProps = {
   onCancel: () => void;
-  onCreateAccount: (accountName: string) => void;
+  onCreateAccount: (account: CreateAccountInfo) => void;
 };
 const AddAccountDialog = ({
   onCancel,
@@ -37,7 +31,7 @@ const AddAccountDialog = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCreateAccount(accountName);
+          onCreateAccount({ accountName });
         }}
       >
         <div>
@@ -57,9 +51,7 @@ const AddAccountDialog = ({
           <Button type="reset" variant="outline" onClick={() => onCancel()}>
             Cancel
           </Button>
-          <Button type="submit" onClick={() => onCreateAccount(accountName)}>
-            Add Account
-          </Button>
+          <Button type="submit">Add Account</Button>
         </DialogFooter>
       </form>
     </DialogContent>

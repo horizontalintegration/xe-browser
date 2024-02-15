@@ -46,8 +46,6 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
   useEffect(() => {
     async function innerFetch() {
       let data;
-
-      console.log("fetching data for", selectedTab, itemLanguage);
       switch (selectedTab) {
         case "meta":
           data = await getItemMetaData(client, itemLanguage, itemId);
@@ -73,7 +71,6 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
           setRouteData(data?.route ?? { error: "Item does not have layout" });
           break;
       }
-      console.log("data", data);
     }
     innerFetch();
   }, [client, itemLanguage, itemId, selectedTab]);
