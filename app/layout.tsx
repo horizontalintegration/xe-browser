@@ -12,6 +12,7 @@ import { ContentWrapper } from "./components/ContentWrapper";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { XeTooltip } from "@/components/helpers/Tooltip";
 import { DarkModeToggle } from "./components/DarkModeToggle";
+import { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,10 @@ if (process.env.NODE_ENV !== "production") {
   loadDevMessages();
   loadErrorMessages();
 }
+
+export const metadata: Metadata = {
+  title: "Sitecore XE Browser",
+};
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
