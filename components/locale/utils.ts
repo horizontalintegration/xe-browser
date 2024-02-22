@@ -3,7 +3,7 @@ export interface LocaleInfo {
   friendlyName: string;
 }
 
-export function formatLanguage(localeInfo?: LocaleInfo) {
+export function formatLocale(localeInfo?: LocaleInfo) {
   if (!localeInfo) {
     return "No Locale Selected";
   }

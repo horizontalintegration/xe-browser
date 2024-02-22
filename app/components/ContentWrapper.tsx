@@ -1,12 +1,12 @@
 "use client";
 import { useApiKey } from "@/components/providers/ApiKeyProvider";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import React from "react";
 
 export function ContentWrapper({ children }: React.PropsWithChildren) {
   const { apiKey } = useApiKey();
-  const { systemLanguages } = useLanguage();
+  const { systemLocales } = useLocale();
   return (
-    <React.Fragment key={`${apiKey}-${systemLanguages.join()}`}>{children}</React.Fragment>
+    <React.Fragment key={`${apiKey}-${systemLocales.join()}`}>{children}</React.Fragment>
   );
 }

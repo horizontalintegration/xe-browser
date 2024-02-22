@@ -1,5 +1,5 @@
 "use client";
-import { ItemLangageSwitcher } from "../../components/language/ItemLangageSwitcher";
+import { ItemLocaleSwitcher } from "../../components/locale/ItemLangageSwitcher";
 import DataJsonView from "./components/DataJsonView";
 import ItemTreeView from "./components/ItemTreeView";
 import {
@@ -24,7 +24,7 @@ export default function Home() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel className="h-full !overflow-y-auto">
-        <ItemLangageSwitcher itemId={selectedItemId} />
+        <ItemLocaleSwitcher itemId={selectedItemId} />
         <DataJsonView itemId={selectedItemId} />
       </ResizablePanel>
     </ResizablePanelGroup>

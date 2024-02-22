@@ -4,20 +4,20 @@ import { getDataUtil } from "./util";
 
 export const getFieldData = async (
   client: ApolloClientType,
-  itemLanguage: string,
+  itemLocale: string,
   itemId?: string
 ): Promise<FieldResponse | null> => {
   const data = await getDataUtil<FieldResponse>(client, GetFieldData, {
     path: itemId,
-    itemLanguage,
+    itemLocale,
   });
 
   return data;
 };
 
 const GetFieldData = gql`
-  query GetItemData($path: String! = "/sitecore", $itemLanguage: String!) {
-    item(path: $path, language: $itemLanguage) {
+  query GetItemData($path: String! = "/sitecore", $itemLocale: String!) {
+    item(path: $path, language: $itemLocale) {
       fields {
         name
         jsonValue

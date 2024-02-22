@@ -4,15 +4,15 @@ import React, { useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
 import { SiteInfo, SiteSwitcher } from "./SiteSwitcher";
 import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const GetLayout = gql`
   query GetLayout(
     $site: String!
     $routePath: String! = "/"
-    $systemLanguage: String!
+    $systemLocale: String!
   ) {
-    layout(site: $site, routePath: $routePath, language: $systemLanguage) {
+    layout(site: $site, routePath: $routePath, language: $systemLocale) {
       item {
         id
         name
@@ -91,7 +91,7 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
   const item = { ...root };
 
   const client = useGraphQLClientContext();
-  const { systemLanguages } = useLanguage();
+  const { systemLocales } = useLocale();
   const fetchData = async (item: ItemNode) => {
     if (!client || !site) {
       return;
@@ -101,14 +101,14 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
     }
     item.children = [];
     const addedItemIds = new Set<string>();
-    for (let index = 0; index < systemLanguages.length; index++) {
-      const systemLanguage = systemLanguages[index];
+    for (let index = 0; index < systemLocales.length; index++) {
+      const systemLocale = systemLocales[index];
       const { data } = await client.query<LayoutData>({
         query: GetLayout,
         variables: {
           site: site.siteName,
           routePath: item.routePath,
-          systemLanguage,
+          systemLocale,
         },
       });
 

@@ -6,8 +6,8 @@ import GraphQLClientProvider from "@/components/providers/GraphQLClientProvider"
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { cn } from "@/lib/utils";
 import { ApiKeyProvider } from "@/components/providers/ApiKeyProvider";
-import { LanguageProvider } from "@/components/providers/LanguageProvider";
-import { SystemLangageSwitcher } from "../components/language/SystemLangageSwitcher";
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
+import { SystemLangageSwitcher } from "../components/locale/SystemLangageSwitcher";
 import { ContentWrapper } from "./components/ContentWrapper";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { XeTooltip } from "@/components/helpers/Tooltip";
@@ -34,24 +34,24 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ApiKeyProvider>
               <GraphQLClientProvider>
-                <LanguageProvider>
+                <LocaleProvider>
                   <div className="border-b flex-initial flex items-center">
                     <div className="flex h-16 items-center px-4">
                       <EnvironmentSwitcher />
                       <MainNav className="mx-6" />
                     </div>
                     <div className="ml-auto flex items-center space-x-4">
-                      <span>System languages</span>
+                      <span>System locales</span>
                       <XeTooltip>
                         <p>
-                          The languages that are used for query the Sitecore
+                          The locales that are used for query the Sitecore
                           tree.
                         </p>
                         <p>
                           {
-                            `If an item isn't in one of these languages, it won't show up on the tree.  
-                            Try to select the fewest number of languages possible, because queries will be made against 
-                            every selected language to ensure we aren't missing items.`
+                            `If an item isn't in one of these locales, it won't show up on the tree.  
+                            Try to select the fewest number of locales possible, because queries will be made against 
+                            every selected locale to ensure we aren't missing items.`
                           }
                         </p>
                       </XeTooltip>
@@ -65,7 +65,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                     <ContentWrapper>{children}</ContentWrapper>
                   </div>
                   <footer className=" flex-initial basis-1">Footer</footer>
-                </LanguageProvider>
+                </LocaleProvider>
               </GraphQLClientProvider>
             </ApiKeyProvider>
           </ThemeProvider>

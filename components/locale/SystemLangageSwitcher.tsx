@@ -5,7 +5,7 @@ import { groupBy } from "lodash";
 import { cn } from "@/lib/utils";
 import { gql } from "@apollo/client";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLanguage } from "../providers/LanguageProvider";
+import { useLocale } from "../providers/LocaleProvider";
 import {
   Popover,
   PopoverContent,
@@ -13,11 +13,11 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { LocaleInfo, formatLanguage } from "./utils";
+import { LocaleInfo, formatLocale } from "./utils";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
-const GetLanguages = gql`
-  query GetLanguages {
+const GetLocales = gql`
+  query GetLocales {
     item(language: "en", path: "/sitecore/system/Languages") {
       children(first: 500) {
         results {
@@ -39,16 +39,16 @@ interface SiteCollectionData {
 }
 
 export function SystemLangageSwitcher() {
-  const [allLanguages, setAllLanguages] = useState<LocaleInfo[]>([]);
-  const [languageDisplayNames, setLanguageDisplayNames] = useState<Intl.DisplayNames>();
+  const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
+  const [localeDisplayNames, setLocaleDisplayNames] = useState<Intl.DisplayNames>();
   const [open, setOpen] = useState(false);
 
   const client = useGraphQLClientContext();
 
-  const { setSystemLanguages, systemLanguages } = useLanguage();
+  const { setSystemLocales, systemLocales } = useLocale();
 
-  const languageSelected = (languageValues: string[]) => {
-    setSystemLanguages(languageValues);
+  const localeSelected = (localeValues: string[]) => {
+    setSystemLocales(localeValues);
   };
 
   const fetchData = async () => {
@@ -56,45 +56,45 @@ export function SystemLangageSwitcher() {
       return;
     }
     const { data } = await client.query<SiteCollectionData>({
-      query: GetLanguages,
+      query: GetLocales,
     });
 
     if (data) {
-      const foundLanguages = data.item.children.results.map<LocaleInfo>((x) => {
+      const foundLocales = data.item.children.results.map<LocaleInfo>((x) => {
         return {
           isoCode: x.name,
-          friendlyName: languageDisplayNames?.of(x.name) ?? "Unknown",
+          friendlyName: localeDisplayNames?.of(x.name) ?? "Unknown",
         };
       });
 
-      setAllLanguages(foundLanguages);
+      setAllLocaleInfos(foundLocales);
     }
   };
 
   useEffect(() => {
     const userLang = window.navigator.language;
-    const languageNames = new Intl.DisplayNames([userLang], {
+    const displayNames = new Intl.DisplayNames([userLang], {
       type: "language",
     });
 
-    setLanguageDisplayNames(languageNames);
+    setLocaleDisplayNames(displayNames);
   }, []);
 
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, languageDisplayNames]);
+  }, [client, localeDisplayNames]);
 
   if (!client) {
     return;
   }
 
-  const selectedLanguage = allLanguages.filter((lang) =>
-    systemLanguages.includes(lang.isoCode)
+  const selectedLocale = allLocaleInfos.filter((lang) =>
+    systemLocales.includes(lang.isoCode)
   );
 
   const localesByLanguage = groupBy(
-    allLanguages,
+    allLocaleInfos,
     (x) => x.isoCode.split("-")[0]
   );
 
@@ -107,7 +107,7 @@ export function SystemLangageSwitcher() {
           aria-expanded={open}
           className="justify-between"
         >
-          {selectedLanguage.map((x) => x.isoCode).join(", ")}
+          {selectedLocale.map((x) => x.isoCode).join(", ")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -115,33 +115,33 @@ export function SystemLangageSwitcher() {
         <ToggleGroup
           type="multiple"
           orientation="vertical"
-          value={systemLanguages}
-          onValueChange={languageSelected}
+          value={systemLocales}
+          onValueChange={localeSelected}
         >
           {Object.keys(localesByLanguage).map((lang) => {
             const locales = localesByLanguage[lang];
             return (
               <div key={lang} className="">
                 <div className="font-bold text-lg">
-                  {languageDisplayNames?.of(lang)}
+                  {localeDisplayNames?.of(lang)}
                 </div>
                 <div className="justify-center items-center">
-                  {locales.map((language) => {
+                  {locales.map((localeInfo) => {
                     return (
                       <ToggleGroupItem
-                        key={language.isoCode}
-                        value={`${language?.isoCode}`}
+                        key={localeInfo.isoCode}
+                        value={`${localeInfo?.isoCode}`}
                         className=" text-left"
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            systemLanguages.includes(language.isoCode)
+                            systemLocales.includes(localeInfo.isoCode)
                               ? "opacity-100"
                               : "opacity-0"
                           )}
                         />
-                        <span>{formatLanguage(language)}</span>
+                        <span>{formatLocale(localeInfo)}</span>
                       </ToggleGroupItem>
                     );
                   })}

@@ -10,7 +10,7 @@ import {
 
 import React from "react";
 import { useState, useEffect, createContext, useContext } from "react";
-import { useLanguage } from "./LanguageProvider";
+import { useLocale } from "./LocaleProvider";
 
 export type GraphQLClientProviderProps = Readonly<{
   children: React.ReactNode;
@@ -45,7 +45,7 @@ export default function GraphQLClientProvider({
           default:
             return (
               defaultDataIdFromObject(responseObject) +
-              // Add language to the cache key.  The was cahsing an issue
+              // Add language to the cache key.  The was caching an issue
               // where the wrong language version would get returned
               (responseObject?.language as any)?.name
             );
