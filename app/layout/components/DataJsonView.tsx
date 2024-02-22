@@ -1,9 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { JsonView, collapseAllNested } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { getLayoutData } from "@/lib/graphql/get-layout-data";
@@ -11,6 +8,7 @@ import { deepSearch } from "@/lib/utils/object-utils";
 import { ComponentResponse } from "@/lib/graphql/types";
 import ComponentsJsonView from "../../../components/viewers/ComponentJsonView";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
 
 export type DataJsonViewProps = {
   siteName: string;
@@ -63,10 +61,10 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
         <TabsTrigger value="components">Components</TabsTrigger>
       </TabsList>
       <TabsContent value="sitecore-context">
-        <JsonView data={sitecoreContextData} />
+        <JsonViewWrapper data={sitecoreContextData} />
       </TabsContent>
       <TabsContent value="route">
-        <JsonView data={routeData} shouldExpandNode={collapseAllNested} />
+        <JsonViewWrapper data={routeData} collapsed={1} />
       </TabsContent>
       <TabsContent value="components">
         <ComponentsJsonView key={routePath} components={componentsData} />
