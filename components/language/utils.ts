@@ -1,11 +1,11 @@
-export interface LanguageInfo {
+export interface LocaleInfo {
   isoCode: string;
   friendlyName: string;
 }
 
-export function formatLanguage(languageInfo?: LanguageInfo) {
-  if (!languageInfo) {
-    return "No Language Selected";
+export function formatLanguage(localeInfo?: LocaleInfo) {
+  if (!localeInfo) {
+    return "No Locale Selected";
   }
-  return `${languageInfo?.isoCode} (${languageInfo?.friendlyName})`;
+  return `${localeInfo?.isoCode} (${localeInfo?.friendlyName})`;
 }

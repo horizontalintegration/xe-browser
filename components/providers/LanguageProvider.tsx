@@ -1,16 +1,17 @@
 "use client";
+import useLocalStorage from "@/lib/hooks/use-local-storage";
 import { createContext, useContext, useState } from "react";
 
 type LanguageContextType = {
-  systemLanguage: string;
-  setSystemLanguage: (systemLanguage: string) => void;
+  systemLanguages: string[];
+  setSystemLanguages: (systemLanguages: string[]) => void;
   itemLanguage: string;
   setItemLanguage: (itemLanguage: string) => void;
 };
 
 const LanguageContext = createContext<LanguageContextType>({
-  systemLanguage: "en",
-  setSystemLanguage: () => {},
+  systemLanguages: ["en"],
+  setSystemLanguages: () => {},
   itemLanguage: "en",
   setItemLanguage: () => {},
 });
@@ -19,14 +20,18 @@ export function useLanguage() {
   return useContext(LanguageContext);
 }
 export function LanguageProvider({ children }: React.PropsWithChildren) {
-  const [systemLanguage, setSystemLanguage] = useState<string>("en");
+  const [systemLanguages, setSystemLanguages] = useLocalStorage<string[]>(
+    "systemLanguage",
+    ["en"]
+  );
+
   const [itemLanguage, setItemLanguage] = useState<string>("en");
 
   return (
     <LanguageContext.Provider
       value={{
-        systemLanguage,
-        setSystemLanguage,
+        systemLanguages,
+        setSystemLanguages,
         itemLanguage,
         setItemLanguage,
       }}

@@ -20,7 +20,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { LanguageInfo, formatLanguage } from "./utils";
+import { LocaleInfo, formatLanguage } from "./utils";
 
 const GetLanguages = gql`
   query GetLanguages($itemId: String!, $systemLanguage: String!) {
@@ -50,12 +50,12 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
   const [selectedLanguageCode, setSelectedLanguageCode] =
     useState<string>("en");
 
-  const [languages, setLanguages] = useState<LanguageInfo[]>([]);
+  const [languages, setLanguages] = useState<LocaleInfo[]>([]);
   const [open, setOpen] = useState(false);
 
   const client = useGraphQLClientContext();
 
-  const { systemLanguage, setItemLanguage } = useLanguage();
+  const { systemLanguages, setItemLanguage } = useLanguage();
 
   const languageSelected = (languageValue: string) => {
     const selectedLanguage = languages.find(
@@ -75,20 +75,26 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
     if (!client || !itemId) {
       return;
     }
-    const { data } = await client.query<ItemLanguageData>({
-      query: GetLanguages,
-      variables: { itemId, systemLanguage },
-    });
-
-    if (data.item) {
-      const foundLanguages = data.item.languages.map<LanguageInfo>((x) => {
-        return {
-          isoCode: x.language.name,
-          friendlyName: x.language.englishName,
-        };
+    for (let index = 0; index < systemLanguages.length; index++) {
+      const systemLanguage = systemLanguages[index];
+      const { data } = await client.query<ItemLanguageData>({
+        query: GetLanguages,
+        variables: { itemId, systemLanguage },
       });
 
-      setLanguages(foundLanguages);
+      if (data.item) {
+        const foundLanguages = data.item.languages.map<LocaleInfo>((x) => {
+          return {
+            isoCode: x.language.name,
+            friendlyName: x.language.englishName,
+          };
+        });
+
+        setLanguages(foundLanguages);
+        // Since we're fetching other language versions, we only need the first one that's found
+        // Once we found one, we're good.
+        break;
+      }
     }
   };
 
@@ -113,7 +119,6 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
           aria-expanded={open}
           className="justify-between"
         >
-          
           {formatLanguage(selectedLanguage)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

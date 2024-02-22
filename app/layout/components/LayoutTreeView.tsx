@@ -66,7 +66,11 @@ interface LayoutData {
 }
 
 export type LayoutTreeViewProps = {
-  onItemSelected: (siteName: SiteInfo, itemId: string, routePath: string) => void;
+  onItemSelected: (
+    siteName: SiteInfo,
+    itemId: string,
+    routePath: string
+  ) => void;
 };
 const root: ItemNode = {
   id: "root",
@@ -87,7 +91,7 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
   const item = { ...root };
 
   const client = useGraphQLClientContext();
-  const { systemLanguage } = useLanguage();
+  const { systemLanguages } = useLanguage();
   const fetchData = async (item: ItemNode) => {
     if (!client || !site) {
       return;
@@ -95,29 +99,43 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
     if (item.id && loadedIds.has(item.id)) {
       return;
     }
-    const { data } = await client.query<LayoutData>({
-      query: GetLayout,
-      variables: {
-        site: site.siteName,
-        routePath: item.routePath,
-        systemLanguage: systemLanguage,
-      },
-    });
+    item.children = [];
+    const addedItemIds = new Set<string>();
+    for (let index = 0; index < systemLanguages.length; index++) {
+      const systemLanguage = systemLanguages[index];
+      const { data } = await client.query<LayoutData>({
+        query: GetLayout,
+        variables: {
+          site: site.siteName,
+          routePath: item.routePath,
+          systemLanguage,
+        },
+      });
 
-    const loadedItem = data.layout?.item;
-    if (loadedItem) {
-      loadedIds.add(loadedItem.id);
-      setLoadedIds(loadedIds);
-      item.id = loadedItem.id;
-      item.children = data.layout?.item?.children.results.map((x) => ({
-        id: x.id,
-        name: x.name,
-        routePath: x.url.path,
-        hasLayout: true,
-        hasChildren: x.children.results.length > 0,
-      }));
-      return item.children;
+      const loadedItem = data.layout?.item;
+      if (loadedItem) {
+        loadedIds.add(loadedItem.id);
+        setLoadedIds(loadedIds);
+        item.id = loadedItem.id;
+
+        data.layout?.item?.children.results.forEach((x) => {
+          if (addedItemIds.has(x.id)) {
+            return;
+          }
+
+          addedItemIds.add(x.id);
+          item.children?.push({
+            id: x.id,
+            name: x.name,
+            routePath: x.url.path,
+            hasLayout: true,
+            hasChildren: x.children.results.length > 0,
+          });
+        });
+      }
     }
+
+    return item.children;
   };
   return (
     <div>

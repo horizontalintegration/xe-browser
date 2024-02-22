@@ -92,7 +92,7 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     }
   };
 
-  const { systemLanguage } = useLanguage();
+  const { systemLanguages } = useLanguage();
   const fetchData = async () => {
     if (!client) {
       return;
@@ -109,20 +109,23 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
         setSites(foundSites);
       }
     } catch {
-      const { data } = await client.query<LegacySiteData>({
-        query: GetSitesLegacy,
-        variables: {
-          systemLanguage,
-        },
-      });
+      const uniqueSiteNames = new Set<string>();
+      for (let index = 0; index < systemLanguages.length; index++) {
+        const systemLanguage = systemLanguages[index];
+        const { data } = await client.query<LegacySiteData>({
+          query: GetSitesLegacy,
+          variables: {
+            systemLanguage,
+          },
+        });
 
-      if (data) {
-        const foundSites = data.search.results.map((x) => ({
-          siteName: x.siteName.value,
-        }));
-        const uniqueSiteNames = new Set(foundSites.map((x) => x.siteName));
-        setSites(Array.from(uniqueSiteNames).map((x) => ({ siteName: x })));
+        if (data) {
+          data.search.results.forEach((x) =>
+            uniqueSiteNames.add(x.siteName.value)
+          );
+        }
       }
+      setSites(Array.from(uniqueSiteNames).map((x) => ({ siteName: x })));
     }
   };
 

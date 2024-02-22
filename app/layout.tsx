@@ -41,15 +41,18 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                       <MainNav className="mx-6" />
                     </div>
                     <div className="ml-auto flex items-center space-x-4">
-                      <span>System language</span>
+                      <span>System languages</span>
                       <XeTooltip>
                         <p>
-                          Note: This is the default language for your Sitecore
-                          instance.
+                          The languages that are used for query the Sitecore
+                          tree.
                         </p>
                         <p>
-                          It is assumed that every item exists in this language.
-                          It should be rare to need to change this
+                          {
+                            `If an item isn't in one of these languages, it won't show up on the tree.  
+                            Try to select the fewest number of languages possible, because queries will be made against 
+                            every selected language to ensure we aren't missing items.`
+                          }
                         </p>
                       </XeTooltip>
 

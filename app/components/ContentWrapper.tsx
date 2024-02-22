@@ -5,8 +5,8 @@ import React from "react";
 
 export function ContentWrapper({ children }: React.PropsWithChildren) {
   const { apiKey } = useApiKey();
-  const { systemLanguage } = useLanguage();
+  const { systemLanguages } = useLanguage();
   return (
-    <React.Fragment key={`${apiKey}-${systemLanguage}`}>{children}</React.Fragment>
+    <React.Fragment key={`${apiKey}-${systemLanguages.join()}`}>{children}</React.Fragment>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { groupBy } from "lodash";
 import { cn } from "@/lib/utils";
 import { gql } from "@apollo/client";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
@@ -13,15 +13,8 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import useLocalStorage from "@/lib/hooks/use-local-storage";
-import { LanguageInfo, formatLanguage } from "./utils";
+import { LocaleInfo, formatLanguage } from "./utils";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
 const GetLanguages = gql`
   query GetLanguages {
@@ -46,30 +39,16 @@ interface SiteCollectionData {
 }
 
 export function SystemLangageSwitcher() {
-  const [systemLanguageCode, setSystemLanguage] = useLocalStorage<string>(
-    "systemLanguage",
-    "en"
-  );
-
-  const [languages, setLanguages] = useState<LanguageInfo[]>([]);
+  const [allLanguages, setAllLanguages] = useState<LocaleInfo[]>([]);
+  const [languageDisplayNames, setLanguageDisplayNames] = useState<Intl.DisplayNames>();
   const [open, setOpen] = useState(false);
 
   const client = useGraphQLClientContext();
 
-  const { setSystemLanguage: setLanguage } = useLanguage();
+  const { setSystemLanguages, systemLanguages } = useLanguage();
 
-  const languageSelected = (languageValue: string) => {
-    const selectedLanguage = languages.find(
-      (x) =>
-        // For some reason the command returns selected value in lowercase
-        x.isoCode?.toLocaleLowerCase() === languageValue?.toLocaleLowerCase()
-    );
-
-    if (selectedLanguage) {
-      setSystemLanguage(selectedLanguage.isoCode);
-      setLanguage(selectedLanguage.isoCode);
-    }
-    setOpen(false);
+  const languageSelected = (languageValues: string[]) => {
+    setSystemLanguages(languageValues);
   };
 
   const fetchData = async () => {
@@ -81,38 +60,46 @@ export function SystemLangageSwitcher() {
     });
 
     if (data) {
-      const userLang = window.navigator.language;
-      const languageNames = new Intl.DisplayNames([userLang], {
-        type: "language",
+      const foundLanguages = data.item.children.results.map<LocaleInfo>((x) => {
+        return {
+          isoCode: x.name,
+          friendlyName: languageDisplayNames?.of(x.name) ?? "Unknown",
+        };
       });
 
-      const foundLanguages = data.item.children.results.map<LanguageInfo>(
-        (x) => {
-          return {
-            isoCode: x.name,
-            friendlyName: languageNames.of(x.name) ?? "Unknown",
-          };
-        }
-      );
-
-      setLanguages(foundLanguages);
+      setAllLanguages(foundLanguages);
     }
   };
 
   useEffect(() => {
+    const userLang = window.navigator.language;
+    const languageNames = new Intl.DisplayNames([userLang], {
+      type: "language",
+    });
+
+    setLanguageDisplayNames(languageNames);
+  }, []);
+
+  useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client]);
+  }, [client, languageDisplayNames]);
 
   if (!client) {
     return;
   }
-  const selectedLanguage = languages.find(
-    (site) => site.isoCode === systemLanguageCode ?? "en"
+
+  const selectedLanguage = allLanguages.filter((lang) =>
+    systemLanguages.includes(lang.isoCode)
+  );
+
+  const localesByLanguage = groupBy(
+    allLanguages,
+    (x) => x.isoCode.split("-")[0]
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -120,35 +107,49 @@ export function SystemLangageSwitcher() {
           aria-expanded={open}
           className="justify-between"
         >
-          {formatLanguage(selectedLanguage)}
+          {selectedLanguage.map((x) => x.isoCode).join(", ")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Command>
-          <CommandInput placeholder="Search language code..." />
-          <CommandEmpty>No languages found.</CommandEmpty>
-          <CommandGroup>
-            {languages.map((language) => (
-              <CommandItem
-                key={language.isoCode}
-                value={`${language?.isoCode}`}
-                onSelect={languageSelected}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    systemLanguageCode === language.isoCode
-                      ? "opacity-100"
-                      : "opacity-0"
-                  )}
-                />
-
-                {formatLanguage(language)}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
+        <ToggleGroup
+          type="multiple"
+          orientation="vertical"
+          value={systemLanguages}
+          onValueChange={languageSelected}
+        >
+          {Object.keys(localesByLanguage).map((lang) => {
+            const locales = localesByLanguage[lang];
+            return (
+              <div key={lang} className="">
+                <div className="font-bold text-lg">
+                  {languageDisplayNames?.of(lang)}
+                </div>
+                <div className="justify-center items-center">
+                  {locales.map((language) => {
+                    return (
+                      <ToggleGroupItem
+                        key={language.isoCode}
+                        value={`${language?.isoCode}`}
+                        className=" text-left"
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            systemLanguages.includes(language.isoCode)
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        <span>{formatLanguage(language)}</span>
+                      </ToggleGroupItem>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </ToggleGroup>
       </PopoverContent>
     </Popover>
   );
