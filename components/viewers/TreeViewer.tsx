@@ -8,6 +8,12 @@ import {
   PackageIcon,
   BookOpenTextIcon,
 } from "lucide-react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../ui/context-menu";
 
 export interface BaseItemNode<T extends BaseItemNode<T>> {
   id: string;
@@ -38,13 +44,12 @@ export function TreeViewer<T extends BaseItemNode<T>>({
   const client = useGraphQLClientContext();
 
   const loadData = async () => {
-    if (!children) {
-      setIsLoading(true);
-      const children = await fetchData(item);
-      setIsLoading(false);
-      setChildren(children);
-      setHasChildren(!!children?.length);
-    }
+    setIsLoading(true);
+    setChildren([]);
+    const children = await fetchData(item);
+    setIsLoading(false);
+    setChildren(children);
+    setHasChildren(!!children?.length);
   };
 
   if (!client) {
@@ -58,40 +63,59 @@ export function TreeViewer<T extends BaseItemNode<T>>({
   }
   return (
     <div className="space-y-1 ml-4">
-      <Button
-        variant={isSelected(item) ? "default" : "ghost"}
-        className="w-full justify-start space-x-1"
-        onClick={async () => {
-          onItemSelected(item);
-          setIsExpanded(true);
-          await loadData();
-        }}
-      >
-        {isLoading ? (
-          <LoaderIcon />
-        ) : isExpanded ? (
-          <ArrowDownRightIcon
-            onClick={async (e) => {
-              e.stopPropagation();
-              setIsExpanded(false);
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <Button
+            variant={isSelected(item) ? "default" : "ghost"}
+            className="w-full justify-start space-x-1"
+            onClick={async () => {
+              onItemSelected(item);
+              if (!isExpanded) {
+                setIsExpanded(true);
+                await loadData();
+              }
             }}
-            className={hasChildren ? "" : "collapse"}
-          />
-        ) : (
-          <ArrowRightIcon
+          >
+            {isLoading ? (
+              <LoaderIcon />
+            ) : isExpanded ? (
+              <ArrowDownRightIcon
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                }}
+                className={hasChildren ? "" : "collapse"}
+              />
+            ) : (
+              <ArrowRightIcon
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!isExpanded) {
+                    setIsExpanded(true);
+                    await loadData();
+                  }
+                }}
+                className={hasChildren ? "" : "collapse"}
+              />
+            )}
+
+            {item.hasLayout ? <BookOpenTextIcon /> : <PackageIcon />}
+
+            <span>{item.name}</span>
+          </Button>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
             onClick={async (e) => {
               e.stopPropagation();
               setIsExpanded(true);
               await loadData();
             }}
-            className={hasChildren ? "" : "collapse"}
-          />
-        )}
-
-        {item.hasLayout ? <BookOpenTextIcon /> : <PackageIcon />}
-        <span>{item.name}</span>
-      </Button>
-
+          >
+            Refresh Children
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
       {isExpanded &&
         children?.map((x) => (
           <TreeViewer<T>

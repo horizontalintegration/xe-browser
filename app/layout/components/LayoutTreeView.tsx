@@ -85,7 +85,6 @@ interface ItemNode extends BaseItemNode<ItemNode> {
 }
 
 const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
-  const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const [site, setSite] = useState<SiteInfo>();
   const item = { ...root };
@@ -94,9 +93,6 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
   const { systemLocales } = useLocale();
   const fetchData = async (item: ItemNode) => {
     if (!client || !site) {
-      return;
-    }
-    if (item.id && loadedIds.has(item.id)) {
       return;
     }
     item.children = [];
@@ -114,8 +110,6 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
 
       const loadedItem = data.layout?.item;
       if (loadedItem) {
-        loadedIds.add(loadedItem.id);
-        setLoadedIds(loadedIds);
         item.id = loadedItem.id;
 
         data.layout?.item?.children.results.forEach((x) => {

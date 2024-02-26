@@ -62,16 +62,12 @@ const root: ItemNode = {
 interface ItemNode extends BaseItemNode<ItemNode> {}
 
 const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
-  const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const item = { ...root };
   const client = useGraphQLClientContext();
   const { systemLocales } = useLocale();
   const fetchData = async (item: ItemNode) => {
     if (!client) {
-      return;
-    }
-    if (loadedIds.has(item.id)) {
       return;
     }
 
@@ -88,8 +84,6 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
       });
 
       if (data) {
-        loadedIds.add(item.id);
-        setLoadedIds(loadedIds);
         data.item?.children.results.forEach((x) => {
           if (addedItemIds.has(x.id)) {
             return;
