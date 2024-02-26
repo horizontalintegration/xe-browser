@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AccountThemes } from "@/components/providers/ThemeProvider";
+import { EnvThemes } from "@/components/providers/ThemeProvider";
 
 export type AddAccountDialogProps = {
   onCancel: () => void;
@@ -30,7 +30,7 @@ const AddAccountDialog = ({
   onCreateAccount,
 }: AddAccountDialogProps) => {
   const [accountName, setAccountName] = useState("");
-  const [accountTheme, setAccountTheme] = useState<AccountThemes>("default");
+  
   return (
     <DialogContent>
       <DialogHeader>
@@ -42,7 +42,7 @@ const AddAccountDialog = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCreateAccount({ accountName, accountTheme });
+          onCreateAccount({ accountName });
         }}
       >
         <div>
@@ -56,24 +56,7 @@ const AddAccountDialog = ({
                 onChange={(e) => setAccountName(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Select
-                value={accountTheme}
-                onValueChange={(e) => setAccountTheme(e as AccountThemes)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a color scheme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Color</SelectLabel>
-                    <SelectItem value="red">Red</SelectItem>
-                    <SelectItem value="green">Green</SelectItem>
-                    <SelectItem value="blue">Blue</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+            
           </div>
         </div>
         <DialogFooter>

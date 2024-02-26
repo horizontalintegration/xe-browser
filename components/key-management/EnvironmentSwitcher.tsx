@@ -36,7 +36,7 @@ import { useApiKey } from "@/components/providers/ApiKeyProvider";
 import { Alert } from "../helpers/Alert";
 import EditAccountDialog from "./dialogs/EditAccountDialog";
 import EditEnvDialog from "./dialogs/EditEnvDialog";
-import { useAccountTheme } from "../providers/ThemeProvider";
+import { useEnvTheme } from "../providers/ThemeProvider";
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
@@ -61,7 +61,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
   const { setApiKey } = useApiKey();
-  const { setAccountTheme } = useAccountTheme();
+  const { setEnvTheme } = useEnvTheme();
 
   const {
     accounts,
@@ -88,15 +88,10 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     if (selectedEnv?.apiKey) {
       setApiKey(selectedEnv.apiKey);
     }
-    if (selectedAccount?.accountTheme) {
-      setAccountTheme(selectedAccount.accountTheme);
+    if (selectedEnv?.envTheme) {
+      setEnvTheme(selectedEnv.envTheme);
     }
-  }, [
-    selectedAccount?.accountTheme,
-    selectedEnv?.apiKey,
-    setAccountTheme,
-    setApiKey,
-  ]);
+  }, [selectedEnv?.envTheme, selectedEnv?.apiKey, setEnvTheme, setApiKey]);
 
   const openDialog = (dialogType: DialogType) => {
     setIsDropDownOpen(false);
@@ -111,11 +106,11 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
 
   const onAccountSelect = (account?: Account) => {
     setSelectedAccount(account);
-    setAccountTheme(account?.accountTheme ?? "default");
   };
 
   const onEnvSelect = (env?: AccountEnvironment) => {
     setSelectedEnv(env);
+    setEnvTheme(env?.envTheme ?? "default");
     setApiKey(env?.apiKey ?? "");
   };
   return (

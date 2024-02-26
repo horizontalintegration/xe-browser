@@ -1,24 +1,24 @@
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import useLocalStorage from "./use-local-storage";
 import { nanoid } from "nanoid";
-import { AccountThemes } from "@/components/providers/ThemeProvider";
+import { EnvThemes } from "@/components/providers/ThemeProvider";
+import { UseStateReturn } from "../types/state";
 
 export interface AccountEnvironment {
   envId: string;
   envName: string;
+  envTheme: EnvThemes;
   apiKey: string;
 }
 
 export interface Account {
   accountId: string;
   accountName: string;
-  accountTheme: AccountThemes;
   environments: AccountEnvironment[];
 }
 
 export interface CreateAccountInfo {
   accountName: string;
-  accountTheme: AccountThemes;
 }
 
 export interface EditAccountInfo extends CreateAccountInfo {
@@ -28,6 +28,7 @@ export interface EditAccountInfo extends CreateAccountInfo {
 export interface CreateEnvInfo {
   accountId: string;
   envName: string;
+  envTheme: EnvThemes;
   apiKey: string;
 }
 
@@ -36,13 +37,12 @@ export interface EditEnvInfo extends CreateEnvInfo {
 }
 
 export const useAccounts = () => {
-  const [accounts, setAccounts] = useLocalStorage<Account[]>("accounts", []);
+  const [accounts, setAccounts] = useAccountState();
 
   const addAccount = (account: CreateAccountInfo) => {
     const newAccount = {
       accountId: nanoid(),
       accountName: account.accountName,
-      accountTheme: account.accountTheme,
       environments: [],
     };
     setAccounts([...accounts, newAccount]);
@@ -56,7 +56,6 @@ export const useAccounts = () => {
     const found = accounts.find((x) => x.accountId === account.accountId);
     if (found) {
       found.accountName = account.accountName;
-      found.accountTheme = account.accountTheme;
       setAccounts(accounts);
       return found;
     }
@@ -78,6 +77,7 @@ export const useAccounts = () => {
     const newEnv = {
       envId: nanoid(),
       envName: env.envName,
+      envTheme: env.envTheme,
       apiKey: env.apiKey,
     };
     account.environments.push(newEnv);
@@ -101,6 +101,7 @@ export const useAccounts = () => {
     const foundEnv = account.environments.find((x) => x.envId === env.envId);
     if (foundEnv) {
       foundEnv.envName = env.envName;
+      foundEnv.envTheme = env.envTheme;
       foundEnv.apiKey = env.apiKey;
       setAccounts(accounts);
       return foundEnv;
@@ -118,6 +119,20 @@ export const useAccounts = () => {
     setAccounts([...accounts]);
   };
 
+  return {
+    accounts,
+    addAccount,
+    editAccount,
+    removeAccount,
+    addEnvironment,
+    editEnvironment,
+    removeEnvironment,
+  };
+};
+
+function useAccountState(): UseStateReturn<Account[]> {
+  const [accounts, setAccounts] = useLocalStorage<Account[]>("accounts", []);
+
   // For accounts created before accountId field was added, populate the ids.
   useEffect(() => {
     let updated = false;
@@ -132,7 +147,6 @@ export const useAccounts = () => {
           updated = true;
         }
       });
-
     });
     if (updated) {
       setAccounts(accounts);
@@ -140,13 +154,5 @@ export const useAccounts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts]);
 
-  return {
-    accounts,
-    addAccount,
-    editAccount,
-    removeAccount,
-    addEnvironment,
-    editEnvironment,
-    removeEnvironment,
-  };
-};
+  return [accounts, setAccounts];
+}

@@ -7,30 +7,30 @@ import { type ThemeProviderProps } from "next-themes/dist/types";
 // This exists purely so Tailwind knows that the class is used and doesn't strip out the class
 export type DarkMode = "dark";
 
-export type AccountThemes = "default" | "red" | "blue" | "green";
+export type EnvThemes = "default" | "red" | "blue" | "green";
 
 type ThemeProviderContextType = {
-  setAccountTheme: (accountTheme: AccountThemes) => void;
+  setEnvTheme: (envTheme: EnvThemes) => void;
 };
 
 const ThemeProviderContext = React.createContext<ThemeProviderContextType>({
-  setAccountTheme: () => {},
+  setEnvTheme: () => {},
 });
 
-export const useAccountTheme = () => {
+export const useEnvTheme = () => {
   return React.useContext(ThemeProviderContext);
 };
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  const [accountTheme, setAccountTheme] = React.useState<AccountThemes>();
-  React.useEffect(() => {
-    if (accountTheme) document.body.classList.add(accountTheme);
+  const [envTheme, setEnvTheme] = React.useState<EnvThemes>();
+  React.useLayoutEffect(() => {
+    if (envTheme) document.body.classList.add(envTheme);
     return () => {
-      if (accountTheme) document.body.classList.remove(accountTheme ?? "");
+      if (envTheme) document.body.classList.remove(envTheme ?? "");
     };
-  }, [accountTheme]);
+  }, [envTheme]);
   return (
-    <ThemeProviderContext.Provider value={{ setAccountTheme }}>
+    <ThemeProviderContext.Provider value={{ setEnvTheme: setEnvTheme }}>
       <NextThemesProvider {...props}>{children}</NextThemesProvider>
     </ThemeProviderContext.Provider>
   );

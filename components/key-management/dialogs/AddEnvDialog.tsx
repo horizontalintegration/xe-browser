@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { CreateEnvInfo } from "@/lib/hooks/use-accounts";
+import { EnvThemes } from "@/components/providers/ThemeProvider";
+import { SelectTheme } from "./fields.tsx/SelectTheme";
 
 export type AddEnvDialogProps = {
   accountId?: string;
@@ -22,6 +24,7 @@ const AddEnvDialog = ({
   onCreateEnv,
 }: AddEnvDialogProps) => {
   const [envName, setEnvName] = useState("");
+  const [envTheme, setEnvTheme] = useState<EnvThemes>("default");
   const [apiKey, setApiKey] = useState("");
   if (!accountId) {
     return;
@@ -37,7 +40,7 @@ const AddEnvDialog = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCreateEnv({ accountId, envName, apiKey });
+          onCreateEnv({ accountId, envName, envTheme, apiKey });
         }}
       >
         <div>
@@ -60,6 +63,11 @@ const AddEnvDialog = ({
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="envtheme">Background Color</Label>
+              <SelectTheme id="envtheme" {...{ envTheme, setEnvTheme }} />
             </div>
           </div>
         </div>

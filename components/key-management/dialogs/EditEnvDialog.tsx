@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import BaseEditDialog from "./BaseEditDialog";
 import { EditEnvInfo } from "@/lib/hooks/use-accounts";
-
+import { EnvThemes } from "@/components/providers/ThemeProvider";
+import { SelectTheme } from "./fields.tsx/SelectTheme";
 
 export type EditEnvDialogProps = {
   envionment?: EditEnvInfo;
@@ -19,6 +20,9 @@ const EditEnvDialog = ({
   onDeleteEnv,
 }: EditEnvDialogProps) => {
   const [envName, setEnvName] = useState(envionment?.envName ?? "");
+  const [envTheme, setEnvTheme] = useState<EnvThemes>(
+    envionment?.envTheme ?? "default"
+  );
   const [apiKey, setApiKey] = useState(envionment?.apiKey ?? "");
   if (!envionment) {
     return <></>;
@@ -33,6 +37,7 @@ const EditEnvDialog = ({
           accountId: envionment.accountId,
           envId: envionment.envId,
           envName,
+          envTheme,
           apiKey,
         })
       }
@@ -47,7 +52,6 @@ const EditEnvDialog = ({
           <Label htmlFor="env">Envionment name</Label>
           <Input
             id="env"
-            placeholder="Development"
             value={envName}
             onChange={(e) => setEnvName(e.target.value)}
           />
@@ -57,10 +61,13 @@ const EditEnvDialog = ({
           <Input
             id="apikey"
             autoComplete="off"
-            placeholder="api-key-here"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="envtheme">Background Color</Label>
+          <SelectTheme id="envtheme" {...{ envTheme, setEnvTheme }} />
         </div>
       </div>
     </BaseEditDialog>
