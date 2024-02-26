@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { gql } from "@apollo/client";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const GetSites = gql`
   query GetSites {
@@ -34,7 +34,7 @@ interface SiteCollectionData {
 
 const GetSitesLegacy = gql`
   # Write your query or mutation here
-  query getSites($systemLanguage: String!) {
+  query getSites($systemLocale: String!) {
     search(
       where: {
         AND: [
@@ -45,7 +45,7 @@ const GetSitesLegacy = gql`
             # /sitecore/templates/Foundation/JSS Experience Accelerator/Multisite/Site
             value: "{E46F3AF2-39FA-4866-A157-7017C4B2A40C}"
           }
-          { name: "_language", value: $systemLanguage }
+          { name: "_language", value: $systemLocale }
         ]
       }
       first: 100
@@ -92,7 +92,7 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     }
   };
 
-  const { systemLanguage } = useLanguage();
+  const { systemLocales } = useLocale();
   const fetchData = async () => {
     if (!client) {
       return;
@@ -109,20 +109,23 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
         setSites(foundSites);
       }
     } catch {
-      const { data } = await client.query<LegacySiteData>({
-        query: GetSitesLegacy,
-        variables: {
-          systemLanguage,
-        },
-      });
+      const uniqueSiteNames = new Set<string>();
+      for (let index = 0; index < systemLocales.length; index++) {
+        const systemLocale = systemLocales[index];
+        const { data } = await client.query<LegacySiteData>({
+          query: GetSitesLegacy,
+          variables: {
+            systemLocale,
+          },
+        });
 
-      if (data) {
-        const foundSites = data.search.results.map((x) => ({
-          siteName: x.siteName.value,
-        }));
-        const uniqueSiteNames = new Set(foundSites.map((x) => x.siteName));
-        setSites(Array.from(uniqueSiteNames).map((x) => ({ siteName: x })));
+        if (data) {
+          data.search.results.forEach((x) =>
+            uniqueSiteNames.add(x.siteName.value)
+          );
+        }
       }
+      setSites(Array.from(uniqueSiteNames).map((x) => ({ siteName: x })));
     }
   };
 

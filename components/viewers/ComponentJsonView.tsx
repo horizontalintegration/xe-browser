@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { JsonView } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
 
 import { ComponentResponse } from "@/lib/graphql/types";
 import {
@@ -14,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { JsonViewWrapper } from "./JsonViewWrapper";
 
 export type ComponentsJsonViewProps = {
   components: ComponentResponse[];
@@ -30,7 +29,9 @@ const ComponentsJsonView = ({ components }: ComponentsJsonViewProps) => {
   ] = useState<boolean>(true);
 
   if (!components.length) {
-    return <JsonView data={{ error: "Item does not have components" }} />;
+    return (
+      <JsonViewWrapper data={{ error: "Item does not have components" }} />
+    );
   }
   return (
     <div>
@@ -78,7 +79,7 @@ const ComponentsJsonView = ({ components }: ComponentsJsonViewProps) => {
         </SelectContent>
       </Select>
 
-      <JsonView data={selectedComponent ?? {}} />
+      <JsonViewWrapper data={selectedComponent ?? {}} />
     </div>
   );
 };

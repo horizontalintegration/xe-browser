@@ -1,16 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { JsonView, collapseAllNested } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { getLayoutData } from "@/lib/graphql/get-layout-data";
 import { deepSearch } from "@/lib/utils/object-utils";
 import { ComponentResponse } from "@/lib/graphql/types";
 import ComponentsJsonView from "../../../components/viewers/ComponentJsonView";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
 
 export type DataJsonViewProps = {
   siteName: string;
@@ -27,7 +25,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
 
   const client = useGraphQLClientContext();
 
-  const { itemLanguage } = useLanguage();
+  const { itemLocale } = useLocale();
   useEffect(() => {
     async function innerFetch() {
       let data;
@@ -35,7 +33,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
         case "sitecore-context":
         case "components":
         case "route":
-          data = await getLayoutData(client, itemLanguage, siteName, routePath);
+          data = await getLayoutData(client, itemLocale, siteName, routePath);
 
           const componentData = deepSearch<ComponentResponse>(
             data,
@@ -50,7 +48,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
       }
     }
     innerFetch();
-  }, [client, itemLanguage, siteName, routePath, selectedTab]);
+  }, [client, itemLocale, siteName, routePath, selectedTab]);
 
   return (
     <Tabs
@@ -63,10 +61,10 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
         <TabsTrigger value="components">Components</TabsTrigger>
       </TabsList>
       <TabsContent value="sitecore-context">
-        <JsonView data={sitecoreContextData} />
+        <JsonViewWrapper data={sitecoreContextData} />
       </TabsContent>
       <TabsContent value="route">
-        <JsonView data={routeData} shouldExpandNode={collapseAllNested} />
+        <JsonViewWrapper data={routeData} collapsed={1} />
       </TabsContent>
       <TabsContent value="components">
         <ComponentsJsonView key={routePath} components={componentsData} />

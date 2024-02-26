@@ -4,13 +4,13 @@ import { ApolloClientType, LayoutItemResponse, LayoutResponse } from "./types";
 
 export const getLayoutItemData = async (
   client: ApolloClientType,
-  itemLanguage: string,
+  itemLocale: string,
   itemId?: string
 ) => {
   const data = await getDataUtil<LayoutItemResponse>(
     client,
     GetLayoutItemData,
-    { path: itemId, itemLanguage }
+    { path: itemId, itemLocale }
   );
 
   return data?.item?.rendered?.sitecore;
@@ -18,9 +18,9 @@ export const getLayoutItemData = async (
 const GetLayoutItemData = gql`
   query GetLayoutItemData(
     $path: String! = "/sitecore"
-    $itemLanguage: String!
+    $itemLocale: String!
   ) {
-    item(path: $path, language: $itemLanguage) {
+    item(path: $path, language: $itemLocale) {
       rendered
     }
   }
@@ -28,13 +28,13 @@ const GetLayoutItemData = gql`
 
 export const getLayoutData = async (
   client: ApolloClientType,
-  systemLanguage: string,
+  systemLocale: string,
   siteName: string,
   routePath: string
 ) => {
   const data = await getDataUtil<LayoutResponse>(client, GetLayoutData, {
     routePath,
-    systemLanguage,
+    systemLocale,
     site: siteName,
   });
 
@@ -45,9 +45,9 @@ const GetLayoutData = gql`
   query GetLayoutData(
     $site: String!
     $routePath: String! = "/"
-    $systemLanguage: String!
+    $systemLocale: String!
   ) {
-    layout(site: $site, routePath: $routePath, language: $systemLanguage) {
+    layout(site: $site, routePath: $routePath, language: $systemLocale) {
       item {
         rendered
       }

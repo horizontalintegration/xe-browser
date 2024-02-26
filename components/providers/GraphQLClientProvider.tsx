@@ -10,7 +10,7 @@ import {
 
 import React from "react";
 import { useState, useEffect, createContext, useContext } from "react";
-import { useLanguage } from "./LanguageProvider";
+import { useLocale } from "./LocaleProvider";
 
 export type GraphQLClientProviderProps = Readonly<{
   children: React.ReactNode;
@@ -33,7 +33,6 @@ export default function GraphQLClientProvider({
     ApolloClient<NormalizedCacheObject> | undefined
   >(undefined);
   const { apiKey } = useApiKey();
-  const { systemLanguage } = useLanguage();
 
   useEffect(() => {
     if (!apiKey) {
@@ -46,7 +45,7 @@ export default function GraphQLClientProvider({
           default:
             return (
               defaultDataIdFromObject(responseObject) +
-              // Add language to the cache key.  The was cahsing an issue
+              // Add language to the cache key.  The was caching an issue
               // where the wrong language version would get returned
               (responseObject?.language as any)?.name
             );
@@ -61,11 +60,13 @@ export default function GraphQLClientProvider({
         },
         cache: cache,
       });
+
       try {
+        // We only care about whether it errors so the language doens't matter, even if it's not found is fine
         await client.query({
           query: gql`
             query {
-              item(path: "/sitecore", language: "${systemLanguage}") {
+              item(path: "/sitecore", language: "en") {
                 path
               }
             }
@@ -80,7 +81,7 @@ export default function GraphQLClientProvider({
     };
     getClient();
     return () => client.stop();
-  }, [apiKey, systemLanguage]);
+  }, [apiKey]);
   return (
     <GraphQLClientContext.Provider value={client}>
       <React.Fragment key={apiKey}>{children}</React.Fragment>

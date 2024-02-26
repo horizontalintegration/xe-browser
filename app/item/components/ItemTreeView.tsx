@@ -3,10 +3,10 @@ import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
 import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 const GetItems = gql`
-  query GetItem($path: String! = "/sitecore", $systemLanguage: String!) {
-    item(path: $path, language: $systemLanguage) {
+  query GetItem($path: String! = "/sitecore", $systemLocale: String!) {
+    item(path: $path, language: $systemLocale) {
       id
       name
       rendered
@@ -28,7 +28,7 @@ const GetItems = gql`
 `;
 
 interface ItemData {
-  item: {
+  item?: {
     id: string;
     name: string;
     rendered: any;
@@ -66,7 +66,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const item = { ...root };
   const client = useGraphQLClientContext();
-  const { systemLanguage } = useLanguage();
+  const { systemLocales } = useLocale();
   const fetchData = async (item: ItemNode) => {
     if (!client) {
       return;
@@ -74,26 +74,40 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
     if (loadedIds.has(item.id)) {
       return;
     }
-    const { data } = await client.query<ItemData>({
-      query: GetItems,
-      variables: {
-        path: item.id,
-        systemLanguage: systemLanguage,
-      },
-    });
 
-    if (data) {
-      loadedIds.add(item.id);
-      setLoadedIds(loadedIds);
-      item.children = data.item.children.results.map((x) => ({
-        id: x.id,
-        name: x.name,
-        hasLayout: x.rendered,
-        hasChildren: x.children.results.length > 0,
-      }));
-      return item.children;
+    item.children = [];
+    const addedItemIds = new Set<string>();
+    for (let index = 0; index < systemLocales.length; index++) {
+      const systemLocale = systemLocales[index];
+      const { data } = await client.query<ItemData>({
+        query: GetItems,
+        variables: {
+          path: item.id,
+          systemLocale,
+        },
+      });
+
+      if (data) {
+        loadedIds.add(item.id);
+        setLoadedIds(loadedIds);
+        data.item?.children.results.forEach((x) => {
+          if (addedItemIds.has(x.id)) {
+            return;
+          }
+          addedItemIds.add(x.id);
+          item.children?.push({
+            id: x.id,
+            name: x.name,
+            hasLayout: x.rendered,
+            hasChildren: x.children.results.length > 0,
+          });
+        });
+      }
     }
+
+    return item.children;
   };
+
   return (
     <TreeViewer<ItemNode>
       item={item}

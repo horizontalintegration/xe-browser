@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { JsonView } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
 import NextImage from "next/image";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
 
 export type FieldDataViewProps = {
   data: FieldResponse | null;
@@ -48,7 +47,7 @@ const renderField = (field: JsonField) => {
         return (
           <div>
             Unknown field type that was treated as TextField{" "}
-            <JsonView data={field} />
+            <JsonViewWrapper data={field} />
           </div>
         );
       }
@@ -65,7 +64,7 @@ const renderField = (field: JsonField) => {
     default:
       return (
         <div>
-          Unknown field type: {field.__typename} <JsonView data={field} />
+          Unknown field type: {field.__typename} <JsonViewWrapper data={field} />
         </div>
       );
   }
@@ -101,7 +100,7 @@ const NumberFieldView = ({ field }: { field: NumberField }) => {
 };
 
 const LinkFieldView = ({ field }: { field: LinkField }) => {
-  return <JsonView data={field.jsonValue?.value as object} />;
+  return <JsonViewWrapper data={field.jsonValue?.value as object} />;
 };
 
 const ImageFieldView = ({ field }: { field: ImageField }) => {
@@ -123,7 +122,7 @@ const ImageFieldView = ({ field }: { field: ImageField }) => {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} />
       ) : null}
-      <JsonView data={imgData as object} shouldExpandNode={doNotExpand} />
+      <JsonViewWrapper data={imgData as object} collapsed={true} />
     </div>
   );
 };
@@ -132,9 +131,9 @@ const LookupFieldView = ({ field }: { field: LookupField }) => {
   return (
     <div>
       {field.jsonValue?.name}
-      <JsonView
+      <JsonViewWrapper
         data={field.jsonValue as object}
-        shouldExpandNode={doNotExpand}
+        collapsed={true}
       />
     </div>
   );
@@ -146,7 +145,7 @@ const MultilistFieldView = ({ field }: { field: MultilistField }) => {
       <div>
         Item is not part of a site, could not get proper JSON value, displaying
         raw values
-        <JsonView data={field.jsonValue as object} />
+        <JsonViewWrapper data={field.jsonValue as object} />
       </div>
     );
   }
@@ -156,7 +155,7 @@ const MultilistFieldView = ({ field }: { field: MultilistField }) => {
         return (
           <li key={x.id}>
             {x.name}:
-            <JsonView data={x} shouldExpandNode={doNotExpand} />
+            <JsonViewWrapper data={x} collapsed={true} />
           </li>
         );
       })}
@@ -201,7 +200,7 @@ const FieldDataView = ({ data }: FieldDataViewProps) => {
           </Table>
         </div>
       ) : (
-        <JsonView data={data as object} />
+        <JsonViewWrapper data={data as object} />
       )}
     </div>
   );

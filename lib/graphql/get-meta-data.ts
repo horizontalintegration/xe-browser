@@ -4,20 +4,20 @@ import { getDataUtil } from "./util";
 
 export const getItemMetaData = async (
   client: ApolloClientType,
-  itemLanguage: string,
+  itemLocale: string,
   itemId?: string
 ) => {
   const data = await getDataUtil<MetaResponse>(client, GetMetaData, {
     path: itemId,
-    itemLanguage,
+    itemLocale,
   });
 
   return data;
 };
 
 const GetMetaData = gql`
-  query GetItemData($path: String! = "/sitecore", $itemLanguage: String!) {
-    item(path: $path, language: $itemLanguage) {
+  query GetItemData($path: String! = "/sitecore", $itemLocale: String!) {
+    item(path: $path, language: $itemLocale) {
       id
       name
       path

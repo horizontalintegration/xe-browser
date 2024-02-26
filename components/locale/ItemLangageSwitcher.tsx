@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { gql } from "@apollo/client";
 import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLanguage } from "../providers/LanguageProvider";
+import { useLocale } from "../providers/LocaleProvider";
 import {
   Popover,
   PopoverContent,
@@ -20,11 +20,11 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { LanguageInfo, formatLanguage } from "./utils";
+import { LocaleInfo, formatLocale } from "./utils";
 
-const GetLanguages = gql`
-  query GetLanguages($itemId: String!, $systemLanguage: String!) {
-    item(language: $systemLanguage, path: $itemId) {
+const GetLocales = gql`
+  query GetLocales($itemId: String!, $systemLocale: String!) {
+    item(language: $systemLocale, path: $itemId) {
       languages {
         language {
           name
@@ -46,27 +46,26 @@ interface ItemLanguageData {
   };
 }
 
-export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
-  const [selectedLanguageCode, setSelectedLanguageCode] =
-    useState<string>("en");
+export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
+  const [selectedLocale, setSelectedLocale] = useState<string>("en");
 
-  const [languages, setLanguages] = useState<LanguageInfo[]>([]);
+  const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
   const [open, setOpen] = useState(false);
 
   const client = useGraphQLClientContext();
 
-  const { systemLanguage, setItemLanguage } = useLanguage();
+  const { systemLocales, setItemLocale } = useLocale();
 
-  const languageSelected = (languageValue: string) => {
-    const selectedLanguage = languages.find(
+  const localeSelected = (localeValue: string) => {
+    const selectedLocale = allLocaleInfos.find(
       (x) =>
         // For some reason the command returns selected value in lowercase
-        x.isoCode?.toLocaleLowerCase() === languageValue?.toLocaleLowerCase()
+        x.isoCode?.toLocaleLowerCase() === localeValue?.toLocaleLowerCase()
     );
 
-    if (selectedLanguage) {
-      setSelectedLanguageCode(selectedLanguage.isoCode);
-      setItemLanguage(selectedLanguage.isoCode);
+    if (selectedLocale) {
+      setSelectedLocale(selectedLocale.isoCode);
+      setItemLocale(selectedLocale.isoCode);
     }
     setOpen(false);
   };
@@ -75,20 +74,26 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
     if (!client || !itemId) {
       return;
     }
-    const { data } = await client.query<ItemLanguageData>({
-      query: GetLanguages,
-      variables: { itemId, systemLanguage },
-    });
-
-    if (data.item) {
-      const foundLanguages = data.item.languages.map<LanguageInfo>((x) => {
-        return {
-          isoCode: x.language.name,
-          friendlyName: x.language.englishName,
-        };
+    for (let index = 0; index < systemLocales.length; index++) {
+      const systemLocale = systemLocales[index];
+      const { data } = await client.query<ItemLanguageData>({
+        query: GetLocales,
+        variables: { itemId, systemLocale },
       });
 
-      setLanguages(foundLanguages);
+      if (data.item) {
+        const foundLocales = data.item.languages.map<LocaleInfo>((x) => {
+          return {
+            isoCode: x.language.name,
+            friendlyName: x.language.englishName,
+          };
+        });
+
+        setAllLocaleInfos(foundLocales);
+        // Since we're fetching other language versions, we only need the first one that's found
+        // Once we found one, we're good.
+        break;
+      }
     }
   };
 
@@ -100,8 +105,8 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
   if (!client) {
     return;
   }
-  const selectedLanguage = languages.find(
-    (site) => site.isoCode === selectedLanguageCode ?? "en"
+  const selectedLocaleInfo = allLocaleInfos.find(
+    (site) => site.isoCode === selectedLocale ?? "en"
   );
 
   return (
@@ -113,31 +118,30 @@ export function ItemLangageSwitcher({ itemId }: { itemId?: string }) {
           aria-expanded={open}
           className="justify-between"
         >
-          
-          {formatLanguage(selectedLanguage)}
+          {formatLocale(selectedLocaleInfo)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput placeholder="Search language code..." />
-          <CommandEmpty>No languages found.</CommandEmpty>
+          <CommandInput placeholder="Search locale code..." />
+          <CommandEmpty>No locales found.</CommandEmpty>
           <CommandGroup>
-            {languages.map((language) => (
+            {allLocaleInfos.map((localeInfo) => (
               <CommandItem
-                key={language.isoCode}
-                value={`${language?.isoCode}`}
-                onSelect={languageSelected}
+                key={localeInfo.isoCode}
+                value={`${localeInfo?.isoCode}`}
+                onSelect={localeSelected}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    selectedLanguageCode === language.isoCode
+                    selectedLocale === localeInfo.isoCode
                       ? "opacity-100"
                       : "opacity-0"
                   )}
                 />
-                {formatLanguage(language)}
+                {formatLocale(localeInfo)}
               </CommandItem>
             ))}
           </CommandGroup>

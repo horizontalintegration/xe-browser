@@ -1,9 +1,6 @@
 "use client";
-import { DocumentNode, gql } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
-import { JsonView, collapseAllNested } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
 
 import {
   Tabs,
@@ -18,7 +15,8 @@ import { ComponentResponse, Fields } from "@/lib/graphql/types";
 import FieldDataView from "./FieldDataView";
 import { deepSearch } from "@/lib/utils/object-utils";
 import ComponentsJsonView from "@/components/viewers/ComponentJsonView";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
 
 export type DataJsonViewProps = {
   itemId?: string;
@@ -42,23 +40,23 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
 
   const client = useGraphQLClientContext();
 
-  const { itemLanguage } = useLanguage();
+  const { itemLocale } = useLocale();
   useEffect(() => {
     async function innerFetch() {
       let data;
       switch (selectedTab) {
         case "meta":
-          data = await getItemMetaData(client, itemLanguage, itemId);
+          data = await getItemMetaData(client, itemLocale, itemId);
           setMetaData(data);
           break;
         case "fields":
-          data = await getFieldData(client, itemLanguage, itemId);
+          data = await getFieldData(client, itemLocale, itemId);
           setFieldData(data);
           break;
         case "sitecore-context":
         case "route":
         case "components":
-          data = await getLayoutItemData(client, itemLanguage, itemId);
+          data = await getLayoutItemData(client, itemLocale, itemId);
 
           const componentData = deepSearch<ComponentResponse>(
             data,
@@ -73,11 +71,11 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
       }
     }
     innerFetch();
-  }, [client, itemLanguage, itemId, selectedTab]);
+  }, [client, itemLocale, itemId, selectedTab]);
 
   return (
     <Tabs
-      key={itemId + itemLanguage}
+      key={itemId + itemLocale}
       defaultValue={selectedTab}
       onValueChange={(value) => setSelectedTab(value as SelectedTabValue)}
     >
@@ -89,16 +87,16 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
         <TabsTrigger value="components">Components</TabsTrigger>
       </TabsList>
       <TabsContent value="meta">
-        <JsonView data={metaData} />
+        <JsonViewWrapper data={metaData} />
       </TabsContent>
       <TabsContent value="fields">
         <FieldDataView data={fieldData} />
       </TabsContent>
       <TabsContent value="sitecore-context">
-        <JsonView data={sitecoreContextData} />
+        <JsonViewWrapper data={sitecoreContextData} />
       </TabsContent>
       <TabsContent value="route">
-        <JsonView data={routeData} shouldExpandNode={collapseAllNested} />
+        <JsonViewWrapper data={routeData} collapsed={1} />
       </TabsContent>
       <TabsContent value="components">
         <ComponentsJsonView components={componentsData} />

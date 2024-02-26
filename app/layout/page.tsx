@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/resizable";
 import { useState } from "react";
 import { SiteInfo } from "./components/SiteSwitcher";
-import { ItemLangageSwitcher } from "../../components/language/ItemLangageSwitcher";
+import { ItemLocaleSwitcher } from "../../components/locale/ItemLangageSwitcher";
 
 export default function Page() {
   const [selectedItemId, setSelectedItemId] = useState<string>();
@@ -30,7 +30,7 @@ export default function Page() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <ItemLangageSwitcher itemId={selectedItemId} />
+          <ItemLocaleSwitcher itemId={selectedItemId} />
           {selectedRoutePath && selectedSite?.siteName ? (
             <DataJsonView
               routePath={selectedRoutePath}
