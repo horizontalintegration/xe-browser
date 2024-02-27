@@ -1,7 +1,7 @@
 "use client";
 import { ItemLocaleSwitcher } from "../../components/locale/ItemLangageSwitcher";
-import DataJsonView from "./components/DataJsonView";
-import ItemTreeView from "./components/ItemTreeView";
+import DataJsonView from "./_components/DataJsonView";
+import ItemTreeView from "./_components/ItemTreeView";
 import {
   ResizablePanelGroup,
   ResizablePanel,

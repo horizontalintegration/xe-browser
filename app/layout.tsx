@@ -1,17 +1,17 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import EnvironmentSwitcher from "@/components/key-management/EnvironmentSwitcher";
-import { MainNav } from "./components/MainNav";
+import { MainNav } from "./_components/MainNav";
 import GraphQLClientProvider from "@/components/providers/GraphQLClientProvider";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { cn } from "@/lib/utils";
 import { ApiKeyProvider } from "@/components/providers/ApiKeyProvider";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import { SystemLangageSwitcher } from "../components/locale/SystemLangageSwitcher";
-import { ContentWrapper } from "./components/ContentWrapper";
+import { ContentWrapper } from "./_components/ContentWrapper";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { XeTooltip } from "@/components/helpers/Tooltip";
-import { DarkModeToggle } from "./components/DarkModeToggle";
+import { DarkModeToggle } from "./_components/DarkModeToggle";
 import { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"] });

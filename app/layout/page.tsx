@@ -1,13 +1,13 @@
 "use client";
-import DataJsonView from "./components/DataJsonView";
-import LayoutTreeView from "./components/LayoutTreeView";
+import DataJsonView from "./_components/DataJsonView";
+import LayoutTreeView from "./_components/LayoutTreeView";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { useState } from "react";
-import { SiteInfo } from "./components/SiteSwitcher";
+import { SiteInfo } from "./_components/SiteSwitcher";
 import { ItemLocaleSwitcher } from "../../components/locale/ItemLangageSwitcher";
 
 export default function Page() {
