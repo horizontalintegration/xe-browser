@@ -1,4 +1,4 @@
-import { tv } from "tailwind-variants";
+import { tv } from 'tailwind-variants';
 
 export const tailwindVariants = tv({
   slots: {
@@ -8,7 +8,7 @@ export const tailwindVariants = tv({
   variants: {
     selected: {
       true: {
-        treeNode: ["bg-slate-500 dark:bg-slate-400"],
+        treeNode: ['bg-slate-500 dark:bg-slate-400'],
       },
     },
   },

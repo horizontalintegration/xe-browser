@@ -1,37 +1,32 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 
-import { ComponentResponse } from "@/lib/graphql/types";
+import { ComponentResponse } from '@/lib/graphql/types';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { JsonViewWrapper } from "./JsonViewWrapper";
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { JsonViewWrapper } from './JsonViewWrapper';
 
 export type ComponentsJsonViewProps = {
   components: ComponentResponse[];
 };
 
-export type SelectedTabValue = "sitecore-context" | "route";
+export type SelectedTabValue = 'sitecore-context' | 'route';
 
 const ComponentsJsonView = ({ components }: ComponentsJsonViewProps) => {
-  const [selectedComponent, setSelectedComponent] =
-    useState<ComponentResponse>();
-  const [
-    excludePartialDesignDynamicPlaceholder,
-    setExcludePartialDesignDynamicPlaceholder,
-  ] = useState<boolean>(true);
+  const [selectedComponent, setSelectedComponent] = useState<ComponentResponse>();
+  const [excludePartialDesignDynamicPlaceholder, setExcludePartialDesignDynamicPlaceholder] =
+    useState<boolean>(true);
 
   if (!components.length) {
-    return (
-      <JsonViewWrapper data={{ error: "Item does not have components" }} />
-    );
+    return <JsonViewWrapper data={{ error: 'Item does not have components' }} />;
   }
   return (
     <div>
@@ -39,25 +34,21 @@ const ComponentsJsonView = ({ components }: ComponentsJsonViewProps) => {
         <span>Exclude PartialDesignDynamicPlaceholder</span>
         <Checkbox
           checked={excludePartialDesignDynamicPlaceholder}
-          onCheckedChange={(x) =>
-            setExcludePartialDesignDynamicPlaceholder(x === true)
-          }
+          onCheckedChange={(x) => setExcludePartialDesignDynamicPlaceholder(x === true)}
         />
       </Label>
       <Select
         defaultValue={selectedComponent?.uid}
-        onValueChange={(uid) =>
-          setSelectedComponent(components.find((x) => x.uid === uid))
-        }
+        onValueChange={(uid) => setSelectedComponent(components.find((x) => x.uid === uid))}
       >
         <SelectTrigger
           className={cn(
-            "flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate"
+            'flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate'
           )}
           aria-label="Select component"
         >
           <SelectValue placeholder="Select a component">
-            <span className={cn("ml-2")}>
+            <span className={cn('ml-2')}>
               {selectedComponent?.componentName} ({selectedComponent?.uid})
             </span>
           </SelectValue>
@@ -67,7 +58,7 @@ const ComponentsJsonView = ({ components }: ComponentsJsonViewProps) => {
             .filter(
               (x) =>
                 !excludePartialDesignDynamicPlaceholder ||
-                x.componentName !== "PartialDesignDynamicPlaceholder"
+                x.componentName !== 'PartialDesignDynamicPlaceholder'
             )
             .map((component) => (
               <SelectItem key={component.uid} value={component.uid}>

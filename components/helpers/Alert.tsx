@@ -1,5 +1,5 @@
-"use client";
-import { ExoticComponent, ReactElement, ReactNode } from "react";
+'use client';
+import { ReactElement, ReactNode } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,12 +10,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { AlertDialogProps } from "@radix-ui/react-alert-dialog";
-import { RenderIf } from "./RenderIf";
-import { Button, ButtonProps } from "../ui/button";
+} from '../ui/alert-dialog';
+import { AlertDialogProps } from '@radix-ui/react-alert-dialog';
+import { RenderIf } from './RenderIf';
 
-export type AlertType = "alert" | "confirm";
+export type AlertType = 'alert' | 'confirm';
 
 export interface AlertProps extends AlertDialogProps {
   alertType: AlertType;
@@ -42,8 +41,8 @@ export function Alert({
       onClose();
     }
   },
-  cancelText = "Cancel",
-  confirmText = "Confirm",
+  cancelText = 'Cancel',
+  confirmText = 'Confirm',
   ...props
 }: AlertProps) {
   return (
@@ -59,14 +58,10 @@ export function Alert({
           </RenderIf>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <RenderIf condition={alertType === "confirm"}>
-            <AlertDialogCancel onClick={onCancel}>
-              {cancelText}
-            </AlertDialogCancel>
+          <RenderIf condition={alertType === 'confirm'}>
+            <AlertDialogCancel onClick={onCancel}>{cancelText}</AlertDialogCancel>
           </RenderIf>
-          <AlertDialogAction onClick={onConfirm}>
-            {confirmText}
-          </AlertDialogAction>
+          <AlertDialogAction onClick={onConfirm}>{confirmText}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

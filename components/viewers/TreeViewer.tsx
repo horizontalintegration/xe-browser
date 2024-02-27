@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { useGraphQLClientContext } from "../providers/GraphQLClientProvider";
-import { Button } from "../ui/button";
+import { useState } from 'react';
+import { useGraphQLClientContext } from '../providers/GraphQLClientProvider';
+import { Button } from '../ui/button';
 import {
   LoaderIcon,
   ArrowDownRightIcon,
   ArrowRightIcon,
   PackageIcon,
   BookOpenTextIcon,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "../ui/context-menu";
+} from '../ui/context-menu';
 
 export interface BaseItemNode<T extends BaseItemNode<T>> {
   id: string;
@@ -55,9 +55,8 @@ export function TreeViewer<T extends BaseItemNode<T>>({
   if (!client) {
     return (
       <p>
-        No environment selected, or selected environment has invalid API key.
-        Editing environments are not supported currently, delete and recreate
-        it.
+        No environment selected, or selected environment has invalid API key. Editing environments
+        are not supported currently, delete and recreate it.
       </p>
     );
   }
@@ -66,7 +65,7 @@ export function TreeViewer<T extends BaseItemNode<T>>({
       <ContextMenu>
         <ContextMenuTrigger>
           <Button
-            variant={isSelected(item) ? "default" : "ghost"}
+            variant={isSelected(item) ? 'default' : 'ghost'}
             className="w-full justify-start space-x-1"
             onClick={async () => {
               onItemSelected(item);
@@ -84,7 +83,7 @@ export function TreeViewer<T extends BaseItemNode<T>>({
                   e.stopPropagation();
                   setIsExpanded(false);
                 }}
-                className={hasChildren ? "" : "collapse"}
+                className={hasChildren ? '' : 'collapse'}
               />
             ) : (
               <ArrowRightIcon
@@ -95,7 +94,7 @@ export function TreeViewer<T extends BaseItemNode<T>>({
                     await loadData();
                   }
                 }}
-                className={hasChildren ? "" : "collapse"}
+                className={hasChildren ? '' : 'collapse'}
               />
             )}
 

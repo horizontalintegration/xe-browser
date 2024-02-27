@@ -1,22 +1,17 @@
-"use client";
-import { useApiKey } from "@/components/providers/ApiKeyProvider";
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  gql,
-} from "@apollo/client";
+'use client';
+import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, gql } from '@apollo/client';
 
-import React from "react";
-import { useState, useEffect, createContext, useContext } from "react";
+import React from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 
 export type GraphQLClientProviderProps = Readonly<{
   children: React.ReactNode;
 }>;
 
-export const GraphQLClientContext = createContext<
-  ApolloClient<NormalizedCacheObject> | undefined
->(undefined);
+export const GraphQLClientContext = createContext<ApolloClient<NormalizedCacheObject> | undefined>(
+  undefined
+);
 
 export const useGraphQLClientContext = () => {
   const context = useContext(GraphQLClientContext);
@@ -24,12 +19,8 @@ export const useGraphQLClientContext = () => {
   return context;
 };
 
-export default function GraphQLClientProvider({
-  children,
-}: GraphQLClientProviderProps) {
-  const [client, setClient] = useState<
-    ApolloClient<NormalizedCacheObject> | undefined
-  >(undefined);
+export default function GraphQLClientProvider({ children }: GraphQLClientProviderProps) {
+  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject> | undefined>(undefined);
   const { apiKey } = useApiKey();
 
   useEffect(() => {
@@ -38,20 +29,19 @@ export default function GraphQLClientProvider({
     }
     let client: ApolloClient<NormalizedCacheObject>;
 
-  
     const getClient = async () => {
       client = new ApolloClient({
-        uri: "https://edge.sitecorecloud.io/api/graphql/v1/",
+        uri: 'https://edge.sitecorecloud.io/api/graphql/v1/',
         headers: {
           sc_apikey: apiKey,
         },
         cache: new InMemoryCache(),
         defaultOptions: {
           watchQuery: {
-            fetchPolicy: "no-cache",
+            fetchPolicy: 'no-cache',
           },
           query: {
-            fetchPolicy: "no-cache",
+            fetchPolicy: 'no-cache',
           },
         },
       });

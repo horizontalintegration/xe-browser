@@ -1,17 +1,13 @@
-"use client";
-import { gql } from "@apollo/client";
-import React, { useState } from "react";
-import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
-import { SiteInfo, SiteSwitcher } from "./SiteSwitcher";
-import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
-import { useLocale } from "@/components/providers/LocaleProvider";
+'use client';
+import { gql } from '@apollo/client';
+import React, { useState } from 'react';
+import { useGraphQLClientContext } from '../../../components/providers/GraphQLClientProvider';
+import { SiteInfo, SiteSwitcher } from './SiteSwitcher';
+import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
+import { useLocale } from '@/components/providers/LocaleProvider';
 
 const GetLayout = gql`
-  query GetLayout(
-    $site: String!
-    $routePath: String! = "/"
-    $systemLocale: String!
-  ) {
+  query GetLayout($site: String!, $routePath: String! = "/", $systemLocale: String!) {
     layout(site: $site, routePath: $routePath, language: $systemLocale) {
       item {
         id
@@ -66,16 +62,12 @@ interface LayoutData {
 }
 
 export type LayoutTreeViewProps = {
-  onItemSelected: (
-    siteName: SiteInfo,
-    itemId: string,
-    routePath: string
-  ) => void;
+  onItemSelected: (siteName: SiteInfo, itemId: string, routePath: string) => void;
 };
 const root: ItemNode = {
-  id: "root",
-  routePath: "/",
-  name: "Home",
+  id: 'root',
+  routePath: '/',
+  name: 'Home',
   hasLayout: true,
   hasChildren: true,
 };

@@ -1,20 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { groupBy } from "lodash";
-import { cn } from "@/lib/utils";
-import { gql } from "@apollo/client";
-import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLocale } from "../providers/LocaleProvider";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { LocaleInfo, formatLocale } from "./utils";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { useEffect, useState } from 'react';
+import { groupBy } from 'lodash';
+import { cn } from '@/lib/utils';
+import { gql } from '@apollo/client';
+import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { useLocale } from '../providers/LocaleProvider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { LocaleInfo, formatLocale } from './utils';
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
 
 const GetLocales = gql`
   query GetLocales {
@@ -63,7 +59,7 @@ export function SystemLangageSwitcher() {
       const foundLocales = data.item.children.results.map<LocaleInfo>((x) => {
         return {
           isoCode: x.name,
-          friendlyName: localeDisplayNames?.of(x.name) ?? "Unknown",
+          friendlyName: localeDisplayNames?.of(x.name) ?? 'Unknown',
         };
       });
 
@@ -74,7 +70,7 @@ export function SystemLangageSwitcher() {
   useEffect(() => {
     const userLang = window.navigator.language;
     const displayNames = new Intl.DisplayNames([userLang], {
-      type: "language",
+      type: 'language',
     });
 
     setLocaleDisplayNames(displayNames);
@@ -89,25 +85,15 @@ export function SystemLangageSwitcher() {
     return;
   }
 
-  const selectedLocale = allLocaleInfos.filter((lang) =>
-    systemLocales.includes(lang.isoCode)
-  );
+  const selectedLocale = allLocaleInfos.filter((lang) => systemLocales.includes(lang.isoCode));
 
-  const localesByLanguage = groupBy(
-    allLocaleInfos,
-    (x) => x.isoCode.split("-")[0]
-  );
+  const localesByLanguage = groupBy(allLocaleInfos, (x) => x.isoCode.split('-')[0]);
 
   return (
     <Popover onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="justify-between"
-        >
-          {selectedLocale.map((x) => x.isoCode).join(", ")}
+        <Button variant="outline" role="combobox" aria-expanded={open} className="justify-between">
+          {selectedLocale.map((x) => x.isoCode).join(', ')}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -122,9 +108,7 @@ export function SystemLangageSwitcher() {
             const locales = localesByLanguage[lang];
             return (
               <div key={lang} className="">
-                <div className="font-bold text-lg">
-                  {localeDisplayNames?.of(lang)}
-                </div>
+                <div className="font-bold text-lg">{localeDisplayNames?.of(lang)}</div>
                 <div className="justify-center items-center">
                   {locales.map((localeInfo) => {
                     return (
@@ -135,10 +119,8 @@ export function SystemLangageSwitcher() {
                       >
                         <Check
                           className={cn(
-                            "mr-2 h-4 w-4",
-                            systemLocales.includes(localeInfo.isoCode)
-                              ? "opacity-100"
-                              : "opacity-0"
+                            'mr-2 h-4 w-4',
+                            systemLocales.includes(localeInfo.isoCode) ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         <span>{formatLocale(localeInfo)}</span>

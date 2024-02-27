@@ -5,7 +5,7 @@ export interface LocaleInfo {
 
 export function formatLocale(localeInfo?: LocaleInfo) {
   if (!localeInfo) {
-    return "No Locale Selected";
+    return 'No Locale Selected';
   }
   return `${localeInfo?.isoCode} (${localeInfo?.friendlyName})`;
 }

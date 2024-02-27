@@ -1,7 +1,7 @@
-"use client";
-import React, { useState } from "react";
-import NextImage from "next/image";
-import { Label } from "@/components/ui/label";
+'use client';
+import React, { useState } from 'react';
+import NextImage from 'next/image';
+import { Label } from '@/components/ui/label';
 import {
   CheckboxField,
   DateField,
@@ -14,8 +14,8 @@ import {
   NumberField,
   RichTextField,
   TextField,
-} from "@/lib/graphql/get-field-data";
-import { Switch } from "@/components/ui/switch";
+} from '@/lib/graphql/get-field-data';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -23,43 +23,42 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
+} from '@/components/ui/table';
+import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
 
 export type FieldDataViewProps = {
   data: FieldResponse | null;
 };
 
-export type SelectedTabValue = "sitecore-context" | "route";
+export type SelectedTabValue = 'sitecore-context' | 'route';
 
 const renderField = (field: JsonField) => {
   switch (field.__typename) {
-    case "CheckboxField":
+    case 'CheckboxField':
       return <CheckboxFieldView field={field as CheckboxField} />;
-    case "NumberField":
+    case 'NumberField':
       return <NumberFieldView field={field as NumberField} />;
-    case "DateField":
+    case 'DateField':
       return <DateFieldView field={field as DateField} />;
-    case "TextField":
-      if (typeof field.jsonValue?.value === "string") {
+    case 'TextField':
+      if (typeof field.jsonValue?.value === 'string') {
         return <TextFieldView field={field as TextField} />;
       } else {
         return (
           <div>
-            Unknown field type that was treated as TextField{" "}
-            <JsonViewWrapper data={field} />
+            Unknown field type that was treated as TextField <JsonViewWrapper data={field} />
           </div>
         );
       }
-    case "RichTextField":
+    case 'RichTextField':
       return <RichTextFieldView field={field as RichTextField} />;
-    case "ImageField":
+    case 'ImageField':
       return <ImageFieldView field={field as ImageField} />;
-    case "LinkField":
+    case 'LinkField':
       return <LinkFieldView field={field as LinkField} />;
-    case "LookupField":
+    case 'LookupField':
       return <LookupFieldView field={field as LookupField} />;
-    case "MultilistField":
+    case 'MultilistField':
       return <MultilistFieldView field={field as MultilistField} />;
     default:
       return (
@@ -75,15 +74,11 @@ const TextFieldView = ({ field }: { field: TextField }) => {
 };
 
 const RichTextFieldView = ({ field }: { field: RichTextField }) => {
-  return (
-    <div
-      dangerouslySetInnerHTML={{ __html: field.jsonValue?.value ?? "" }}
-    ></div>
-  );
+  return <div dangerouslySetInnerHTML={{ __html: field.jsonValue?.value ?? '' }}></div>;
 };
 
 const DateFieldView = ({ field }: { field: DateField }) => {
-  const dateNumber = Date.parse(field.jsonValue?.value ?? "");
+  const dateNumber = Date.parse(field.jsonValue?.value ?? '');
   if (Number.isNaN(dateNumber)) {
     return `Invalid date: ${field.jsonValue?.value}`;
   }
@@ -109,15 +104,12 @@ const ImageFieldView = ({ field }: { field: ImageField }) => {
   const { src, alt, width, height } = imgData ?? {};
   const renderImage = !!src;
   const renderNextImage =
-    renderImage &&
-    src?.startsWith("https://edge.sitecorecloud.io") &&
-    width &&
-    height;
+    renderImage && src?.startsWith('https://edge.sitecorecloud.io') && width && height;
 
   return (
     <div>
       {renderNextImage ? (
-        <NextImage src={src} width={width} height={height} alt={alt ?? ""} />
+        <NextImage src={src} width={width} height={height} alt={alt ?? ''} />
       ) : renderImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} />
@@ -131,10 +123,7 @@ const LookupFieldView = ({ field }: { field: LookupField }) => {
   return (
     <div>
       {field.jsonValue?.name}
-      <JsonViewWrapper
-        data={field.jsonValue as object}
-        collapsed={true}
-      />
+      <JsonViewWrapper data={field.jsonValue as object} collapsed={true} />
     </div>
   );
 };
@@ -143,8 +132,7 @@ const MultilistFieldView = ({ field }: { field: MultilistField }) => {
   if (!field.jsonValue?.map) {
     return (
       <div>
-        Item is not part of a site, could not get proper JSON value, displaying
-        raw values
+        Item is not part of a site, could not get proper JSON value, displaying raw values
         <JsonViewWrapper data={field.jsonValue as object} />
       </div>
     );
@@ -207,6 +195,3 @@ const FieldDataView = ({ data }: FieldDataViewProps) => {
 };
 
 export default FieldDataView;
-function doNotExpand() {
-  return false;
-}

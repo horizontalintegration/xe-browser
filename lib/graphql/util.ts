@@ -1,5 +1,5 @@
-import { DocumentNode, OperationVariables } from "@apollo/client";
-import { ApolloClientType } from "./types";
+import { DocumentNode, OperationVariables } from '@apollo/client';
+import { ApolloClientType } from './types';
 
 export const getDataUtil = async <T>(
   client: ApolloClientType,

@@ -1,4 +1,4 @@
-import { EnvThemes } from "@/components/providers/ThemeProvider";
+import { EnvThemes } from '@/components/providers/ThemeProvider';
 import {
   Select,
   SelectContent,
@@ -7,8 +7,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Dispatch, SetStateAction } from "react";
+} from '@/components/ui/select';
+import { Dispatch, SetStateAction } from 'react';
 
 export type SelectThemeProps = {
   id: string;

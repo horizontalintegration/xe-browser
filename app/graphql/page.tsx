@@ -1,9 +1,9 @@
-"use client";
-import { useApiKey } from "@/components/providers/ApiKeyProvider";
-import { createGraphiQLFetcher, Fetcher } from "@graphiql/toolkit";
-import { GraphiQL } from "graphiql";
-import "graphiql/graphiql.css";
-import { useEffect, useState } from "react";
+'use client';
+import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import { createGraphiQLFetcher, Fetcher } from '@graphiql/toolkit';
+import { GraphiQL } from 'graphiql';
+import 'graphiql/graphiql.css';
+import { useEffect, useState } from 'react';
 
 // useState doesn't like functions as direct objects apparently because it calls the function
 // when setState is called (with no arguments which fails).
@@ -18,9 +18,9 @@ export default function GraphQL() {
       return;
     }
     const newFetcher = createGraphiQLFetcher({
-      url: "https://edge.sitecorecloud.io/api/graphql/v1/",
+      url: 'https://edge.sitecorecloud.io/api/graphql/v1/',
       headers: {
-        sc_apikey: apiKey ?? "",
+        sc_apikey: apiKey ?? '',
       },
     });
     setFetcherWrapper({ fetcher: newFetcher });
@@ -29,9 +29,8 @@ export default function GraphQL() {
   if (!apiKey) {
     return (
       <p>
-        No environment selected, or selected environment has invalid API key.
-        Editing environments are not supported currently, delete and recreate
-        it.
+        No environment selected, or selected environment has invalid API key. Editing environments
+        are not supported currently, delete and recreate it.
       </p>
     );
   }

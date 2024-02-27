@@ -1,15 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { PropsWithChildren, useState } from "react";
-import { Alert } from "@/components/helpers/Alert";
+} from '@/components/ui/dialog';
+import { PropsWithChildren } from 'react';
+import { Alert } from '@/components/helpers/Alert';
 
 export interface BaseEditDialogProps extends PropsWithChildren {
   title: string;
@@ -21,7 +19,7 @@ export interface BaseEditDialogProps extends PropsWithChildren {
   deleteConfirmTitle: string;
   deleteConfirmDescription: string;
   saveButtonText: string;
-};
+}
 const BaseEditDialog = ({
   title,
   description,
@@ -32,7 +30,7 @@ const BaseEditDialog = ({
   deleteConfirmTitle,
   deleteConfirmDescription,
   saveButtonText,
-  children
+  children,
 }: BaseEditDialogProps) => {
   return (
     <DialogContent>
@@ -46,14 +44,10 @@ const BaseEditDialog = ({
           onSave();
         }}
       >
-        <div>
-          {children}
-        </div>
+        <div>{children}</div>
         <DialogFooter>
           <Alert
-            triggerButton={
-              <Button variant={"destructive"}>{deleteButtonText}</Button>
-            }
+            triggerButton={<Button variant={'destructive'}>{deleteButtonText}</Button>}
             alertType="confirm"
             title={deleteConfirmTitle}
             description={deleteConfirmDescription}

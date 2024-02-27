@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
-import { ApolloClientType } from "./types";
-import { getDataUtil } from "./util";
+import { gql } from '@apollo/client';
+import { ApolloClientType } from './types';
+import { getDataUtil } from './util';
 
 export const getItemMetaData = async (
   client: ApolloClientType,

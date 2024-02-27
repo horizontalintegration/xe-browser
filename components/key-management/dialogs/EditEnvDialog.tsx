@@ -1,10 +1,10 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import BaseEditDialog from "./BaseEditDialog";
-import { EditEnvInfo } from "@/lib/hooks/use-accounts";
-import { EnvThemes } from "@/components/providers/ThemeProvider";
-import { SelectTheme } from "./fields.tsx/SelectTheme";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import BaseEditDialog from './BaseEditDialog';
+import { EditEnvInfo } from '@/lib/hooks/use-accounts';
+import { EnvThemes } from '@/components/providers/ThemeProvider';
+import { SelectTheme } from './fields.tsx/SelectTheme';
 
 export type EditEnvDialogProps = {
   envionment?: EditEnvInfo;
@@ -13,17 +13,10 @@ export type EditEnvDialogProps = {
   onDeleteEnv: (env: EditEnvInfo) => void;
 };
 
-const EditEnvDialog = ({
-  envionment,
-  onCancel,
-  onSaveEnv,
-  onDeleteEnv,
-}: EditEnvDialogProps) => {
-  const [envName, setEnvName] = useState(envionment?.envName ?? "");
-  const [envTheme, setEnvTheme] = useState<EnvThemes>(
-    envionment?.envTheme ?? "default"
-  );
-  const [apiKey, setApiKey] = useState(envionment?.apiKey ?? "");
+const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnvDialogProps) => {
+  const [envName, setEnvName] = useState(envionment?.envName ?? '');
+  const [envTheme, setEnvTheme] = useState<EnvThemes>(envionment?.envTheme ?? 'default');
+  const [apiKey, setApiKey] = useState(envionment?.apiKey ?? '');
   if (!envionment) {
     return <></>;
   }
@@ -50,11 +43,7 @@ const EditEnvDialog = ({
       <div className="space-y-4 py-2 pb-4">
         <div className="space-y-2">
           <Label htmlFor="env">Envionment name</Label>
-          <Input
-            id="env"
-            value={envName}
-            onChange={(e) => setEnvName(e.target.value)}
-          />
+          <Input id="env" value={envName} onChange={(e) => setEnvName(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="apikey">Experience Edge API Key</Label>

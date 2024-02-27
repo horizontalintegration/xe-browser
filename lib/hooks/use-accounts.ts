@@ -1,8 +1,8 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
-import useLocalStorage from "./use-local-storage";
-import { nanoid } from "nanoid";
-import { EnvThemes } from "@/components/providers/ThemeProvider";
-import { UseStateReturn } from "../types/state";
+import { useEffect } from 'react';
+import useLocalStorage from './use-local-storage';
+import { nanoid } from 'nanoid';
+import { EnvThemes } from '@/components/providers/ThemeProvider';
+import { UseStateReturn } from '../types/state';
 
 export interface AccountEnvironment {
   envId: string;
@@ -51,7 +51,7 @@ export const useAccounts = () => {
 
   const editAccount = (account: EditAccountInfo) => {
     if (!account.accountId) {
-      throw new Error("editAccount missing accountId");
+      throw new Error('editAccount missing accountId');
     }
     const found = accounts.find((x) => x.accountId === account.accountId);
     if (found) {
@@ -67,7 +67,7 @@ export const useAccounts = () => {
 
   const addEnvironment = (env: CreateEnvInfo) => {
     if (!env.accountId) {
-      throw new Error("addEnvironment missing accountId");
+      throw new Error('addEnvironment missing accountId');
     }
 
     const account = accounts.find((x) => x.accountId === env.accountId);
@@ -87,11 +87,11 @@ export const useAccounts = () => {
 
   const editEnvironment = (env: EditEnvInfo) => {
     if (!env.accountId) {
-      throw new Error("editEnvironment missing accountId");
+      throw new Error('editEnvironment missing accountId');
     }
 
     if (!env.envId) {
-      throw new Error("editEnvironment missing envId");
+      throw new Error('editEnvironment missing envId');
     }
 
     const account = accounts.find((x) => x.accountId === env.accountId);
@@ -113,9 +113,7 @@ export const useAccounts = () => {
     if (!account) {
       throw new Error(`Unable to find account: ${accountId}`);
     }
-    account.environments = [
-      ...account.environments.filter((x) => x.envId !== envId),
-    ];
+    account.environments = [...account.environments.filter((x) => x.envId !== envId)];
     setAccounts([...accounts]);
   };
 
@@ -131,7 +129,7 @@ export const useAccounts = () => {
 };
 
 function useAccountState(): UseStateReturn<Account[]> {
-  const [accounts, setAccounts] = useLocalStorage<Account[]>("accounts", []);
+  const [accounts, setAccounts] = useLocalStorage<Account[]>('accounts', []);
 
   // For accounts created before accountId field was added, populate the ids.
   useEffect(() => {

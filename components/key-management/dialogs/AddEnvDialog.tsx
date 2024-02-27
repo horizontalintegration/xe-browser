@@ -1,31 +1,27 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { CreateEnvInfo } from "@/lib/hooks/use-accounts";
-import { EnvThemes } from "@/components/providers/ThemeProvider";
-import { SelectTheme } from "./fields.tsx/SelectTheme";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { CreateEnvInfo } from '@/lib/hooks/use-accounts';
+import { EnvThemes } from '@/components/providers/ThemeProvider';
+import { SelectTheme } from './fields.tsx/SelectTheme';
 
 export type AddEnvDialogProps = {
   accountId?: string;
   onCancel: () => void;
   onCreateEnv: (env: CreateEnvInfo) => void;
 };
-const AddEnvDialog = ({
-  accountId,
-  onCancel,
-  onCreateEnv,
-}: AddEnvDialogProps) => {
-  const [envName, setEnvName] = useState("");
-  const [envTheme, setEnvTheme] = useState<EnvThemes>("default");
-  const [apiKey, setApiKey] = useState("");
+const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) => {
+  const [envName, setEnvName] = useState('');
+  const [envTheme, setEnvTheme] = useState<EnvThemes>('default');
+  const [apiKey, setApiKey] = useState('');
   if (!accountId) {
     return;
   }
@@ -33,9 +29,7 @@ const AddEnvDialog = ({
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Add an environment</DialogTitle>
-        <DialogDescription>
-          Add a new environments to the account
-        </DialogDescription>
+        <DialogDescription>Add a new environments to the account</DialogDescription>
       </DialogHeader>
       <form
         onSubmit={(e) => {

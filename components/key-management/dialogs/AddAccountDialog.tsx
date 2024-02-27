@@ -1,43 +1,28 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { CreateAccountInfo } from "@/lib/hooks/use-accounts";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { EnvThemes } from "@/components/providers/ThemeProvider";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { CreateAccountInfo } from '@/lib/hooks/use-accounts';
 
 export type AddAccountDialogProps = {
   onCancel: () => void;
   onCreateAccount: (account: CreateAccountInfo) => void;
 };
-const AddAccountDialog = ({
-  onCancel,
-  onCreateAccount,
-}: AddAccountDialogProps) => {
-  const [accountName, setAccountName] = useState("");
-  
+const AddAccountDialog = ({ onCancel, onCreateAccount }: AddAccountDialogProps) => {
+  const [accountName, setAccountName] = useState('');
+
   return (
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Add account</DialogTitle>
-        <DialogDescription>
-          Add a new account to manage environments
-        </DialogDescription>
+        <DialogDescription>Add a new account to manage environments</DialogDescription>
       </DialogHeader>
       <form
         onSubmit={(e) => {
@@ -56,7 +41,6 @@ const AddAccountDialog = ({
                 onChange={(e) => setAccountName(e.target.value)}
               />
             </div>
-            
           </div>
         </div>
         <DialogFooter>

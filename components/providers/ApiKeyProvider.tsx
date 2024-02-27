@@ -1,5 +1,5 @@
-"use client";
-import { createContext, useContext, useState } from "react";
+'use client';
+import { createContext, useContext, useState } from 'react';
 
 type ApiKeyContextType = {
   apiKey?: string;
@@ -17,9 +17,5 @@ export function useApiKey() {
 export function ApiKeyProvider({ children }: React.PropsWithChildren) {
   const [apiKey, setApiKey] = useState<string>();
 
-  return (
-    <ApiKeyContext.Provider value={{ apiKey, setApiKey }}>
-      {children}
-    </ApiKeyContext.Provider>
-  );
+  return <ApiKeyContext.Provider value={{ apiKey, setApiKey }}>{children}</ApiKeyContext.Provider>;
 }

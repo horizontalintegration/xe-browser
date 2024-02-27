@@ -1,51 +1,38 @@
-"use client";
+'use client';
 
-import {
-  CaretSortIcon,
-  CheckIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons";
+import { CaretSortIcon, CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/command';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Account,
   AccountEnvironment,
   EditAccountInfo,
   EditEnvInfo,
   useAccounts,
-} from "@/lib/hooks/use-accounts";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
-import AddAccountDialog from "./dialogs/AddAccountDialog";
-import AddEnvDialog from "./dialogs/AddEnvDialog";
-import useLocalStorage from "@/lib/hooks/use-local-storage";
-import { useApiKey } from "@/components/providers/ApiKeyProvider";
-import { Alert } from "../helpers/Alert";
-import EditAccountDialog from "./dialogs/EditAccountDialog";
-import EditEnvDialog from "./dialogs/EditEnvDialog";
-import { useEnvTheme } from "../providers/ThemeProvider";
+} from '@/lib/hooks/use-accounts';
+import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
+import AddAccountDialog from './dialogs/AddAccountDialog';
+import AddEnvDialog from './dialogs/AddEnvDialog';
+import useLocalStorage from '@/lib/hooks/use-local-storage';
+import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import { Alert } from '../helpers/Alert';
+import EditAccountDialog from './dialogs/EditAccountDialog';
+import EditEnvDialog from './dialogs/EditEnvDialog';
+import { useEnvTheme } from '../providers/ThemeProvider';
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
-type DialogType =
-  | "create-account"
-  | "create-env"
-  | "edit-account"
-  | "edit-env"
-  | undefined;
+type DialogType = 'create-account' | 'create-env' | 'edit-account' | 'edit-env' | undefined;
 
 type ErrorMessage = {
   title: string;
@@ -73,13 +60,15 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     removeEnvironment,
   } = useAccounts();
 
-  const [selectedAccount, setSelectedAccount] = useLocalStorage<
-    Account | undefined
-  >("selectedAccount", undefined);
+  const [selectedAccount, setSelectedAccount] = useLocalStorage<Account | undefined>(
+    'selectedAccount',
+    undefined
+  );
 
-  const [selectedEnv, setSelectedEnv] = useLocalStorage<
-    AccountEnvironment | undefined
-  >("selectedEnvironment", undefined);
+  const [selectedEnv, setSelectedEnv] = useLocalStorage<AccountEnvironment | undefined>(
+    'selectedEnvironment',
+    undefined
+  );
 
   const [editingAccount, setEditingAccount] = useState<EditAccountInfo>();
   const [editingEnv, setEditingEnv] = useState<EditEnvInfo>();
@@ -110,26 +99,22 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
 
   const onEnvSelect = (env?: AccountEnvironment) => {
     setSelectedEnv(env);
-    setEnvTheme(env?.envTheme ?? "default");
-    setApiKey(env?.apiKey ?? "");
+    setEnvTheme(env?.envTheme ?? 'default');
+    setApiKey(env?.apiKey ?? '');
   };
   return (
     <Dialog open={isDialogVisible} onOpenChange={setIsDialogVisible}>
-      <Popover
-        open={isDropDownOpen}
-        onOpenChange={setIsDropDownOpen}
-        {...props}
-      >
+      <Popover open={isDropDownOpen} onOpenChange={setIsDropDownOpen} {...props}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={isDropDownOpen}
             aria-label="Select a team"
-            className={cn("w-auto justify-between")}
+            className={cn('w-auto justify-between')}
           >
-            {selectedAccount?.accountName ?? "No Account"}:{" "}
-            {selectedEnv?.envName ?? "No Environment"}
+            {selectedAccount?.accountName ?? 'No Account'}:{' '}
+            {selectedEnv?.envName ?? 'No Environment'}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -141,32 +126,29 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                   key={account.accountId}
                   heading={
                     <div className="flex px-2 h-16 items-center">
-                      <div className="pr-10 font-bold text-lg">
-                        {account.accountName}
-                      </div>
+                      <div className="pr-10 font-bold text-lg">{account.accountName}</div>
 
                       <div className="ml-auto flex items-center space-x-4">
                         <DialogTrigger asChild>
                           <Button
-                            variant={"outline"}
-                            size={"xs"}
+                            variant={'outline'}
+                            size={'xs'}
                             onClick={(e) => {
                               e.stopPropagation();
                               setIsDropDownOpen(false);
                               onAccountSelect(account);
-                              openDialog("create-env");
+                              openDialog('create-env');
                             }}
                           >
-                            <PlusCircledIcon className="h-5 w-5" /> Add
-                            Environment
+                            <PlusCircledIcon className="h-5 w-5" /> Add Environment
                           </Button>
                         </DialogTrigger>
                         <Button
-                          size={"xs"}
+                          size={'xs'}
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingAccount(account);
-                            openDialog("edit-account");
+                            openDialog('edit-account');
                           }}
                         >
                           Edit Account
@@ -191,21 +173,19 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                       <div className="ml-auto flex items-center space-x-4">
                         <CheckIcon
                           className={cn(
-                            "ml-auto h-4 w-4",
-                            selectedEnv?.envId === env.envId
-                              ? "opacity-100"
-                              : "opacity-0"
+                            'ml-auto h-4 w-4',
+                            selectedEnv?.envId === env.envId ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         <Button
-                          size={"xs"}
+                          size={'xs'}
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingEnv({
                               accountId: account.accountId,
                               ...env,
                             });
-                            openDialog("edit-env");
+                            openDialog('edit-env');
                           }}
                         >
                           Edit Environment
@@ -222,7 +202,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
-                      openDialog("create-account");
+                      openDialog('create-account');
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -234,7 +214,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      {dialogType === "create-account" ? (
+      {dialogType === 'create-account' ? (
         <AddAccountDialog
           onCancel={closeDialog}
           onCreateAccount={(account) => {
@@ -245,8 +225,8 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
             );
             if (existingAccount) {
               setErrorMessage({
-                title: "Account already exists",
-                description: "Cannot add duplicate Account",
+                title: 'Account already exists',
+                description: 'Cannot add duplicate Account',
               });
               return;
             }
@@ -256,23 +236,22 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
             closeDialog();
           }}
         />
-      ) : dialogType === "create-env" ? (
+      ) : dialogType === 'create-env' ? (
         <AddEnvDialog
           accountId={selectedAccount?.accountId}
           onCancel={closeDialog}
           onCreateEnv={(env) => {
             if (!selectedAccount) {
-              throw new Error("No account selected");
+              throw new Error('No account selected');
             }
             const existingEnv = selectedAccount.environments.find(
               (x) =>
-                x.envName?.toLocaleLowerCase().trim() ===
-                env.envName.toLocaleLowerCase().trim()
+                x.envName?.toLocaleLowerCase().trim() === env.envName.toLocaleLowerCase().trim()
             );
             if (existingEnv) {
               setErrorMessage({
-                title: "Environment already exists",
-                description: "Cannot add duplicate Environment",
+                title: 'Environment already exists',
+                description: 'Cannot add duplicate Environment',
               });
               return;
             }
@@ -281,7 +260,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
             closeDialog();
           }}
         />
-      ) : dialogType === "edit-account" ? (
+      ) : dialogType === 'edit-account' ? (
         <EditAccountDialog
           account={editingAccount}
           onCancel={closeDialog}
@@ -299,7 +278,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
             closeDialog();
           }}
         />
-      ) : dialogType === "edit-env" ? (
+      ) : dialogType === 'edit-env' ? (
         <EditEnvDialog
           envionment={editingEnv}
           onCancel={closeDialog}

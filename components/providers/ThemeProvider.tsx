@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { type ThemeProviderProps } from "next-themes/dist/types";
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { type ThemeProviderProps } from 'next-themes/dist/types';
 
 // This exists purely so Tailwind knows that the class is used and doesn't strip out the class
-export type DarkMode = "dark";
+export type DarkMode = 'dark';
 
-export type EnvThemes = "default" | "red" | "blue" | "green";
+export type EnvThemes = 'default' | 'red' | 'blue' | 'green';
 
 type ThemeProviderContextType = {
   setEnvTheme: (envTheme: EnvThemes) => void;
@@ -26,7 +26,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   React.useLayoutEffect(() => {
     if (envTheme) document.body.classList.add(envTheme);
     return () => {
-      if (envTheme) document.body.classList.remove(envTheme ?? "");
+      if (envTheme) document.body.classList.remove(envTheme ?? '');
     };
   }, [envTheme]);
   return (

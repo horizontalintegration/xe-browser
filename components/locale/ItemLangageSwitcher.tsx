@@ -1,26 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { cn } from "@/lib/utils";
-import { gql } from "@apollo/client";
-import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLocale } from "../providers/LocaleProvider";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { gql } from '@apollo/client';
+import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { useLocale } from '../providers/LocaleProvider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command";
-import { LocaleInfo, formatLocale } from "./utils";
+} from '@/components/ui/command';
+import { LocaleInfo, formatLocale } from './utils';
 
 const GetLocales = gql`
   query GetLocales($itemId: String!, $systemLocale: String!) {
@@ -47,7 +43,7 @@ interface ItemLanguageData {
 }
 
 export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
-  const [selectedLocale, setSelectedLocale] = useState<string>("en");
+  const [selectedLocale, setSelectedLocale] = useState<string>('en');
 
   const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
   const [open, setOpen] = useState(false);
@@ -105,19 +101,12 @@ export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
   if (!client) {
     return;
   }
-  const selectedLocaleInfo = allLocaleInfos.find(
-    (site) => site.isoCode === selectedLocale ?? "en"
-  );
+  const selectedLocaleInfo = allLocaleInfos.find((site) => site.isoCode === selectedLocale ?? 'en');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="justify-between"
-        >
+        <Button variant="outline" role="combobox" aria-expanded={open} className="justify-between">
           {formatLocale(selectedLocaleInfo)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -135,10 +124,8 @@ export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
               >
                 <Check
                   className={cn(
-                    "mr-2 h-4 w-4",
-                    selectedLocale === localeInfo.isoCode
-                      ? "opacity-100"
-                      : "opacity-0"
+                    'mr-2 h-4 w-4',
+                    selectedLocale === localeInfo.isoCode ? 'opacity-100' : 'opacity-0'
                   )}
                 />
                 {formatLocale(localeInfo)}

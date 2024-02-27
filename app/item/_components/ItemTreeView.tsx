@@ -1,9 +1,9 @@
-"use client";
-import { gql } from "@apollo/client";
-import React, { useState } from "react";
-import { useGraphQLClientContext } from "../../../components/providers/GraphQLClientProvider";
-import { BaseItemNode, TreeViewer } from "@/components/viewers/TreeViewer";
-import { useLocale } from "@/components/providers/LocaleProvider";
+'use client';
+import { gql } from '@apollo/client';
+import React, { useState } from 'react';
+import { useGraphQLClientContext } from '../../../components/providers/GraphQLClientProvider';
+import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
+import { useLocale } from '@/components/providers/LocaleProvider';
 const GetItems = gql`
   query GetItem($path: String! = "/sitecore", $systemLocale: String!) {
     item(path: $path, language: $systemLocale) {
@@ -31,12 +31,12 @@ interface ItemData {
   item?: {
     id: string;
     name: string;
-    rendered: any;
+    rendered?: object;
     children: {
       results: {
         id: string;
         name: string;
-        rendered: any;
+        rendered?: object;
         children: {
           results: {
             id: string;
@@ -53,8 +53,8 @@ export type ItemTreeViewProps = {
 };
 
 const root: ItemNode = {
-  id: "/sitecore",
-  name: "sitecore",
+  id: '/sitecore',
+  name: 'sitecore',
   hasLayout: false,
   hasChildren: true,
 };
@@ -92,7 +92,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
           item.children?.push({
             id: x.id,
             name: x.name,
-            hasLayout: x.rendered,
+            hasLayout: !!x.rendered,
             hasChildren: x.children.results.length > 0,
           });
         });

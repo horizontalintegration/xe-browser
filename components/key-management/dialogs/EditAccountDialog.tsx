@@ -1,8 +1,8 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import BaseEditDialog from "./BaseEditDialog";
-import { EditAccountInfo } from "@/lib/hooks/use-accounts";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import BaseEditDialog from './BaseEditDialog';
+import { EditAccountInfo } from '@/lib/hooks/use-accounts';
 
 export type EditAccountDialogProps = {
   account?: EditAccountInfo;
@@ -17,7 +17,7 @@ const EditAccountDialog = ({
   onSaveAccount,
   onDeleteAccount,
 }: EditAccountDialogProps) => {
-  const [accountName, setAccountName] = useState(account?.accountName ?? "");
+  const [accountName, setAccountName] = useState(account?.accountName ?? '');
 
   if (!account) {
     return <></>;
@@ -42,11 +42,7 @@ const EditAccountDialog = ({
       <div className="space-y-4 py-2 pb-4">
         <div className="space-y-2">
           <Label htmlFor="name">Account name</Label>
-          <Input
-            id="name"
-            value={accountName}
-            onChange={(e) => setAccountName(e.target.value)}
-          />
+          <Input id="name" value={accountName} onChange={(e) => setAccountName(e.target.value)} />
         </div>
       </div>
     </BaseEditDialog>

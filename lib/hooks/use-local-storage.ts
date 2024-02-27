@@ -1,12 +1,9 @@
-import equal from "fast-deep-equal/es6/react";
-import { useEffect, useState } from "react";
-import { UseStateReturn } from "../types/state";
+import equal from 'fast-deep-equal/es6/react';
+import { useEffect, useState } from 'react';
+import { UseStateReturn } from '../types/state';
 
-const KEY_PREFIX = "xe-browser:";
-const useLocalStorage = <T>(
-  key: string,
-  initialValue: T
-): UseStateReturn<T> => {
+const KEY_PREFIX = 'xe-browser:';
+const useLocalStorage = <T>(key: string, initialValue: T): UseStateReturn<T> => {
   const [state, setState] = useState<T>(initialValue);
 
   const prefixedKey = KEY_PREFIX + key;

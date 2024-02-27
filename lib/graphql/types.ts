@@ -1,4 +1,4 @@
-import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
+import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
 
 export type ApolloClientType = ReturnType<typeof useGraphQLClientContext>;
 
@@ -7,7 +7,7 @@ export interface Params {
 }
 
 export interface Fields {
-  [fieldName: string]: { value: any };
+  [fieldName: string]: { value: object };
 }
 
 export interface Placeholders {
@@ -42,7 +42,7 @@ export interface LayoutItemResponse {
 }
 
 export interface RenderedSitecoreData {
-  context: any;
+  context: object;
   route: {
     name: string;
     fields: Fields;

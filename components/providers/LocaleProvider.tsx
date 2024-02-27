@@ -1,6 +1,6 @@
-"use client";
-import useLocalStorage from "@/lib/hooks/use-local-storage";
-import { createContext, useContext, useState } from "react";
+'use client';
+import useLocalStorage from '@/lib/hooks/use-local-storage';
+import { createContext, useContext, useState } from 'react';
 
 type LocaleContextType = {
   systemLocales: string[];
@@ -10,9 +10,9 @@ type LocaleContextType = {
 };
 
 const LocaleContext = createContext<LocaleContextType>({
-  systemLocales: ["en"],
+  systemLocales: ['en'],
   setSystemLocales: () => {},
-  itemLocale: "en",
+  itemLocale: 'en',
   setItemLocale: () => {},
 });
 
@@ -20,12 +20,9 @@ export function useLocale() {
   return useContext(LocaleContext);
 }
 export function LocaleProvider({ children }: React.PropsWithChildren) {
-  const [systemLocales, setSystemLocales] = useLocalStorage<string[]>(
-    "systemLocale",
-    ["en"]
-  );
+  const [systemLocales, setSystemLocales] = useLocalStorage<string[]>('systemLocale', ['en']);
 
-  const [itemLocale, setItemLocale] = useState<string>("en");
+  const [itemLocale, setItemLocale] = useState<string>('en');
 
   return (
     <LocaleContext.Provider

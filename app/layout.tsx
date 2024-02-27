@@ -1,35 +1,35 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
-import EnvironmentSwitcher from "@/components/key-management/EnvironmentSwitcher";
-import { MainNav } from "./_components/MainNav";
-import GraphQLClientProvider from "@/components/providers/GraphQLClientProvider";
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import { cn } from "@/lib/utils";
-import { ApiKeyProvider } from "@/components/providers/ApiKeyProvider";
-import { LocaleProvider } from "@/components/providers/LocaleProvider";
-import { SystemLangageSwitcher } from "../components/locale/SystemLangageSwitcher";
-import { ContentWrapper } from "./_components/ContentWrapper";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { XeTooltip } from "@/components/helpers/Tooltip";
-import { DarkModeToggle } from "./_components/DarkModeToggle";
-import { Metadata } from "next";
+import { Inter } from 'next/font/google';
+import './globals.css';
+import EnvironmentSwitcher from '@/components/key-management/EnvironmentSwitcher';
+import { MainNav } from './_components/MainNav';
+import GraphQLClientProvider from '@/components/providers/GraphQLClientProvider';
+import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
+import { cn } from '@/lib/utils';
+import { ApiKeyProvider } from '@/components/providers/ApiKeyProvider';
+import { LocaleProvider } from '@/components/providers/LocaleProvider';
+import { SystemLangageSwitcher } from '../components/locale/SystemLangageSwitcher';
+import { ContentWrapper } from './_components/ContentWrapper';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { XeTooltip } from '@/components/helpers/Tooltip';
+import { DarkModeToggle } from './_components/DarkModeToggle';
+import { Metadata } from 'next';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   // Adds messages only in a dev environment
   loadDevMessages();
   loadErrorMessages();
 }
 
 export const metadata: Metadata = {
-  title: "Sitecore XE Browser",
+  title: 'Sitecore XE Browser',
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en" className={cn(inter.className, "h-full", "m-0")}>
-      <body className={cn(inter.className, "h-full", "m-0")}>
+    <html lang="en" className={cn(inter.className, 'h-full', 'm-0')}>
+      <body className={cn(inter.className, 'h-full', 'm-0')}>
         <div className="flex flex-col h-full">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ApiKeyProvider>
@@ -43,16 +43,11 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                     <div className="ml-auto flex items-center space-x-4">
                       <span>System locales</span>
                       <XeTooltip>
+                        <p>The locales that are used for query the Sitecore tree.</p>
                         <p>
-                          The locales that are used for query the Sitecore
-                          tree.
-                        </p>
-                        <p>
-                          {
-                            `If an item isn't in one of these locales, it won't show up on the tree.  
+                          {`If an item isn't in one of these locales, it won't show up on the tree.  
                             Try to select the fewest number of locales possible, because queries will be made against 
-                            every selected locale to ensure we aren't missing items.`
-                          }
+                            every selected locale to ensure we aren't missing items.`}
                         </p>
                       </XeTooltip>
 

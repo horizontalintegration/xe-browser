@@ -1,19 +1,11 @@
-import { InfoIcon } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { ReactNode } from "react";
+import { InfoIcon } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { ReactNode } from 'react';
 
 export type XeTooltipProps = React.PropsWithChildren<{
   trigger?: ReactNode;
 }>;
-export function XeTooltip({
-  trigger = <InfoIcon />,
-  children,
-}: XeTooltipProps) {
+export function XeTooltip({ trigger = <InfoIcon />, children }: XeTooltipProps) {
   return (
     <TooltipProvider>
       <Tooltip>

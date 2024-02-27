@@ -1,27 +1,27 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { getLayoutData } from "@/lib/graphql/get-layout-data";
-import { deepSearch } from "@/lib/utils/object-utils";
-import { ComponentResponse } from "@/lib/graphql/types";
-import ComponentsJsonView from "../../../components/viewers/ComponentJsonView";
-import { useLocale } from "@/components/providers/LocaleProvider";
-import { JsonViewWrapper } from "@/components/viewers/JsonViewWrapper";
+import { getLayoutData } from '@/lib/graphql/get-layout-data';
+import { deepSearch } from '@/lib/utils/object-utils';
+import { ComponentResponse } from '@/lib/graphql/types';
+import ComponentsJsonView from '../../../components/viewers/ComponentJsonView';
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
 
 export type DataJsonViewProps = {
   siteName: string;
   routePath: string;
 };
 
-export type SelectedTabValue = "sitecore-context" | "route" | "components";
+export type SelectedTabValue = 'sitecore-context' | 'route' | 'components';
 
 const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
-  const [sitecoreContextData, setSitecoreContextData] = useState<any>();
-  const [routeData, setRouteData] = useState<any>();
+  const [sitecoreContextData, setSitecoreContextData] = useState<object>();
+  const [routeData, setRouteData] = useState<object>();
   const [componentsData, setComponentsData] = useState<ComponentResponse[]>([]);
-  const [selectedTab, setSelectedTab] = useState<SelectedTabValue>("route");
+  const [selectedTab, setSelectedTab] = useState<SelectedTabValue>('route');
 
   const client = useGraphQLClientContext();
 
@@ -30,20 +30,15 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
     async function innerFetch() {
       let data;
       switch (selectedTab) {
-        case "sitecore-context":
-        case "components":
-        case "route":
+        case 'sitecore-context':
+        case 'components':
+        case 'route':
           data = await getLayoutData(client, itemLocale, siteName, routePath);
 
-          const componentData = deepSearch<ComponentResponse>(
-            data,
-            (x) => !!x.componentName
-          );
+          const componentData = deepSearch<ComponentResponse>(data, (x) => !!x.componentName);
           setComponentsData(componentData);
-          setSitecoreContextData(
-            data?.context ?? { error: "Item does not have layout" }
-          );
-          setRouteData(data?.route ?? { error: "Item does not have layout" });
+          setSitecoreContextData(data?.context ?? { error: 'Item does not have layout' });
+          setRouteData(data?.route ?? { error: 'Item does not have layout' });
           break;
       }
     }

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { gql } from "@apollo/client";
-import { useGraphQLClientContext } from "@/components/providers/GraphQLClientProvider";
-import { useLocale } from "@/components/providers/LocaleProvider";
+} from '@/components/ui/select';
+import { gql } from '@apollo/client';
+import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { useLocale } from '@/components/providers/LocaleProvider';
 
 const GetSites = gql`
   query GetSites {
@@ -120,9 +120,7 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
         });
 
         if (data) {
-          data.search.results.forEach((x) =>
-            uniqueSiteNames.add(x.siteName.value)
-          );
+          data.search.results.forEach((x) => uniqueSiteNames.add(x.siteName.value));
         }
       }
       setSites(Array.from(uniqueSiteNames).map((x) => ({ siteName: x })));
@@ -137,9 +135,8 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
   if (!client) {
     return (
       <p>
-        No environment selected, or selected environment has invalid API key.
-        Editing environments are not supported currently, delete and recreate
-        it.
+        No environment selected, or selected environment has invalid API key. Editing environments
+        are not supported currently, delete and recreate it.
       </p>
     );
   }
@@ -147,12 +144,12 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     <Select defaultValue={selectedSite} onValueChange={siteSelected}>
       <SelectTrigger
         className={cn(
-          "flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate"
+          'flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate'
         )}
         aria-label="Select site"
       >
         <SelectValue placeholder="Select site">
-          <span className={cn("ml-2")}>
+          <span className={cn('ml-2')}>
             {sites.find((site) => site.siteName === selectedSite)?.siteName}
           </span>
         </SelectValue>
