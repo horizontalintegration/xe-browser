@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { gql } from '@apollo/client';
 import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
 import { useLocale } from '../providers/LocaleProvider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -16,41 +15,19 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import { LocaleInfo, formatLocale } from './utils';
-
-const GetLocales = gql`
-  query GetLocales($itemId: String!, $systemLocale: String!) {
-    item(language: $systemLocale, path: $itemId) {
-      languages {
-        language {
-          name
-          englishName
-        }
-      }
-    }
-  }
-`;
-
-interface ItemLanguageData {
-  item?: {
-    languages: {
-      language: {
-        name: string;
-        englishName: string;
-      };
-    }[];
-  };
-}
+import { formatLocale } from './utils';
+import { useItemLocales } from '@/lib/hooks/use-item-locales';
 
 export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
   const [selectedLocale, setSelectedLocale] = useState<string>('en');
 
-  const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
   const [open, setOpen] = useState(false);
 
   const client = useGraphQLClientContext();
 
-  const { systemLocales, setItemLocale } = useLocale();
+  const { setItemLocale } = useLocale();
+
+  const allLocaleInfos = useItemLocales(itemId);
 
   const localeSelected = (localeValue: string) => {
     const selectedLocale = allLocaleInfos.find(
@@ -65,38 +42,6 @@ export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
     }
     setOpen(false);
   };
-
-  const fetchData = async () => {
-    if (!client || !itemId) {
-      return;
-    }
-    for (let index = 0; index < systemLocales.length; index++) {
-      const systemLocale = systemLocales[index];
-      const { data } = await client.query<ItemLanguageData>({
-        query: GetLocales,
-        variables: { itemId, systemLocale },
-      });
-
-      if (data.item) {
-        const foundLocales = data.item.languages.map<LocaleInfo>((x) => {
-          return {
-            isoCode: x.language.name,
-            friendlyName: x.language.englishName,
-          };
-        });
-
-        setAllLocaleInfos(foundLocales);
-        // Since we're fetching other language versions, we only need the first one that's found
-        // Once we found one, we're good.
-        break;
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, itemId]);
 
   if (!client) {
     return;

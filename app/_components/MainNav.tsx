@@ -1,20 +1,8 @@
 'use client';
-import Link from 'next/link';
 
-import { cn } from '@/lib/utils';
-import { ReactNode } from 'react';
-import { tailwindVariants } from './MainNavStyles';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { NavLink, Navigation } from '@/components/helpers/Navigation';
 
-type NavLink = {
-  href: string;
-  content: ReactNode;
-};
-
-export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const pathName = usePathname();
-
+export function MainNav(props: React.HTMLAttributes<HTMLElement>) {
   const links: NavLink[] = [
     {
       href: '/item',
@@ -28,18 +16,10 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
       href: '/graphql',
       content: 'GraphQL Browser',
     },
+    {
+      href: '/troubleshooting',
+      content: 'Troubleshooting',
+    },
   ];
-  const { baseStyle } = tailwindVariants();
-
-  return (
-    <nav className={cn(baseStyle(), className)} {...props}>
-      {links.map((x) => {
-        return (
-          <Button key={x.href} asChild variant={pathName === x.href ? 'default' : 'ghost'}>
-            <Link href={x.href}>{x.content}</Link>
-          </Button>
-        );
-      })}
-    </nav>
-  );
+  return <Navigation links={links} {...props} />;
 }
