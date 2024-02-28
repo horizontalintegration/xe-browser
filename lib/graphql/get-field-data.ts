@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client';
-import { ApolloClientType, ItemResponse } from './types';
-import { getDataUtil } from './util';
+import { ItemResponse } from './types';
+import { QuerySettings, getDataUtil } from './util';
 
 export const getFieldData = async (
-  client: ApolloClientType,
+  querySettings: QuerySettings,
   itemLocale: string,
   itemId?: string
 ): Promise<FieldResponse | null> => {
-  const data = await getDataUtil<FieldResponse>(client, GetFieldData, {
+  const data = await getDataUtil<FieldResponse>(querySettings, GetFieldData, {
     path: itemId,
     itemLocale,
   });

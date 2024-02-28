@@ -1,5 +1,5 @@
 import equal from 'fast-deep-equal/es6/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { UseStateReturn } from '../types/state';
 
 const KEY_PREFIX = 'xe-browser:';
@@ -32,13 +32,20 @@ const useLocalStorage = <T>(key: string, initialValue: T): UseStateReturn<T> => 
     }
   }, [initialValue, key, prefixedKey, state]);
 
-  const setValue = (value: T | ((arg0: T) => T)) => {
-    // If the passed value is a callback function,
-    //  then call it with the existing state.
-    const valueToStore = value instanceof Function ? value(state) : value;
-    window.localStorage.setItem(prefixedKey, JSON.stringify(valueToStore));
-    setState(value);
-  };
+  const setValue = useCallback(
+    (value: T | ((arg0: T) => T)) => {
+      // If the passed value is a callback function,
+      //  then call it with the existing state.
+      const valueToStore = value instanceof Function ? value(state) : value;
+      window.localStorage.setItem(prefixedKey, JSON.stringify(valueToStore));
+      if (!equal(value, state)) {
+        setState(value);
+      }
+    },
+    // The setter shouldn't care what the state is
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [prefixedKey]
+  );
 
   return [state, setValue];
 };

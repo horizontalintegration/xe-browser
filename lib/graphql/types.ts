@@ -1,6 +1,6 @@
-import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
-export type ApolloClientType = ReturnType<typeof useGraphQLClientContext>;
+export type ApolloClientType = ApolloClient<NormalizedCacheObject> | undefined;
 
 export interface Params {
   [paramName: string]: string;

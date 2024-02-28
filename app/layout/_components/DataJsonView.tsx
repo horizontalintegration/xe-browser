@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { getLayoutData } from '@/lib/graphql/get-layout-data';
@@ -9,6 +8,7 @@ import { ComponentResponse } from '@/lib/graphql/types';
 import ComponentsJsonView from '../../../components/viewers/ComponentJsonView';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 
 export type DataJsonViewProps = {
   siteName: string;
@@ -23,17 +23,21 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
   const [componentsData, setComponentsData] = useState<ComponentResponse[]>([]);
   const [selectedTab, setSelectedTab] = useState<SelectedTabValue>('route');
 
-  const client = useGraphQLClientContext();
-
   const { itemLocale } = useLocale();
+
+  const querySettings = useQuerySettings();
+
   useEffect(() => {
     async function innerFetch() {
       let data;
+      if (!querySettings?.client) {
+        return;
+      }
       switch (selectedTab) {
         case 'sitecore-context':
         case 'components':
         case 'route':
-          data = await getLayoutData(client, itemLocale, siteName, routePath);
+          data = await getLayoutData(querySettings, itemLocale, siteName, routePath);
 
           const componentData = deepSearch<ComponentResponse>(data, (x) => !!x.componentName);
           setComponentsData(componentData);
@@ -43,7 +47,7 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
       }
     }
     innerFetch();
-  }, [client, itemLocale, siteName, routePath, selectedTab]);
+  }, [querySettings, itemLocale, siteName, routePath, selectedTab]);
 
   return (
     <Tabs

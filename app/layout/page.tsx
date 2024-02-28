@@ -3,8 +3,8 @@ import DataJsonView from './_components/DataJsonView';
 import LayoutTreeView from './_components/LayoutTreeView';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useState } from 'react';
-import { SiteInfo } from './_components/SiteSwitcher';
-import { ItemLocaleSwitcher } from '../../components/locale/ItemLangageSwitcher';
+import { SiteInfo } from '../../components/switchers/SiteSwitcher';
+import { ItemLocaleSwitcher } from '../../components/switchers/ItemLangageSwitcher';
 
 export default function Page() {
   const [selectedItemId, setSelectedItemId] = useState<string>();

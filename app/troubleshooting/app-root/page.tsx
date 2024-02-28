@@ -1,46 +1,101 @@
 'use client';
-import { SiteInfo, SiteSwitcher } from '@/app/layout/_components/SiteSwitcher';
-import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
+import { MultiLocaleSwitcher } from '@/components/switchers/MultiLocaleSwitcher';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
 import { CheckAppRootResult, checkAppRoot } from '@/lib/graphql/check-app-root';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ResultsTable } from './_components/ResultsTable';
+import { RenderIf } from '@/components/helpers/RenderIf';
+import { useSiteList } from '@/lib/hooks/use-site-list';
+import { LoaderIcon } from 'lucide-react';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
+import { sortBy } from 'lodash';
+import { ApolloError } from '@apollo/client';
 
 export default function Page() {
   const { systemLocales } = useLocale();
-  const [site, setSite] = useState<SiteInfo>();
-  const [appRootResults, setAppRootResults] = useState<CheckAppRootResult[]>();
-  const client = useGraphQLClientContext();
 
-  useEffect(() => {
-    async function getData() {
-      if (!site) {
-        return;
-      }
-      const results: CheckAppRootResult[] = [];
-      for (let index = 0; index < systemLocales.length; index++) {
-        const element = systemLocales[index];
+  const [loading, setLoading] = useState<boolean>(false);
+  const [locales, setLocales] = useState<string[]>([...systemLocales]);
+  const [appRootResults, setAppRootResults] = useState<CheckAppRootResult[]>([]);
 
-        const result = await checkAppRoot(client, site.siteName, element);
-        results.push(result);
-      }
-      setAppRootResults(results);
+  const abortController = useRef(new AbortController());
+
+  const querySettings = useQuerySettings(abortController.current.signal);
+
+  const sites = useSiteList();
+
+  async function getData() {
+    if (!querySettings?.client) {
+      return;
     }
 
-    getData();
-  }, [client, site, systemLocales]);
+    abortController.current = new AbortController();
+    querySettings.abortSignal = abortController.current.signal;
+
+    setLoading(true);
+    setAppRootResults([]);
+    const promises: Promise<CheckAppRootResult>[] = [];
+    try {
+      for (let siteIndex = 0; siteIndex < sites.length; siteIndex++) {
+        const site = sites[siteIndex];
+        for (let index = 0; index < locales.length; index++) {
+          const element = locales[index];
+
+          const promise = checkAppRoot(querySettings, site.siteName, element);
+          promises.push(promise);
+        }
+      }
+      // Batch the requests
+      const results: CheckAppRootResult[] = await Promise.all(promises);
+
+      setAppRootResults(results);
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        if (error.networkError?.name === 'AbortError') {
+        } else {
+          console.error(error);
+        }
+      } else {
+        console.error(error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (sites.length && locales.length) {
+      getData();
+    }
+    return () => {
+      abortController.current.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [querySettings, sites, locales]);
+
+  const sortedResults = sortBy(
+    appRootResults,
+    (x) => x.success,
+    (x) => x.siteName,
+    (x) => x.language
+  );
 
   return (
     <div>
-      <p>
+      <p className="py-4">
         {` Use this to troubleshoot "Error: Valid value for rootItemId not provided and failed to
-        auto-resolve app root item."  Select a site and it will show you whether the app id was found in each language.`}
+        auto-resolve app root item."`}
       </p>
-      <p>
-        {` For now it will only use the system languages selected in top right, but will add ability to select languages for this list.`}
-      </p>
-      <SiteSwitcher onSiteSelected={setSite} />
-      <JsonViewWrapper data={appRootResults} />
+      <MultiLocaleSwitcher locales={locales} setLocales={setLocales} />
+      {/* <SiteSwitcher onSiteSelected={setSite} /> */}
+      <RenderIf condition={loading}>
+        <span>
+          <LoaderIcon /> Loading
+        </span>
+      </RenderIf>
+      {/* <RenderIf condition={sortedResults.length > 0}> */}
+      <ResultsTable results={sortedResults} />
+      {/* </RenderIf> */}
     </div>
   );
 }

@@ -1,13 +1,12 @@
 import { gql } from '@apollo/client';
-import { ApolloClientType } from './types';
-import { getDataUtil } from './util';
+import { QuerySettings, getDataUtil } from './util';
 
 export const getItemMetaData = async (
-  client: ApolloClientType,
+  querySettings: QuerySettings,
   itemLocale: string,
   itemId?: string
 ) => {
-  const data = await getDataUtil<MetaResponse>(client, GetMetaData, {
+  const data = await getDataUtil<MetaResponse>(querySettings, GetMetaData, {
     path: itemId,
     itemLocale,
   });

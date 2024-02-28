@@ -1,10 +1,11 @@
 'use client';
 import { gql } from '@apollo/client';
 import React, { useState } from 'react';
-import { useGraphQLClientContext } from '../../../components/providers/GraphQLClientProvider';
-import { SiteInfo, SiteSwitcher } from './SiteSwitcher';
+import { SiteInfo, SiteSwitcher } from '../../../components/switchers/SiteSwitcher';
 import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { getDataUtil } from '@/lib/graphql/util';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 
 const GetLayout = gql`
   query GetLayout($site: String!, $routePath: String! = "/", $systemLocale: String!) {
@@ -81,26 +82,25 @@ const LayoutTreeView = ({ onItemSelected }: LayoutTreeViewProps) => {
   const [site, setSite] = useState<SiteInfo>();
   const item = { ...root };
 
-  const client = useGraphQLClientContext();
   const { systemLocales } = useLocale();
+
+  const querySettings = useQuerySettings();
+
   const fetchData = async (item: ItemNode) => {
-    if (!client || !site) {
+    if (!querySettings?.client || !site) {
       return;
     }
     item.children = [];
     const addedItemIds = new Set<string>();
     for (let index = 0; index < systemLocales.length; index++) {
       const systemLocale = systemLocales[index];
-      const { data } = await client.query<LayoutData>({
-        query: GetLayout,
-        variables: {
-          site: site.siteName,
-          routePath: item.routePath,
-          systemLocale,
-        },
+      const data = await getDataUtil<LayoutData>(querySettings, GetLayout, {
+        site: site.siteName,
+        routePath: item.routePath,
+        systemLocale,
       });
 
-      const loadedItem = data.layout?.item;
+      const loadedItem = data?.layout?.item;
       if (loadedItem) {
         item.id = loadedItem.id;
 

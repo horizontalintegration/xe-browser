@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client';
-import { getDataUtil } from './util';
-import { ApolloClientType, LayoutItemResponse, LayoutResponse } from './types';
+import { QuerySettings, getDataUtil } from './util';
+import { LayoutItemResponse, LayoutResponse } from './types';
 
 export const getLayoutItemData = async (
-  client: ApolloClientType,
+  querySettings: QuerySettings,
   itemLocale: string,
   itemId?: string
 ) => {
-  const data = await getDataUtil<LayoutItemResponse>(client, GetLayoutItemData, {
+  const data = await getDataUtil<LayoutItemResponse>(querySettings, GetLayoutItemData, {
     path: itemId,
     itemLocale,
   });
@@ -23,12 +23,12 @@ const GetLayoutItemData = gql`
 `;
 
 export const getLayoutData = async (
-  client: ApolloClientType,
+  querySettings: QuerySettings,
   systemLocale: string,
   siteName: string,
   routePath: string
 ) => {
-  const data = await getDataUtil<LayoutResponse>(client, GetLayoutData, {
+  const data = await getDataUtil<LayoutResponse>(querySettings, GetLayoutData, {
     routePath,
     systemLocale,
     site: siteName,

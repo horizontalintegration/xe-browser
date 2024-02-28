@@ -28,6 +28,9 @@
     --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: hsl(0 0% 98%);
 
+    --success: hsl(138, 58%, 38%);
+    --success-foreground: hsl(0 0% 98%);
+
     --border: hsl(240 5.9% 90%);
     --input: hsl(240 5.9% 90%);
 
@@ -50,8 +53,11 @@
     --accent: hsl(240 3.7% 15.9%);
     --accent-foreground: hsl(0 0% 98%);
 
-    --destructive: hsl(0 62.8% 30.6%);
-    --destructive-foreground: hsl(0 0% 98%);
+    /* --destructive: hsl(0 62.8% 30.6%);
+    --destructive-foreground: hsl(0 0% 98%); */
+
+    --success: hsl(138, 58%, 50%);
+    --success-foreground: hsl(0 0% 98%);
 
     --border: hsl(240 3.7% 15.9%);
     --input: hsl(240 3.7% 15.9%);
@@ -62,7 +68,7 @@
     --background: var(--red-1);
     --foreground: var(--red-12);
     --primary: var(--red-9);
-    --primary-foreground: var(--red-9-contrast);
+    --primary-foreground: var(--red-11);
     --accent: var(--red-2);
     --accent-foreground: var(--red-2-contrast);
     --muted: var(--red-2);
@@ -72,17 +78,17 @@
     --background: var(--blue-1);
     --foreground: var(--blue-12);
     --primary: var(--blue-9);
-    --primary-foreground: var(--blue-9-contrast);
+    --primary-foreground: var(--blue-12);
     --accent: var(--blue-2);
-    --accent-foreground: var(--blue-2-contrast);
+    --accent-foreground: var(--blue-11);
     --muted: var(--blue-2);
     --muted-foreground: var(--blue-11);
   }
   .green {
     --background: var(--green-1);
     --foreground: var(--green-12);
-    --primary: var(--green-9);
-    --primary-foreground: var(--green-9-contrast);
+    --primary: var(--green-3);
+    --primary-foreground: var(--green-3-contrast);
     --accent: var(--green-2);
     --accent-foreground: var(--green-2-contrast);
     --muted: var(--green-2);

@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client';
 import { SitecoreTemplateId } from '../constants';
-import { ApolloClientType } from './types';
-import { getDataUtil } from './util';
+import { QuerySettings, getDataUtil } from './util';
 
 /** @private */
 export const siteNameError = 'The site name must be a non-empty string';
@@ -51,7 +50,7 @@ type AppRootQueryResult = {
  * leaving that decision up to implementations.
  */
 export async function checkAppRoot(
-  client: ApolloClientType,
+  querySettings: QuerySettings,
   siteName: string,
   itemLocale: string,
   jssAppTemplateId?: string
@@ -64,7 +63,7 @@ export async function checkAppRoot(
     throw new RangeError(languageError);
   }
 
-  const data = await getDataUtil<AppRootQueryResult>(client, appRootQuery, {
+  const data = await getDataUtil<AppRootQueryResult>(querySettings, appRootQuery, {
     jssAppTemplateId: jssAppTemplateId || SitecoreTemplateId.JssApp,
     siteName,
     language: itemLocale,

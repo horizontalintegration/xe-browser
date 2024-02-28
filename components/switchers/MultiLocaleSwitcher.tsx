@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { groupBy } from 'lodash';
 import { cn } from '@/lib/utils';
 import { gql } from '@apollo/client';
-import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
-import { useLocale } from '../providers/LocaleProvider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { LocaleInfo, formatLocale } from './utils';
+import { LocaleInfo, formatLocale } from '../locale/utils';
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
+import { getDataUtil } from '@/lib/graphql/util';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 
 const GetLocales = gql`
   query GetLocales {
@@ -34,26 +34,25 @@ interface SiteCollectionData {
   };
 }
 
-export function SystemLangageSwitcher() {
+export interface MultiLocaleSwitcherProps {
+  locales: string[];
+  setLocales: (locales: string[]) => void;
+}
+export function MultiLocaleSwitcher({ locales, setLocales }: MultiLocaleSwitcherProps) {
   const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
   const [localeDisplayNames, setLocaleDisplayNames] = useState<Intl.DisplayNames>();
   const [open, setOpen] = useState(false);
 
-  const client = useGraphQLClientContext();
-
-  const { setSystemLocales, systemLocales } = useLocale();
-
   const localeSelected = (localeValues: string[]) => {
-    setSystemLocales(localeValues);
+    setLocales(localeValues);
   };
 
+  const querySettings = useQuerySettings();
   const fetchData = async () => {
-    if (!client) {
+    if (!querySettings?.client) {
       return;
     }
-    const { data } = await client.query<SiteCollectionData>({
-      query: GetLocales,
-    });
+    const data = await getDataUtil<SiteCollectionData>(querySettings, GetLocales);
 
     if (data) {
       const foundLocales = data.item.children.results.map<LocaleInfo>((x) => {
@@ -79,13 +78,13 @@ export function SystemLangageSwitcher() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, localeDisplayNames]);
+  }, [querySettings, localeDisplayNames]);
 
-  if (!client) {
+  if (!querySettings?.client) {
     return;
   }
 
-  const selectedLocale = allLocaleInfos.filter((lang) => systemLocales.includes(lang.isoCode));
+  const selectedLocale = allLocaleInfos.filter((lang) => locales.includes(lang.isoCode));
 
   const localesByLanguage = groupBy(allLocaleInfos, (x) => x.isoCode.split('-')[0]);
 
@@ -101,16 +100,16 @@ export function SystemLangageSwitcher() {
         <ToggleGroup
           type="multiple"
           orientation="vertical"
-          value={systemLocales}
+          value={locales}
           onValueChange={localeSelected}
         >
           {Object.keys(localesByLanguage).map((lang) => {
-            const locales = localesByLanguage[lang];
+            const localeInfos = localesByLanguage[lang];
             return (
               <div key={lang} className="">
                 <div className="font-bold text-lg">{localeDisplayNames?.of(lang)}</div>
                 <div className="justify-center items-center">
-                  {locales.map((localeInfo) => {
+                  {localeInfos.map((localeInfo) => {
                     return (
                       <ToggleGroupItem
                         key={localeInfo.isoCode}
@@ -120,7 +119,7 @@ export function SystemLangageSwitcher() {
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            systemLocales.includes(localeInfo.isoCode) ? 'opacity-100' : 'opacity-0'
+                            locales.includes(localeInfo.isoCode) ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         <span>{formatLocale(localeInfo)}</span>

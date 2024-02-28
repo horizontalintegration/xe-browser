@@ -1,9 +1,11 @@
 'use client';
 import { gql } from '@apollo/client';
 import React, { useState } from 'react';
-import { useGraphQLClientContext } from '../../../components/providers/GraphQLClientProvider';
 import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { getDataUtil } from '@/lib/graphql/util';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
+
 const GetItems = gql`
   query GetItem($path: String! = "/sitecore", $systemLocale: String!) {
     item(path: $path, language: $systemLocale) {
@@ -64,10 +66,10 @@ interface ItemNode extends BaseItemNode<ItemNode> {}
 const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
   const item = { ...root };
-  const client = useGraphQLClientContext();
   const { systemLocales } = useLocale();
+  const querySettings = useQuerySettings();
   const fetchData = async (item: ItemNode) => {
-    if (!client) {
+    if (!querySettings?.client) {
       return;
     }
 
@@ -75,12 +77,9 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
     const addedItemIds = new Set<string>();
     for (let index = 0; index < systemLocales.length; index++) {
       const systemLocale = systemLocales[index];
-      const { data } = await client.query<ItemData>({
-        query: GetItems,
-        variables: {
-          path: item.id,
-          systemLocale,
-        },
+      const data = await getDataUtil<ItemData>(querySettings, GetItems, {
+        path: item.id,
+        systemLocale,
       });
 
       if (data) {

@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useGraphQLClientContext } from '../../../components/providers/GraphQLClientProvider';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import { getLayoutItemData } from '@/lib/graphql/get-layout-data';
@@ -12,6 +11,7 @@ import { deepSearch } from '@/lib/utils/object-utils';
 import ComponentsJsonView from '@/components/viewers/ComponentJsonView';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
+import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 
 export type DataJsonViewProps = {
   itemId?: string;
@@ -28,25 +28,29 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
   const [routeData, setRouteData] = useState<object>();
   const [selectedTab, setSelectedTab] = useState<SelectedTabValue>('meta');
 
-  const client = useGraphQLClientContext();
-
   const { itemLocale } = useLocale();
+
+  const querySettings = useQuerySettings();
+
   useEffect(() => {
     async function innerFetch() {
+      if (!querySettings?.client) {
+        return;
+      }
       let data;
       switch (selectedTab) {
         case 'meta':
-          data = await getItemMetaData(client, itemLocale, itemId);
+          data = await getItemMetaData(querySettings, itemLocale, itemId);
           setMetaData(data);
           break;
         case 'fields':
-          data = await getFieldData(client, itemLocale, itemId);
+          data = await getFieldData(querySettings, itemLocale, itemId);
           setFieldData(data);
           break;
         case 'sitecore-context':
         case 'route':
         case 'components':
-          data = await getLayoutItemData(client, itemLocale, itemId);
+          data = await getLayoutItemData(querySettings, itemLocale, itemId);
 
           const componentData = deepSearch<ComponentResponse>(data, (x) => !!x?.componentName);
           setComponentsData(componentData);
@@ -56,7 +60,7 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
       }
     }
     innerFetch();
-  }, [client, itemLocale, itemId, selectedTab]);
+  }, [querySettings, itemLocale, itemId, selectedTab]);
 
   return (
     <Tabs

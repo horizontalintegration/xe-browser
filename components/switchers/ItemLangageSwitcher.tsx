@@ -15,7 +15,7 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import { formatLocale } from './utils';
+import { formatLocale } from '../locale/utils';
 import { useItemLocales } from '@/lib/hooks/use-item-locales';
 
 export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
