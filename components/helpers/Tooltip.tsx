@@ -10,7 +10,7 @@ export function XeTooltip({ trigger = <InfoIcon />, children }: XeTooltipProps) 
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>{trigger}</TooltipTrigger>
-        <TooltipContent>{children}</TooltipContent>
+        <TooltipContent className="max-w-80">{children}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

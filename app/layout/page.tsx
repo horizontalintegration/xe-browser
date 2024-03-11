@@ -13,25 +13,23 @@ export default function Page() {
   const [selectedSite, setSelectedSite] = useState<SiteInfo>();
 
   return (
-    <main>
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel>
-          <LayoutTreeView
-            onItemSelected={(siteInfo, itemId, routePath) => {
-              setSelectedSite(siteInfo);
-              setSelectedItemId(itemId);
-              setSelectedRoutePath(routePath);
-            }}
-          />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel>
-          <ItemLocaleSwitcher itemId={selectedItemId} />
-          {selectedRoutePath && selectedSite?.siteName ? (
-            <DataJsonView routePath={selectedRoutePath} siteName={selectedSite?.siteName} />
-          ) : null}
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </main>
+    <ResizablePanelGroup direction="horizontal" className="h-full !overflow-y-auto">
+      <ResizablePanel className="h-full px-4 !overflow-y-auto">
+        <LayoutTreeView
+          onItemSelected={(siteInfo, itemId, routePath) => {
+            setSelectedSite(siteInfo);
+            setSelectedItemId(itemId);
+            setSelectedRoutePath(routePath);
+          }}
+        />
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel className="h-full px-4 !overflow-y-auto">
+        <ItemLocaleSwitcher itemId={selectedItemId} />
+        {selectedRoutePath && selectedSite?.siteName ? (
+          <DataJsonView routePath={selectedRoutePath} siteName={selectedSite?.siteName} />
+        ) : null}
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }

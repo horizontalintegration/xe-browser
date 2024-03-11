@@ -2,75 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "@radix-ui/colors/red.css";
-@import "@radix-ui/colors/blue.css";
-@import "@radix-ui/colors/green.css";
-@import "@radix-ui/colors/red-dark.css";
-@import "@radix-ui/colors/blue-dark.css";
-@import "@radix-ui/colors/green-dark.css";
+@import '@radix-ui/colors/red.css';
+@import '@radix-ui/colors/blue.css';
+@import '@radix-ui/colors/green.css';
+@import '@radix-ui/colors/red-dark.css';
+@import '@radix-ui/colors/blue-dark.css';
+@import '@radix-ui/colors/green-dark.css';
+
 @layer base {
   :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(240 10% 3.9%);
+    --background: theme('colors.white');
+    --foreground: theme('colors.black');
 
-    --primary: hsl(240 5.9% 10%);
-    --primary-foreground: hsl(0 0% 98%);
+    --primary: theme('colors.black');
+    --primary-foreground: theme('colors.white');
 
-    --secondary: hsl(240 4.8% 95.9%);
-    --secondary-foreground: hsl(240 5.9% 10%);
+    --accent: theme('colors.gray.dark');
+    --accent-foreground: theme('colors.white');
+
+    --secondary: theme('colors.background');
+    --secondary-foreground: theme('colors.foreground');
 
     --muted: hsl(240 4.8% 95.9%);
     --muted-foreground: hsl(240 3.8% 46.1%);
 
-    --accent: hsl(240 4.8% 95.9%);
-    --accent-foreground: hsl(240 5.9% 10%);
-
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(0 0% 98%);
+    --destructive: theme('colors.error.white');
+    --destructive-foreground: theme('colors.white');
 
     --success: hsl(138, 58%, 38%);
-    --success-foreground: hsl(0 0% 98%);
+    --success-foreground: #ffffff;
 
-    --border: hsl(240 5.9% 90%);
-    --input: hsl(240 5.9% 90%);
+    --border: theme('colors.gray.light');
+    --input: theme('colors.gray.light');
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: hsl(240 10% 3.9%);
-    --foreground: hsl(0 0% 98%);
+    --background: theme('colors.black');
+    --foreground: theme('colors.white');
 
-    --primary: hsl(0 0% 98%);
-    --primary-foreground: hsl(240 5.9% 10%);
+    --primary: theme('colors.white');
+    --primary-foreground: theme('colors.black');
 
-    --secondary: hsl(240 3.7% 15.9%);
-    --secondary-foreground: hsl(0 0% 98%);
+    --accent: theme('colors.gray.light');
+    --accent-foreground: theme('colors.black');
+
+    /* --secondary: hsl(240 3.7% 15.9%);
+    --secondary-foreground: #ffffff; */
 
     --muted: hsl(240 3.7% 15.9%);
     --muted-foreground: hsl(240 5% 64.9%);
 
-    --accent: hsl(240 3.7% 15.9%);
-    --accent-foreground: hsl(0 0% 98%);
-
-    /* --destructive: hsl(0 62.8% 30.6%);
-    --destructive-foreground: hsl(0 0% 98%); */
+    --destructive: theme('colors.error.black');
+    --destructive-foreground: theme('colors.black');
 
     --success: hsl(138, 58%, 50%);
-    --success-foreground: hsl(0 0% 98%);
+    --success-foreground: theme('colors.white');
 
-    --border: hsl(240 3.7% 15.9%);
-    --input: hsl(240 3.7% 15.9%);
-    --ring: hsl(240 4.9% 83.9%);
+    --border: theme('colors.gray.dark');
+    --input: theme('colors.gray.DEFAULT');
+    --ring: theme('colors.gray.light');
   }
 
   .red {
     --background: var(--red-1);
     --foreground: var(--red-12);
     --primary: var(--red-9);
-    --primary-foreground: var(--red-11);
-    --accent: var(--red-2);
-    --accent-foreground: var(--red-2-contrast);
+    --primary-foreground: var(--foreground);
+    --accent: var(--red-4);
+    --accent-foreground: var(--red-12);
     --muted: var(--red-2);
     --muted-foreground: var(--red-11);
   }
@@ -78,19 +79,19 @@
     --background: var(--blue-1);
     --foreground: var(--blue-12);
     --primary: var(--blue-9);
-    --primary-foreground: var(--blue-12);
-    --accent: var(--blue-2);
-    --accent-foreground: var(--blue-11);
+    --primary-foreground: theme('colors.white');
+    --accent: var(--blue-4);
+    --accent-foreground: var(--blue-12);
     --muted: var(--blue-2);
     --muted-foreground: var(--blue-11);
   }
   .green {
     --background: var(--green-1);
     --foreground: var(--green-12);
-    --primary: var(--green-3);
-    --primary-foreground: var(--green-3-contrast);
-    --accent: var(--green-2);
-    --accent-foreground: var(--green-2-contrast);
+    --primary: var(--green-9);
+    --primary-foreground: theme('colors.white');
+    --accent: var(--green-4);
+    --accent-foreground: var(--green-12);
     --muted: var(--green-2);
     --muted-foreground: var(--green-11);
   }

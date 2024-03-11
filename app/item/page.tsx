@@ -10,11 +10,11 @@ export default function Home() {
 
   return (
     <ResizablePanelGroup direction="horizontal" className="h-full !overflow-y-auto">
-      <ResizablePanel className="h-full !overflow-y-auto">
+      <ResizablePanel className="h-full px-4 !overflow-y-auto">
         <ItemTreeView onElementSelected={(element) => setSelectedItemId(element)} />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel className="h-full !overflow-y-auto">
+      <ResizablePanel className="h-full px-4 !overflow-y-auto">
         <ItemLocaleSwitcher itemId={selectedItemId} />
         <DataJsonView itemId={selectedItemId} />
       </ResizablePanel>

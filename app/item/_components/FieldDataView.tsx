@@ -91,7 +91,7 @@ const CheckboxFieldView = ({ field }: { field: CheckboxField }) => {
 };
 
 const NumberFieldView = ({ field }: { field: NumberField }) => {
-  return field.jsonValue?.value.toString();
+  return field.jsonValue?.value?.toString();
 };
 
 const LinkFieldView = ({ field }: { field: LinkField }) => {

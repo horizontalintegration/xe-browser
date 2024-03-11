@@ -30,7 +30,14 @@ export type RenderItemAsTreeProps<T extends BaseItemNode<T>> = {
   isSelected: (item: T) => boolean;
 };
 
-export function TreeViewer<T extends BaseItemNode<T>>({
+export function TreeViewer<T extends BaseItemNode<T>>({ ...props }: RenderItemAsTreeProps<T>) {
+  return (
+    <div className="mt-2 -ml-4">
+      <TreeViewerNode<T> {...props} />
+    </div>
+  );
+}
+function TreeViewerNode<T extends BaseItemNode<T>>({
   item,
   onItemSelected,
   fetchData,
@@ -117,7 +124,7 @@ export function TreeViewer<T extends BaseItemNode<T>>({
       </ContextMenu>
       {isExpanded &&
         children?.map((x) => (
-          <TreeViewer<T>
+          <TreeViewerNode<T>
             key={x.name}
             item={x}
             onItemSelected={onItemSelected}
