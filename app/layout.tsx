@@ -24,7 +24,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const metadata: Metadata = {
-  title: 'Sitecore XE Browser',
+  title: 'Horizontal Experience Edge Browser',
+  icons: '/favicon.png',
+  description:
+    'An interactive UI for browsing data on Sitecore Experience Edge.  Created by Horizontal Digital.',
 };
 
 export default function RootLayout({ children }: React.PropsWithChildren) {
