@@ -8,6 +8,7 @@ export interface AccountEnvironment {
   envId: string;
   envName: string;
   envTheme: EnvThemes;
+  graphQLEndpointUrl?: string;
   apiKey: string;
 }
 
@@ -29,6 +30,7 @@ export interface CreateEnvInfo {
   accountId: string;
   envName: string;
   envTheme: EnvThemes;
+  graphQLEndpointUrl?: string;
   apiKey: string;
 }
 
@@ -78,6 +80,7 @@ export const useAccounts = () => {
       envId: nanoid(),
       envName: env.envName,
       envTheme: env.envTheme,
+      graphQLEndpointUrl: env.graphQLEndpointUrl,
       apiKey: env.apiKey,
     };
     account.environments.push(newEnv);
@@ -102,7 +105,9 @@ export const useAccounts = () => {
     if (foundEnv) {
       foundEnv.envName = env.envName;
       foundEnv.envTheme = env.envTheme;
+      foundEnv.graphQLEndpointUrl = env.graphQLEndpointUrl;
       foundEnv.apiKey = env.apiKey;
+
       setAccounts(accounts);
       return foundEnv;
     }

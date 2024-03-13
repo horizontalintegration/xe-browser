@@ -1,5 +1,9 @@
 'use client';
-import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import {
+  DefaultGraphQLEndpointUrl,
+  GraphQLConnectionInfo,
+  useGraphQLConnectionInfo,
+} from '@/components/providers/GraphQLConnectionInfoProvider';
 import { getDataUtil } from '@/lib/graphql/util';
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 import { ApolloClient, InMemoryCache, NormalizedCacheObject, gql } from '@apollo/client';
@@ -14,10 +18,13 @@ export type GraphQLClientProviderProps = Readonly<{
 
 type GraphQLClientContextType = {
   client?: ApolloClient<NormalizedCacheObject>;
-  apiKey: string;
+  connectionInfo: GraphQLConnectionInfo;
 };
 
-const defaultValue = { apiKey: 'none' };
+const defaultValue: GraphQLClientContextType = {
+  connectionInfo: { apiKey: '' },
+};
+
 export const GraphQLClientContext = createContext<GraphQLClientContextType>(defaultValue);
 
 export const useGraphQLClientContext = () => {
@@ -28,11 +35,11 @@ export const useGraphQLClientContext = () => {
 
 export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) {
   const [client, setClient] = useState<GraphQLClientContextType>(defaultValue);
-  const { apiKey } = useApiKey();
+  const { connectionInfo } = useGraphQLConnectionInfo();
 
   const querySettings = useQuerySettings();
   useEffect(() => {
-    if (!apiKey) {
+    if (!connectionInfo?.apiKey) {
       return;
     }
     let client: ApolloClient<NormalizedCacheObject>;
@@ -40,9 +47,9 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
     const getClient = async () => {
       client = new ApolloClient({
         link: new BatchHttpLink({
-          uri: 'https://edge.sitecorecloud.io/api/graphql/v1/',
+          uri: connectionInfo.graphQLEndpointUrl || DefaultGraphQLEndpointUrl,
           headers: {
-            sc_apikey: apiKey,
+            sc_apikey: connectionInfo.apiKey,
           },
           batchInterval: 20, // Wait no more than 20ms after first batched operation
         }),
@@ -70,7 +77,7 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
           `
         );
 
-        setClient({ client, apiKey });
+        setClient({ client, connectionInfo });
       } catch (err) {
         console.error(err);
         setClient(defaultValue);
@@ -79,10 +86,10 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
     getClient();
     return () => client.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiKey]);
+  }, [connectionInfo]);
   return (
     <GraphQLClientContext.Provider value={client}>
-      <React.Fragment key={apiKey}>{children}</React.Fragment>
+      <React.Fragment key={connectionInfo?.apiKey}>{children}</React.Fragment>
     </GraphQLClientContext.Provider>
   );
 }

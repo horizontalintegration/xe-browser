@@ -5,6 +5,7 @@ import BaseEditDialog from './BaseEditDialog';
 import { EditEnvInfo } from '@/lib/hooks/use-accounts';
 import { EnvThemes } from '@/components/providers/ThemeProvider';
 import { SelectTheme } from './fields.tsx/SelectTheme';
+import { DefaultGraphQLEndpointUrl } from '@/components/providers/GraphQLConnectionInfoProvider';
 
 export type EditEnvDialogProps = {
   envionment?: EditEnvInfo;
@@ -17,6 +18,9 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
   const [envName, setEnvName] = useState(envionment?.envName ?? '');
   const [envTheme, setEnvTheme] = useState<EnvThemes>(envionment?.envTheme ?? 'default');
   const [apiKey, setApiKey] = useState(envionment?.apiKey ?? '');
+  const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState(
+    envionment?.graphQLEndpointUrl ?? ''
+  );
   if (!envionment) {
     return <></>;
   }
@@ -31,6 +35,7 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
           envId: envionment.envId,
           envName,
           envTheme,
+          graphQLEndpointUrl,
           apiKey,
         })
       }
@@ -42,11 +47,22 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
     >
       <div className="space-y-4 py-2 pb-4">
         <div className="space-y-2">
-          <Label htmlFor="env">Envionment name</Label>
+          <Label htmlFor="env">Envionment name (e.g. Dev, UAT, Prod)</Label>
           <Input id="env" value={envName} onChange={(e) => setEnvName(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="apikey">Experience Edge API Key</Label>
+          <Label htmlFor="graphQLEndpointUrl">
+            GraphQL Endpoint Url (Will use Experience Edge if blank)
+          </Label>
+          <Input
+            id="graphQLEndpointUrl"
+            placeholder={DefaultGraphQLEndpointUrl}
+            value={graphQLEndpointUrl}
+            onChange={(e) => setGraphQLEndpointUrl(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="apikey">GraphQL API Key</Label>
           <Input
             id="apikey"
             autoComplete="off"

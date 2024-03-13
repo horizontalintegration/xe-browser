@@ -2,11 +2,12 @@
 
 import { gql } from '@apollo/client';
 
-import { LocaleInfo } from '@/components/locale/utils';
+import { LocaleInfo } from '@/lib/locale/utils';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useEffect, useState } from 'react';
 import { getDataUtil } from '../graphql/util';
 import { useQuerySettings } from './use-query-settings';
+
 const GetLocales = gql`
   query GetLocales($itemId: String!, $systemLocale: String!) {
     item(language: $systemLocale, path: $itemId) {
@@ -32,9 +33,10 @@ interface ItemLanguageData {
 }
 
 export function useItemLocales(itemId?: string): LocaleInfo[] {
-  const [allLocaleInfos, setAllLocaleInfos] = useState<LocaleInfo[]>([]);
+  const [itemLocaleInfos, setItemLocaleInfos] = useState<LocaleInfo[]>([]);
 
   const { systemLocales } = useLocale();
+
   const querySettings = useQuerySettings();
 
   useEffect(() => {
@@ -59,12 +61,12 @@ export function useItemLocales(itemId?: string): LocaleInfo[] {
 
           // Since we're fetching other language versions, we only need the first one that's found
           // Once we found one, we're good.
-          setAllLocaleInfos(foundLocales);
+          setItemLocaleInfos(foundLocales);
         }
       }
     }
     getData();
   }, [querySettings, itemId, systemLocales]);
 
-  return allLocaleInfos;
+  return itemLocaleInfos;
 }

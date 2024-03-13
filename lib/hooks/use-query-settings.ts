@@ -2,11 +2,16 @@ import { useGraphQLClientContext } from '@/components/providers/GraphQLClientPro
 import { useLogQueries } from '@/components/providers/LogQueriesProvider';
 import { QuerySettings } from '../graphql/util';
 import { useMemo } from 'react';
-import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import { useGraphQLConnectionInfo } from '@/components/providers/GraphQLConnectionInfoProvider';
 
 export function useQuerySettings(abortSignal?: AbortSignal): QuerySettings | null {
-  const { client, apiKey: clientApiKey } = useGraphQLClientContext();
-  const { apiKey: currentApiKey } = useApiKey();
+  const {
+    client,
+    connectionInfo: { apiKey: clientApiKey },
+  } = useGraphQLClientContext();
+
+  const { connectionInfo } = useGraphQLConnectionInfo();
+  const currentApiKey = connectionInfo?.apiKey;
 
   const { logQueries } = useLogQueries();
 

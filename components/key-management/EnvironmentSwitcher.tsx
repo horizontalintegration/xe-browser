@@ -24,7 +24,7 @@ import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
 import AddAccountDialog from './dialogs/AddAccountDialog';
 import AddEnvDialog from './dialogs/AddEnvDialog';
 import useLocalStorage from '@/lib/hooks/use-local-storage';
-import { useApiKey } from '@/components/providers/ApiKeyProvider';
+import { useGraphQLConnectionInfo } from '@/components/providers/GraphQLConnectionInfoProvider';
 import { Alert } from '../helpers/Alert';
 import EditAccountDialog from './dialogs/EditAccountDialog';
 import EditEnvDialog from './dialogs/EditEnvDialog';
@@ -47,7 +47,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const [dialogType, setDialogType] = useState<DialogType>();
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
-  const { setApiKey } = useApiKey();
+  const { setConnectionInfo } = useGraphQLConnectionInfo();
   const { setEnvTheme } = useEnvTheme();
 
   const {
@@ -75,12 +75,21 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
 
   useEffect(() => {
     if (selectedEnv?.apiKey) {
-      setApiKey(selectedEnv.apiKey);
+      setConnectionInfo({
+        apiKey: selectedEnv.apiKey,
+        graphQLEndpointUrl: selectedEnv.graphQLEndpointUrl,
+      });
     }
     if (selectedEnv?.envTheme) {
       setEnvTheme(selectedEnv.envTheme);
     }
-  }, [selectedEnv?.envTheme, selectedEnv?.apiKey, setEnvTheme, setApiKey]);
+  }, [
+    selectedEnv?.envTheme,
+    selectedEnv?.apiKey,
+    selectedEnv?.graphQLEndpointUrl,
+    setEnvTheme,
+    setConnectionInfo,
+  ]);
 
   const openDialog = (dialogType: DialogType) => {
     setIsDropDownOpen(false);
@@ -100,7 +109,11 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const onEnvSelect = (env?: AccountEnvironment) => {
     setSelectedEnv(env);
     setEnvTheme(env?.envTheme ?? 'default');
-    setApiKey(env?.apiKey ?? '');
+
+    setConnectionInfo({
+      apiKey: env?.apiKey ?? '',
+      graphQLEndpointUrl: env?.graphQLEndpointUrl,
+    });
   };
   return (
     <Dialog open={isDialogVisible} onOpenChange={setIsDialogVisible}>
