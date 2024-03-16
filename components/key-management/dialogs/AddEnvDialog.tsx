@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { CreateEnvInfo } from '@/lib/hooks/use-accounts';
 import { EnvThemes } from '@/components/providers/ThemeProvider';
 import { SelectTheme } from './fields.tsx/SelectTheme';
-import { DefaultGraphQLEndpointUrl } from '@/components/providers/GraphQLConnectionInfoProvider';
+import { Switch } from '@/components/ui/switch';
 
 export type AddEnvDialogProps = {
   accountId?: string;
@@ -23,7 +23,9 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
   const [envName, setEnvName] = useState('');
   const [envTheme, setEnvTheme] = useState<EnvThemes>('default');
   const [apiKey, setApiKey] = useState('');
-  const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState<string>();
+  // const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState<string>();
+
+  const [useEdgeContextId, setUseEdgeContextId] = useState(false);
 
   if (!accountId) {
     return;
@@ -37,7 +39,14 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCreateEnv({ accountId, envName, envTheme, graphQLEndpointUrl, apiKey });
+          onCreateEnv({
+            accountId,
+            envName,
+            envTheme,
+            // graphQLEndpointUrl,
+            apiKey,
+            useEdgeContextId,
+          });
         }}
       >
         <div>
@@ -46,7 +55,7 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
               <Label htmlFor="env">Envionment name (e.g. Dev, UAT, Prod)</Label>
               <Input id="env" value={envName} onChange={(e) => setEnvName(e.target.value)} />
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="graphQLEndpointUrl">
                 GraphQL Endpoint Url (Will use Experience Edge if blank)
               </Label>
@@ -56,9 +65,19 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
                 value={graphQLEndpointUrl}
                 onChange={(e) => setGraphQLEndpointUrl(e.target.value)}
               />
+            </div> */}
+            <div className="space-y-2">
+              <Label htmlFor="useEdgeContextId">Use Edge Context Id </Label>
+              <Switch
+                id="useEdgeContextId"
+                checked={useEdgeContextId}
+                onCheckedChange={(newValue) => setUseEdgeContextId(newValue)}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="apikey">GraphQL API Key</Label>
+              <Label htmlFor="apikey">
+                {useEdgeContextId ? 'SITECORE_EDGE_CONTEXT_ID' : 'SITECORE_API_KEY'}
+              </Label>
               <Input
                 id="apikey"
                 autoComplete="off"

@@ -78,6 +78,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
       setConnectionInfo({
         apiKey: selectedEnv.apiKey,
         graphQLEndpointUrl: selectedEnv.graphQLEndpointUrl,
+        useEdgeContextId: selectedEnv.useEdgeContextId,
       });
     }
     if (selectedEnv?.envTheme) {
@@ -113,6 +114,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     setConnectionInfo({
       apiKey: env?.apiKey ?? '',
       graphQLEndpointUrl: env?.graphQLEndpointUrl,
+      useEdgeContextId: env?.useEdgeContextId === true,
     });
   };
   return (

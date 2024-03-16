@@ -9,6 +9,7 @@ export interface AccountEnvironment {
   envName: string;
   envTheme: EnvThemes;
   graphQLEndpointUrl?: string;
+  useEdgeContextId: boolean;
   apiKey: string;
 }
 
@@ -31,6 +32,7 @@ export interface CreateEnvInfo {
   envName: string;
   envTheme: EnvThemes;
   graphQLEndpointUrl?: string;
+  useEdgeContextId: boolean;
   apiKey: string;
 }
 
@@ -82,6 +84,7 @@ export const useAccounts = () => {
       envTheme: env.envTheme,
       graphQLEndpointUrl: env.graphQLEndpointUrl,
       apiKey: env.apiKey,
+      useEdgeContextId: env.useEdgeContextId,
     };
     account.environments.push(newEnv);
     setAccounts(accounts);

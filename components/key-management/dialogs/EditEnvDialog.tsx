@@ -5,7 +5,7 @@ import BaseEditDialog from './BaseEditDialog';
 import { EditEnvInfo } from '@/lib/hooks/use-accounts';
 import { EnvThemes } from '@/components/providers/ThemeProvider';
 import { SelectTheme } from './fields.tsx/SelectTheme';
-import { DefaultGraphQLEndpointUrl } from '@/components/providers/GraphQLConnectionInfoProvider';
+import { Switch } from '@/components/ui/switch';
 
 export type EditEnvDialogProps = {
   envionment?: EditEnvInfo;
@@ -18,9 +18,10 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
   const [envName, setEnvName] = useState(envionment?.envName ?? '');
   const [envTheme, setEnvTheme] = useState<EnvThemes>(envionment?.envTheme ?? 'default');
   const [apiKey, setApiKey] = useState(envionment?.apiKey ?? '');
-  const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState(
-    envionment?.graphQLEndpointUrl ?? ''
-  );
+  // const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState(
+  //   envionment?.graphQLEndpointUrl ?? ''
+  // );
+  const [useEdgeContextId, setUseEdgeContextId] = useState(false);
   if (!envionment) {
     return <></>;
   }
@@ -35,8 +36,9 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
           envId: envionment.envId,
           envName,
           envTheme,
-          graphQLEndpointUrl,
+          // graphQLEndpointUrl,
           apiKey,
+          useEdgeContextId,
         })
       }
       saveButtonText="Save Environment"
@@ -50,7 +52,7 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
           <Label htmlFor="env">Envionment name (e.g. Dev, UAT, Prod)</Label>
           <Input id="env" value={envName} onChange={(e) => setEnvName(e.target.value)} />
         </div>
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="graphQLEndpointUrl">
             GraphQL Endpoint Url (Will use Experience Edge if blank)
           </Label>
@@ -60,9 +62,19 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
             value={graphQLEndpointUrl}
             onChange={(e) => setGraphQLEndpointUrl(e.target.value)}
           />
+        </div> */}
+        <div className="space-y-2">
+          <Label htmlFor="useEdgeContextId">Use Edge Context Id </Label>
+          <Switch
+            id="useEdgeContextId"
+            checked={useEdgeContextId}
+            onCheckedChange={(newValue) => setUseEdgeContextId(newValue)}
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="apikey">GraphQL API Key</Label>
+          <Label htmlFor="apikey">
+            {useEdgeContextId ? 'SITECORE_EDGE_CONTEXT_ID' : 'SITECORE_API_KEY'}
+          </Label>
           <Input
             id="apikey"
             autoComplete="off"

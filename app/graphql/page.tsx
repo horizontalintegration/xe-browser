@@ -1,8 +1,5 @@
 'use client';
-import {
-  DefaultGraphQLEndpointUrl,
-  useGraphQLConnectionInfo,
-} from '@/components/providers/GraphQLConnectionInfoProvider';
+import { useResolvedGraphQLConnectionInfo } from '@/components/providers/GraphQLConnectionInfoProvider';
 import { createGraphiQLFetcher, Fetcher } from '@graphiql/toolkit';
 import { GraphiQL } from 'graphiql';
 import 'graphiql/graphiql.css';
@@ -13,24 +10,20 @@ import { useEffect, useState } from 'react';
 type FetcherWrapper = { fetcher: Fetcher };
 
 export default function GraphQL() {
-  const { connectionInfo } = useGraphQLConnectionInfo();
+  const resolvedConnectionInfo = useResolvedGraphQLConnectionInfo();
   const [fetcherWrapper, setFetcherWrapper] = useState<FetcherWrapper>();
-  const apiKey = connectionInfo?.apiKey;
-  const graphQLEndpointUrl = connectionInfo?.graphQLEndpointUrl;
   useEffect(() => {
-    if (!apiKey || !graphQLEndpointUrl) {
+    if (!resolvedConnectionInfo) {
       return;
     }
     const newFetcher = createGraphiQLFetcher({
-      url: graphQLEndpointUrl || DefaultGraphQLEndpointUrl,
-      headers: {
-        sc_apikey: apiKey ?? '',
-      },
+      url: resolvedConnectionInfo?.url ?? '',
+      headers: resolvedConnectionInfo?.headers,
     });
     setFetcherWrapper({ fetcher: newFetcher });
-  }, [apiKey, graphQLEndpointUrl]);
+  }, [resolvedConnectionInfo?.url]);
 
-  if (!apiKey || !graphQLEndpointUrl) {
+  if (!resolvedConnectionInfo) {
     return <p>No environment selected, or selected environment has invalid API key or endpoint.</p>;
   }
   if (!fetcherWrapper) {
