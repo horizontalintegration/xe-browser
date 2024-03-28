@@ -15,7 +15,7 @@ export const getLayoutItemData = async (
   return data?.item?.rendered?.sitecore;
 };
 const GetLayoutItemData = gql`
-  query GetLayoutItemData($path: String! = "/sitecore", $itemLocale: String!) {
+  query GetLayoutItemData($path: String = "/sitecore", $itemLocale: String!) {
     item(path: $path, language: $itemLocale) {
       rendered
     }
@@ -38,7 +38,7 @@ export const getLayoutData = async (
 };
 
 const GetLayoutData = gql`
-  query GetLayoutData($site: String!, $routePath: String! = "/", $systemLocale: String!) {
+  query GetLayoutData($site: String!, $routePath: String = "/", $systemLocale: String!) {
     layout(site: $site, routePath: $routePath, language: $systemLocale) {
       item {
         rendered

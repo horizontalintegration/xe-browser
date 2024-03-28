@@ -1,6 +1,7 @@
 'use client';
 import { useAllLocales } from '@/lib/hooks/use-all-locales';
 import useLocalStorage from '@/lib/hooks/use-local-storage';
+import { LocaleInfo } from '@/lib/locale/utils';
 import { createContext, useContext, useState } from 'react';
 
 type LocaleContextType = {
@@ -25,9 +26,7 @@ export function LocaleProvider({ children }: React.PropsWithChildren) {
 
   const { allLocaleInfos } = useAllLocales();
 
-  const validSystemLocales = systemLocales.filter((x) =>
-    allLocaleInfos.find((l) => l.isoCode === x)
-  );
+  const validSystemLocales = getValidLocales(allLocaleInfos, systemLocales);
 
   const [itemLocale, setItemLocale] = useState<string>('en');
 
@@ -43,4 +42,10 @@ export function LocaleProvider({ children }: React.PropsWithChildren) {
       {children}
     </LocaleContext.Provider>
   );
+}
+
+function getValidLocales(allLocaleInfos: LocaleInfo[], localeValues: string[]) {
+  return allLocaleInfos.length
+    ? localeValues.filter((x) => allLocaleInfos.find((l) => l.isoCode === x))
+    : localeValues;
 }

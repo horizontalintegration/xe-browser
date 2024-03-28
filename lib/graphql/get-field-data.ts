@@ -16,7 +16,7 @@ export const getFieldData = async (
 };
 
 const GetFieldData = gql`
-  query GetItemData($path: String! = "/sitecore", $itemLocale: String!) {
+  query GetItemData($path: String = "/sitecore", $itemLocale: String!) {
     item(path: $path, language: $itemLocale) {
       fields {
         name

@@ -4,13 +4,17 @@ import { gql } from '@apollo/client';
 
 import { LocaleInfo } from '@/lib/locale/utils';
 import { useEffect, useState } from 'react';
-import { getDataUtil } from '../graphql/util';
+import { PageInfo, getPaginatedDataUtil } from '../graphql/util';
 import { useQuerySettings } from './use-query-settings';
 
 const GetAllLocales = gql`
-  query GetAllLocales {
+  query GetAllLocales($nextCursor: String) {
     item(language: "en", path: "/sitecore/system/Languages") {
-      children(first: 100) {
+      children(first: 10, after: $nextCursor) {
+        pageInfo {
+          hasNext
+          endCursor
+        }
         results {
           name
         }
@@ -20,8 +24,9 @@ const GetAllLocales = gql`
 `;
 
 interface SystemLanguagesData {
-  item: {
+  item?: {
     children: {
+      pageInfo: PageInfo;
       results: {
         name: string;
       }[];
@@ -51,15 +56,21 @@ export function useAllLocales(): {
     if (!querySettings?.client) {
       return;
     }
-    const data = await getDataUtil<SystemLanguagesData>(querySettings, GetAllLocales);
+    const data = await getPaginatedDataUtil<SystemLanguagesData>(
+      querySettings,
+      GetAllLocales,
+      undefined,
+      (x) => x.item?.children.pageInfo
+    );
 
     if (data) {
-      const foundLocales = data.item.children.results.map<LocaleInfo>((x) => {
-        return {
-          isoCode: x.name,
-          friendlyName: localeDisplayNames?.of(x.name) ?? 'Unknown',
-        };
-      });
+      const foundLocales =
+        data.item?.children.results.map<LocaleInfo>((x) => {
+          return {
+            isoCode: x.name,
+            friendlyName: localeDisplayNames?.of(x.name) ?? 'Unknown',
+          };
+        }) ?? [];
 
       setAllLocaleInfos(foundLocales);
     }

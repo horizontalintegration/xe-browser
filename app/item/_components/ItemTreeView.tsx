@@ -3,16 +3,20 @@ import { gql } from '@apollo/client';
 import React, { useState } from 'react';
 import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { getDataUtil } from '@/lib/graphql/util';
+import { PageInfo, getPaginatedDataUtil } from '@/lib/graphql/util';
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 
 const GetItems = gql`
-  query GetItem($path: String! = "/sitecore", $systemLocale: String!) {
+  query GetItem($path: String = "/sitecore", $systemLocale: String!, $nextCursor: String) {
     item(path: $path, language: $systemLocale) {
       id
       name
       rendered
-      children(first: 100) {
+      children(first: 10, after: $nextCursor) {
+        pageInfo {
+          hasNext
+          endCursor
+        }
         results {
           id
           name
@@ -35,6 +39,7 @@ interface ItemData {
     name: string;
     rendered?: object;
     children: {
+      pageInfo: PageInfo;
       results: {
         id: string;
         name: string;
@@ -77,10 +82,15 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
     const addedItemIds = new Set<string>();
     for (let index = 0; index < systemLocales.length; index++) {
       const systemLocale = systemLocales[index];
-      const data = await getDataUtil<ItemData>(querySettings, GetItems, {
-        path: item.id,
-        systemLocale,
-      });
+      const data = await getPaginatedDataUtil<ItemData>(
+        querySettings,
+        GetItems,
+        {
+          path: item.id,
+          systemLocale,
+        },
+        (x) => x.item?.children.pageInfo
+      );
 
       if (data) {
         data.item?.children.results.forEach((x) => {

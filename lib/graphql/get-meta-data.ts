@@ -15,7 +15,7 @@ export const getItemMetaData = async (
 };
 
 const GetMetaData = gql`
-  query GetItemData($path: String! = "/sitecore", $itemLocale: String!) {
+  query GetItemData($path: String = "/sitecore", $itemLocale: String!) {
     item(path: $path, language: $itemLocale) {
       id
       name
