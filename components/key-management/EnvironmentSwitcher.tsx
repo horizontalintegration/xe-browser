@@ -88,6 +88,7 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     selectedEnv?.envTheme,
     selectedEnv?.apiKey,
     selectedEnv?.graphQLEndpointUrl,
+    selectedEnv?.useEdgeContextId,
     setEnvTheme,
     setConnectionInfo,
   ]);

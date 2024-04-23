@@ -110,6 +110,7 @@ export const useAccounts = () => {
       foundEnv.envTheme = env.envTheme;
       foundEnv.graphQLEndpointUrl = env.graphQLEndpointUrl;
       foundEnv.apiKey = env.apiKey;
+      foundEnv.useEdgeContextId = env.useEdgeContextId;
 
       setAccounts(accounts);
       return foundEnv;
