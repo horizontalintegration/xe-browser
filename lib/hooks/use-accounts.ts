@@ -113,6 +113,7 @@ export const useAccounts = () => {
       foundEnv.useEdgeContextId = env.useEdgeContextId;
 
       setAccounts(accounts);
+
       return foundEnv;
     }
   };
