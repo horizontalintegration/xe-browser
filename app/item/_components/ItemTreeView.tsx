@@ -12,7 +12,7 @@ const GetItems = gql`
       id
       name
       rendered
-      children(first: 10, after: $nextCursor) {
+      children(first: 100, after: $nextCursor) {
         pageInfo {
           hasNext
           endCursor
@@ -20,13 +20,19 @@ const GetItems = gql`
         results {
           id
           name
-          rendered
           children(first: 1) {
             results {
               id
               name
             }
           }
+        }
+      }
+      # Originally we just checked the "rendered" property of each child,
+      # but that pulled way too much data, so this will just get the ID.
+      childrenWithLayout: children(first: 100, hasLayout: true, after: $nextCursor) {
+        results {
+          id
         }
       }
     }
@@ -43,13 +49,18 @@ interface ItemData {
       results: {
         id: string;
         name: string;
-        rendered?: object;
         children: {
           results: {
             id: string;
             name: string;
           }[];
         };
+      }[];
+    };
+
+    childrenWithLayout: {
+      results: {
+        id: string;
       }[];
     };
   };
@@ -101,7 +112,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
           item.children?.push({
             id: x.id,
             name: x.name,
-            hasLayout: !!x.rendered,
+            hasLayout: !!data.item?.childrenWithLayout.results.find((y) => x.id === y.id),
             hasChildren: x.children.results.length > 0,
           });
         });

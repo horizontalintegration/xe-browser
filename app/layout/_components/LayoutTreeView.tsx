@@ -21,7 +21,7 @@ const GetLayout = gql`
         url {
           path
         }
-        children(hasLayout: true, first: 10, after: $nextCursor) {
+        children(hasLayout: true, first: 100, after: $nextCursor) {
           pageInfo {
             hasNext
             endCursor
@@ -32,7 +32,6 @@ const GetLayout = gql`
             url {
               path
             }
-            rendered
             children(hasLayout: true, first: 1) {
               results {
                 id

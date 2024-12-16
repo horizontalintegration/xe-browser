@@ -52,7 +52,10 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
         case 'components':
           data = await getLayoutItemData(querySettings, itemLocale, itemId);
 
-          const componentData = deepSearch<ComponentResponse>(data, (x) => !!x?.componentName);
+          const componentData = deepSearch<ComponentResponse>(
+            data,
+            (x) => typeof x.componentName === 'string' && typeof x.uid === 'string'
+          );
           setComponentsData(componentData);
           setSitecoreContextData(data?.context ?? { error: 'Item does not have layout' });
           setRouteData(data?.route ?? { error: 'Item does not have layout' });

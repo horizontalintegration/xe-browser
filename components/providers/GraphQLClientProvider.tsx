@@ -6,8 +6,8 @@ import {
 } from '@/components/providers/GraphQLConnectionInfoProvider';
 import { getDataUtil } from '@/lib/graphql/util';
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';
-import { ApolloClient, InMemoryCache, NormalizedCacheObject, gql } from '@apollo/client';
-import { BatchHttpLink } from '@apollo/client/link/batch-http';
+import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject, gql } from '@apollo/client';
+// import { BatchHttpLink } from '@apollo/client/link/batch-http';
 
 import React from 'react';
 import { useState, useEffect, createContext, useContext } from 'react';
@@ -46,10 +46,16 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
 
     const getClient = async () => {
       client = new ApolloClient({
-        link: new BatchHttpLink({
+        // For some reason, when batching responses, Sitecore returns datasources as references.
+        // link: new BatchHttpLink({
+        //   uri: resolvedConnectionInfo.url,
+        //   headers: resolvedConnectionInfo.headers,
+        //   batchInterval: 1, // Wait no more than 20ms after first batched operation
+        //   batchMax: 1,
+        // }),
+        link: new HttpLink({
           uri: resolvedConnectionInfo.url,
           headers: resolvedConnectionInfo.headers,
-          batchInterval: 20, // Wait no more than 20ms after first batched operation
         }),
         cache: new InMemoryCache(),
         defaultOptions: {

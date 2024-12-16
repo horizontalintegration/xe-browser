@@ -10,7 +10,7 @@ import { useQuerySettings } from './use-query-settings';
 const GetAllLocales = gql`
   query GetAllLocales($nextCursor: String) {
     item(language: "en", path: "/sitecore/system/Languages") {
-      children(first: 10, after: $nextCursor) {
+      children(first: 100, after: $nextCursor) {
         pageInfo {
           hasNext
           endCursor
