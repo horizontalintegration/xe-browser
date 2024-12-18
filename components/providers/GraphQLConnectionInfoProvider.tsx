@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 const ExperienceEdgeUrl = 'https://edge.sitecorecloud.io/api/graphql/v1/';
 
@@ -31,7 +31,7 @@ export function useGraphQLConnectionInfo() {
 
 export function useResolvedGraphQLConnectionInfo() {
   const { connectionInfo } = useGraphQLConnectionInfo();
-  return getGraphQLConnectionInfo(connectionInfo);
+  return useMemo(() => getGraphQLConnectionInfo(connectionInfo), [connectionInfo]);
 }
 
 export function GraphQLConnectionInfoProvider({ children }: React.PropsWithChildren) {

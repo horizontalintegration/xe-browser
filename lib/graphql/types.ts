@@ -33,12 +33,13 @@ export interface LayoutResponse {
   layout?: LayoutItemResponse;
 }
 
-export interface LayoutItemResponse {
-  item?: {
-    rendered?: {
-      sitecore: RenderedSitecoreData;
-    };
+export interface RenderedData {
+  rendered?: {
+    sitecore: RenderedSitecoreData;
   };
+}
+export interface LayoutItemResponse {
+  item?: RenderedData;
 }
 
 export interface RenderedSitecoreData {
@@ -49,3 +50,26 @@ export interface RenderedSitecoreData {
     placeholders?: Placeholders;
   };
 }
+
+export type GetAllSiteInfoResult = {
+  siteName: string;
+  language: string;
+  hostname: string;
+  rootPath: string;
+  robots: string;
+  sitemap: string;
+  enableFieldLanguageFallback: boolean;
+  enableItemLanguageFallback: boolean;
+  targetHostName: string;
+  serverErrorPageItemPath?: string;
+  serverErrorPageId?: string;
+  serverErrorPageRoutePath?: string;
+  notFoundPageItemPath?: string;
+  notFoundPageId?: string;
+  notFoundPageRoutePath?: string;
+};
+
+export type KeyValue = {
+  key: string;
+  value: string | boolean | number | null;
+};

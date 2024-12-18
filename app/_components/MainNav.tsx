@@ -13,6 +13,10 @@ export function MainNav(props: React.HTMLAttributes<HTMLElement>) {
       content: 'Layout Query',
     },
     {
+      href: '/site',
+      content: 'Site Info',
+    },
+    {
       href: '/graphql',
       content: 'GraphQL Browser',
     },

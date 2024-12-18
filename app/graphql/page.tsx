@@ -13,7 +13,7 @@ export default function GraphQL() {
   const resolvedConnectionInfo = useResolvedGraphQLConnectionInfo();
   const [fetcherWrapper, setFetcherWrapper] = useState<FetcherWrapper>();
   useEffect(() => {
-    if (!resolvedConnectionInfo) {
+    if (!resolvedConnectionInfo?.url) {
       return;
     }
     const newFetcher = createGraphiQLFetcher({
@@ -21,7 +21,7 @@ export default function GraphQL() {
       headers: resolvedConnectionInfo?.headers,
     });
     setFetcherWrapper({ fetcher: newFetcher });
-  }, [resolvedConnectionInfo?.url]);
+  }, [resolvedConnectionInfo?.headers, resolvedConnectionInfo?.url]);
 
   if (!resolvedConnectionInfo) {
     return <p>No environment selected, or selected environment has invalid API key or endpoint.</p>;

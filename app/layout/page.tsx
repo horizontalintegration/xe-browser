@@ -1,5 +1,5 @@
 'use client';
-import DataJsonView from './_components/DataJsonView';
+import LayoutDataJsonView from './_components/LayoutDataJsonView';
 import LayoutTreeView from './_components/LayoutTreeView';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ export default function Page() {
       <ResizablePanel className="h-full px-4 !overflow-y-auto">
         <ItemLocaleSwitcher itemId={selectedItemId} />
         {selectedRoutePath && selectedSite?.siteName ? (
-          <DataJsonView routePath={selectedRoutePath} siteName={selectedSite?.siteName} />
+          <LayoutDataJsonView routePath={selectedRoutePath} siteName={selectedSite?.siteName} />
         ) : null}
       </ResizablePanel>
     </ResizablePanelGroup>

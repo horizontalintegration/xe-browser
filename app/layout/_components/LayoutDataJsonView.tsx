@@ -17,7 +17,7 @@ export type DataJsonViewProps = {
 
 export type SelectedTabValue = 'sitecore-context' | 'route' | 'components';
 
-const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
+const LayoutDataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
   const [sitecoreContextData, setSitecoreContextData] = useState<object>();
   const [routeData, setRouteData] = useState<object>();
   const [componentsData, setComponentsData] = useState<ComponentResponse[]>([]);
@@ -75,4 +75,4 @@ const DataJsonView = ({ siteName, routePath }: DataJsonViewProps) => {
   );
 };
 
-export default DataJsonView;
+export default LayoutDataJsonView;

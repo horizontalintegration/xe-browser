@@ -20,7 +20,7 @@ export type DataJsonViewProps = {
 export type QueryType = 'meta' | 'fields' | 'layout';
 export type SelectedTabValue = 'meta' | 'fields' | 'sitecore-context' | 'route' | 'components';
 
-const DataJsonView = ({ itemId }: DataJsonViewProps) => {
+const ItemDataJsonView = ({ itemId }: DataJsonViewProps) => {
   const [metaData, setMetaData] = useState<object | null>();
   const [fieldData, setFieldData] = useState<FieldResponse | null>(null);
   const [sitecoreContextData, setSitecoreContextData] = useState<object | null>();
@@ -97,4 +97,4 @@ const DataJsonView = ({ itemId }: DataJsonViewProps) => {
   );
 };
 
-export default DataJsonView;
+export default ItemDataJsonView;

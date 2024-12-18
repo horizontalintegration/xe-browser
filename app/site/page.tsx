@@ -1,14 +1,15 @@
 'use client';
 import { MultiLocaleSwitcher } from '@/components/switchers/MultiLocaleSwitcher';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { CheckAppRootResult, checkAppRoot } from '@/lib/graphql/check-app-root';
 import { useCallback, useState } from 'react';
 import { ResultsTable } from './_components/ResultsTable';
 import { useSiteList } from '@/lib/hooks/use-site-list';
 import { sortBy } from 'lodash';
-import { WithLoader } from '@/components/helpers/Loader';
+import { getAllSiteInfo } from '@/lib/graphql/get-site-info';
+import { GetAllSiteInfoResult } from '@/lib/graphql/types';
 import { QuerySettings } from '@/lib/graphql/util';
 import { useFetchData } from '@/lib/hooks/use-fetch-data';
+import { WithLoader } from '@/components/helpers/Loader';
 
 export default function Page() {
   const { systemLocales } = useLocale();
@@ -19,41 +20,34 @@ export default function Page() {
 
   const fetchData = useCallback(
     async (querySettings: QuerySettings) => {
-      const promises: Promise<CheckAppRootResult>[] = [];
-      for (let siteIndex = 0; siteIndex < sites.length; siteIndex++) {
-        const site = sites[siteIndex];
-        for (let index = 0; index < locales.length; index++) {
-          const element = locales[index];
+      if (!sites.length) return [];
+      const promises: Promise<GetAllSiteInfoResult[]>[] = [];
 
-          const promise = checkAppRoot(querySettings, site.siteName, element);
-          promises.push(promise);
-        }
+      for (let index = 0; index < locales.length; index++) {
+        const locale = locales[index];
+
+        const promise = getAllSiteInfo(querySettings, locale);
+        promises.push(promise);
       }
       // Batch the requests
-      const results: CheckAppRootResult[] = await Promise.all(promises);
+      const results: GetAllSiteInfoResult[] = (await Promise.all(promises)).flat();
       return results;
     },
-    [sites, locales]
+    [locales, sites]
   );
 
-  const { loading, data } = useFetchData(fetchData);
-
-  const appRootResults = data;
+  const { loading, data: siteInfoResults } = useFetchData(fetchData);
 
   const sortedResults = sortBy(
-    appRootResults,
-    (x) => x.success,
+    siteInfoResults,
     (x) => x.siteName,
     (x) => x.language
   );
 
   return (
     <div>
-      <p className="py-4">
-        {` Use this to troubleshoot "Error: Valid value for rootItemId not provided and failed to
-        auto-resolve app root item."`}
-      </p>
       <MultiLocaleSwitcher locales={locales} setLocales={setLocales} />
+
       <WithLoader loading={loading}>
         <ResultsTable results={sortedResults} />
       </WithLoader>

@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { HztlLogo } from '@/components/svg/horizontal-logo';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -88,8 +89,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                       </Link>
                       .
                     </span>
-                    {/* <span>
-                      {' '}
+                    <span>
                       Source code is available on{' '}
                       <Link
                         className="underline"
@@ -100,13 +100,14 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                         GitHub
                       </Link>
                       .
-                    </span> */}
+                    </span>
                   </p>
                 </div>
               </div>
             </footer>
           </ProviderWrapper>
         </div>
+        <Analytics />
       </body>
     </html>
   );

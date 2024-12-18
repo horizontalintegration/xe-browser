@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import { useGraphQLClientContext } from '../providers/GraphQLClientProvider';
 import { Button } from '../ui/button';
-import {
-  LoaderIcon,
-  ArrowDownRightIcon,
-  ArrowRightIcon,
-  PackageIcon,
-  BookOpenTextIcon,
-} from 'lucide-react';
+import { ArrowDownRightIcon, ArrowRightIcon, PackageIcon, BookOpenTextIcon } from 'lucide-react';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '../ui/context-menu';
+import { WithLoader } from '../helpers/Loader';
 
 export interface BaseItemNode<T extends BaseItemNode<T>> {
   id: string;
@@ -82,29 +77,28 @@ function TreeViewerNode<T extends BaseItemNode<T>>({
               }
             }}
           >
-            {isLoading ? (
-              <LoaderIcon />
-            ) : isExpanded ? (
-              <ArrowDownRightIcon
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  setIsExpanded(false);
-                }}
-                className={hasChildren ? '' : 'collapse'}
-              />
-            ) : (
-              <ArrowRightIcon
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  if (!isExpanded) {
-                    setIsExpanded(true);
-                    await loadData();
-                  }
-                }}
-                className={hasChildren ? '' : 'collapse'}
-              />
-            )}
-
+            <WithLoader loading={isLoading} noText>
+              {isExpanded ? (
+                <ArrowDownRightIcon
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setIsExpanded(false);
+                  }}
+                  className={hasChildren ? '' : 'collapse'}
+                />
+              ) : (
+                <ArrowRightIcon
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!isExpanded) {
+                      setIsExpanded(true);
+                      await loadData();
+                    }
+                  }}
+                  className={hasChildren ? '' : 'collapse'}
+                />
+              )}
+            </WithLoader>
             {item.hasLayout ? <BookOpenTextIcon /> : <PackageIcon />}
 
             <span>{item.name}</span>
