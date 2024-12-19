@@ -57,10 +57,7 @@ export function SiteDictionary({ site }: { site: GetAllSiteInfoResult }) {
             <TableHead colSpan={2}>
               {filteredDictionary.length} Results
               {filteredDictionary.length < dictionary.length ? (
-                <span className=" text-muted-foreground">
-                  {' '}
-                  (Total: {filteredDictionary.length})
-                </span>
+                <span className=" text-muted-foreground"> (Total: {dictionary.length})</span>
               ) : null}
             </TableHead>
           </TableRow>
