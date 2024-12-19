@@ -1,10 +1,12 @@
 'use client';
 import { gql } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BaseItemNode, TreeViewer } from '@/components/viewers/TreeViewer';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { PageInfo, getPaginatedDataUtil } from '@/lib/graphql/util';
+import { PageInfo, getDataUtil, getPaginatedDataUtil } from '@/lib/graphql/util';
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';
+import { SiteInfo } from '@/lib/hooks/use-site-list';
+import { SiteSwitcher } from '@/components/switchers/SiteSwitcher';
 
 const GetItems = gql`
   query GetItem($path: String = "/sitecore", $systemLocale: String!, $nextCursor: String) {
@@ -66,6 +68,25 @@ interface ItemData {
   };
 }
 
+const GetSiteHomeId = gql`
+  query GetSiteHomeId($site: String!, $routePath: String = "/", $systemLocale: String!) {
+    layout(site: $site, routePath: $routePath, language: $systemLocale) {
+      item {
+        id
+        name
+      }
+    }
+  }
+`;
+
+interface LayoutData {
+  layout?: {
+    item?: {
+      id: string;
+      name: string;
+    };
+  };
+}
 export type ItemTreeViewProps = {
   onElementSelected: (id: string) => void;
 };
@@ -81,58 +102,114 @@ interface ItemNode extends BaseItemNode<ItemNode> {}
 
 const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
   const [selectedItem, setSelectedItem] = useState<ItemNode>();
-  const item = { ...root };
+  const [site, setSite] = useState<SiteInfo>();
+
   const { systemLocales } = useLocale();
   const querySettings = useQuerySettings();
-  const fetchData = async (item: ItemNode) => {
-    if (!querySettings?.client) {
-      return;
-    }
 
-    item.children = [];
-    const addedItemIds = new Set<string>();
-    for (let index = 0; index < systemLocales.length; index++) {
-      const systemLocale = systemLocales[index];
-      const data = await getPaginatedDataUtil<ItemData>(
-        querySettings,
-        GetItems,
-        {
-          path: item.id,
-          systemLocale,
-        },
-        (x) => x.item?.children.pageInfo
-      );
-
-      if (data) {
-        data.item?.children.results.forEach((x) => {
-          if (addedItemIds.has(x.id)) {
-            return;
-          }
-          addedItemIds.add(x.id);
-          item.children?.push({
-            id: x.id,
-            name: x.name,
-            hasLayout: !!data.item?.childrenWithLayout.results.find((y) => x.id === y.id),
-            hasChildren: x.children.results.length > 0,
-          });
-        });
+  const fetchData = useCallback(
+    async (item: ItemNode) => {
+      if (!querySettings?.client) {
+        return;
       }
+
+      item.children = [];
+      const addedItemIds = new Set<string>();
+      for (let index = 0; index < systemLocales.length; index++) {
+        const systemLocale = systemLocales[index];
+        const data = await getPaginatedDataUtil<ItemData>(
+          querySettings,
+          GetItems,
+          {
+            path: item.id,
+            systemLocale,
+          },
+          (x) => x.item?.children.pageInfo
+        );
+
+        if (data) {
+          data.item?.children.results.forEach((x) => {
+            if (addedItemIds.has(x.id)) {
+              return;
+            }
+            addedItemIds.add(x.id);
+            item.children?.push({
+              id: x.id,
+              name: x.name,
+              hasLayout: !!data.item?.childrenWithLayout.results.find((y) => x.id === y.id),
+              hasChildren: x.children.results.length > 0,
+            });
+          });
+        }
+      }
+
+      return item.children;
+    },
+    [querySettings]
+  );
+  const rootItem = useRootItem(site, fetchData);
+  useEffect(() => {
+    if (rootItem) {
+      fetchData(rootItem).then((data) => (rootItem.children = data));
     }
-
-    return item.children;
-  };
-
+  }, [rootItem]);
   return (
-    <TreeViewer<ItemNode>
-      item={item}
-      onItemSelected={(item) => {
-        setSelectedItem(item);
-        onElementSelected(item.id);
-      }}
-      isSelected={(item) => selectedItem?.id === item.id}
-      fetchData={fetchData}
-    />
+    <div>
+      <SiteSwitcher onSiteSelected={setSite} allowNullSite />
+      {!!rootItem ? (
+        <TreeViewer<ItemNode>
+          item={rootItem}
+          onItemSelected={(item) => {
+            setSelectedItem(item);
+            onElementSelected(item.id);
+          }}
+          isSelected={(item) => selectedItem?.id === item.id}
+          fetchData={fetchData}
+        />
+      ) : null}
+    </div>
   );
 };
 
 export default ItemTreeView;
+
+function useRootItem(
+  site: SiteInfo | undefined,
+  fetchData: (item: ItemNode) => Promise<ItemNode[] | undefined>
+) {
+  const { systemLocales } = useLocale();
+  const querySettings = useQuerySettings();
+
+  const [rootItem, setRootItem] = useState<ItemNode>();
+
+  useEffect(() => {
+    const getLayoutData = async () => {
+      if (site) {
+        for (let index = 0; index < systemLocales.length; index++) {
+          const systemLocale = systemLocales[index];
+          const data = await getDataUtil<LayoutData>(querySettings, GetSiteHomeId, {
+            site: site.siteName,
+            routePath: '/',
+            systemLocale,
+          });
+          if (data?.layout?.item) {
+            const newRoot: ItemNode = {
+              id: data.layout.item.id,
+              name: data.layout.item.name,
+              hasLayout: true,
+              hasChildren: true,
+            };
+            newRoot.children = await fetchData(newRoot);
+            setRootItem(newRoot);
+            return;
+          }
+        }
+      } else {
+        setRootItem({ ...root });
+      }
+    };
+    getLayoutData();
+  }, [site]);
+
+  return rootItem;
+}

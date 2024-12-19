@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGraphQLClientContext } from '../providers/GraphQLClientProvider';
 import { Button } from '../ui/button';
 import { ArrowDownRightIcon, ArrowRightIcon, PackageIcon, BookOpenTextIcon } from 'lucide-react';
@@ -45,14 +45,22 @@ function TreeViewerNode<T extends BaseItemNode<T>>({
 
   const client = useGraphQLClientContext();
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     setChildren([]);
     const children = await fetchData(item);
     setIsLoading(false);
     setChildren(children);
     setHasChildren(!!children?.length);
-  };
+  }, [fetchData, item]);
+
+  // Reset local state when item changes
+  useEffect(() => {
+    setChildren(item.children);
+    setHasChildren(item.hasChildren);
+    setIsExpanded(false);
+    setIsLoading(false);
+  }, [item]);
 
   if (!client) {
     return (

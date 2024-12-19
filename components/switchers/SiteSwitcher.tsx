@@ -18,10 +18,14 @@ export interface SiteInfo {
 }
 
 interface SiteSwitcherProps {
-  onSiteSelected: (site: SiteInfo) => void;
+  onSiteSelected: (site?: SiteInfo) => void;
+  allowNullSite?: boolean;
 }
 
-export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
+const NoSiteValue = 'none';
+const NoSiteLabel = '[No Site]';
+
+export function SiteSwitcher({ onSiteSelected, allowNullSite }: SiteSwitcherProps) {
   const [selectedSite, setSelectedSite] = useState<string>();
 
   const sites = useSiteList();
@@ -33,6 +37,9 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
     if (selectedSite) {
       setSelectedSite(selectedSite?.siteName);
       onSiteSelected(selectedSite);
+    } else if (allowNullSite) {
+      setSelectedSite(NoSiteValue);
+      onSiteSelected(undefined);
     }
   };
 
@@ -54,11 +61,17 @@ export function SiteSwitcher({ onSiteSelected }: SiteSwitcherProps) {
       >
         <SelectValue placeholder="Select site">
           <span className={cn('ml-2')}>
-            {sites.find((site) => site.siteName === selectedSite)?.siteName}
+            {sites.find((site) => site.siteName === selectedSite)?.siteName ?? NoSiteLabel}
           </span>
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
+        {allowNullSite ? (
+          <SelectItem value={'none'}>
+            <div className="flex items-center gap-3">{NoSiteLabel}</div>
+          </SelectItem>
+        ) : null}
+
         {sites.map((site) => (
           <SelectItem key={site.siteName} value={site.siteName}>
             <div className="flex items-center gap-3">{site.siteName}</div>
