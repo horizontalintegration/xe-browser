@@ -25,8 +25,8 @@ export function ResultsTable({ results }: ResultsTableProps) {
     }
   }
   return (
-    <Table>
-      <TableHeader>
+    <Table className="relative block max-h-screen overflow-auto">
+      <TableHeader className="sticky top-0 bg-muted">
         <TableRow>
           <TableHead>Site Name</TableHead>
           <TableHead>Language</TableHead>
@@ -50,14 +50,32 @@ export function ResultsTable({ results }: ResultsTableProps) {
                 <pre className=" whitespace-pre-wrap">{x.robots}</pre>
               </TableCell>
               <TableCell>
-                <a href={x.sitemap} title={x.sitemap} target="_blank">
-                  Sitemap Link
-                </a>
+                {x.sitemap ? (
+                  <a href={x.sitemap} title={x.sitemap} target="_blank">
+                    Sitemap Link
+                  </a>
+                ) : (
+                  <span className=" text-destructive">No Sitemap</span>
+                )}
               </TableCell>
               <BooleanTableCell value={x.enableItemLanguageFallback} style="yes-no" />
               <BooleanTableCell value={x.enableFieldLanguageFallback} style="yes-no" />
-              <TableCell>{x.notFoundPageItemPath}</TableCell>
-              <TableCell>{x.serverErrorPageItemPath}</TableCell>
+
+              <TableCell>
+                {x.notFoundPageItemPath ? (
+                  x.notFoundPageItemPath
+                ) : (
+                  <span className=" text-destructive">NotFound page not specified</span>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {x.serverErrorPageItemPath ? (
+                  x.serverErrorPageItemPath
+                ) : (
+                  <span className=" text-destructive">ServerError page not specified</span>
+                )}
+              </TableCell>
             </TableRow>
             {x === selected ? (
               <TableRow>
