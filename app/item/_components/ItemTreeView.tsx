@@ -7,6 +7,7 @@ import { PageInfo, getDataUtil, getPaginatedDataUtil } from '@/lib/graphql/util'
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';
 import { SiteInfo } from '@/lib/hooks/use-site-list';
 import { SiteSwitcher } from '@/components/switchers/SiteSwitcher';
+import { WithLoader } from '@/components/helpers/Loader';
 
 const GetItems = gql`
   query GetItem($path: String = "/sitecore", $systemLocale: String!, $nextCursor: String) {
@@ -148,6 +149,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
     [querySettings]
   );
   const rootItem = useRootItem(site, fetchData);
+
   useEffect(() => {
     if (rootItem) {
       fetchData(rootItem).then((data) => (rootItem.children = data));
@@ -156,17 +158,19 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
   return (
     <div>
       <SiteSwitcher onSiteSelected={setSite} allowNullSite />
-      {!!rootItem ? (
-        <TreeViewer<ItemNode>
-          item={rootItem}
-          onItemSelected={(item) => {
-            setSelectedItem(item);
-            onElementSelected(item.id);
-          }}
-          isSelected={(item) => selectedItem?.id === item.id}
-          fetchData={fetchData}
-        />
-      ) : null}
+      <WithLoader loading={!rootItem}>
+        {!!rootItem ? (
+          <TreeViewer<ItemNode>
+            item={rootItem}
+            onItemSelected={(item) => {
+              setSelectedItem(item);
+              onElementSelected(item.id);
+            }}
+            isSelected={(item) => selectedItem?.id === item.id}
+            fetchData={fetchData}
+          />
+        ) : null}
+      </WithLoader>
     </div>
   );
 };
@@ -185,6 +189,7 @@ function useRootItem(
   useEffect(() => {
     const getLayoutData = async () => {
       if (site) {
+        setRootItem(undefined);
         for (let index = 0; index < systemLocales.length; index++) {
           const systemLocale = systemLocales[index];
           const data = await getDataUtil<LayoutData>(querySettings, GetSiteHomeId, {
