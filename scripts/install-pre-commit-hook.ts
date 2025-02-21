@@ -18,8 +18,10 @@ const installHooks = async () => {
 # To skip this hook, use the --no-verify flag
 # when committing.
 #
-echo "Running lint check..."
 cd ${appPath}
+echo "Checking Typescript Compile..."
+npx tsc
+echo "Running lint check..."
 npm run lint`;
 
     await promisify(fs.writeFile)(`${gitRootPath}/.git/hooks/pre-commit`, data, 'utf8');

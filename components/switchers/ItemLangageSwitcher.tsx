@@ -46,7 +46,7 @@ export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
   if (!client) {
     return;
   }
-  const selectedLocaleInfo = allLocaleInfos.find((site) => site.isoCode === selectedLocale ?? 'en');
+  const selectedLocaleInfo = allLocaleInfos.find((site) => site.isoCode === selectedLocale);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
