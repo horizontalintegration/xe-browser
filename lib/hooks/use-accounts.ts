@@ -53,6 +53,21 @@ export const useAccounts = () => {
     return newAccount;
   };
 
+  const importAccount = (account: Account) => {
+    if (!account.accountId) {
+      throw new Error('importAccount missing accountId');
+    }
+    const found = accounts.find((x) => x.accountId === account.accountId);
+    if (found) {
+      found.accountName = account.accountName;
+      found.environments = account.environments;
+      setAccounts(accounts);
+      return found;
+    } else {
+      setAccounts([...accounts, account]);
+    }
+  };
+
   const editAccount = (account: EditAccountInfo) => {
     if (!account.accountId) {
       throw new Error('editAccount missing accountId');
@@ -131,6 +146,7 @@ export const useAccounts = () => {
     accounts,
     addAccount,
     editAccount,
+    importAccount,
     removeAccount,
     addEnvironment,
     editEnvironment,

@@ -9,15 +9,33 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { CreateAccountInfo } from '@/lib/hooks/use-accounts';
+import { CreateAccountInfo, useAccounts } from '@/lib/hooks/use-accounts';
+import { useSelectedEnv, useSelectedAccount, EnvironmentDialogProps } from '../EnvironmentSwitcher';
 
-export type AddAccountDialogProps = {
-  onCancel: () => void;
-  onCreateAccount: (account: CreateAccountInfo) => void;
-};
-const AddAccountDialog = ({ onCancel, onCreateAccount }: AddAccountDialogProps) => {
+const AddAccountDialog = ({ closeDialog, setErrorMessage }: EnvironmentDialogProps) => {
   const [accountName, setAccountName] = useState('');
+  const { accounts, addAccount } = useAccounts();
 
+  const [, setSelectedEnv] = useSelectedEnv();
+  const [, setSelectedAccount] = useSelectedAccount();
+
+  const onCreateAccount = (account: CreateAccountInfo) => {
+    const existingAccount = accounts.find(
+      (x) =>
+        x.accountName?.toLocaleLowerCase().trim() === account.accountName.toLocaleLowerCase().trim()
+    );
+    if (existingAccount) {
+      setErrorMessage({
+        title: 'Account already exists',
+        description: 'Cannot add duplicate Account',
+      });
+      return;
+    }
+    const createdAccount = addAccount(account);
+    setSelectedAccount(createdAccount);
+    setSelectedEnv(undefined);
+    closeDialog();
+  };
   return (
     <DialogContent>
       <DialogHeader>
@@ -44,7 +62,7 @@ const AddAccountDialog = ({ onCancel, onCreateAccount }: AddAccountDialogProps) 
           </div>
         </div>
         <DialogFooter>
-          <Button type="reset" variant="outline" onClick={() => onCancel()}>
+          <Button type="reset" variant="outline" onClick={() => closeDialog()}>
             Cancel
           </Button>
           <Button type="submit">Add Account</Button>

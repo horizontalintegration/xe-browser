@@ -9,21 +9,43 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { CreateEnvInfo } from '@/lib/hooks/use-accounts';
+import { CreateEnvInfo, useAccounts } from '@/lib/hooks/use-accounts';
 import { EnvThemes } from '@/components/providers/ThemeProvider';
 import { SelectTheme } from './fields.tsx/SelectTheme';
 import { Switch } from '@/components/ui/switch';
+import { EnvironmentDialogProps, useSelectedAccount, useSelectedEnv } from '../EnvironmentSwitcher';
 
-export type AddEnvDialogProps = {
-  accountId?: string;
-  onCancel: () => void;
-  onCreateEnv: (env: CreateEnvInfo) => void;
-};
-const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) => {
+const AddEnvDialog = ({ closeDialog, setErrorMessage }: EnvironmentDialogProps) => {
+  const [selectedAccount] = useSelectedAccount();
+
+  const [, setSelectedEnv] = useSelectedEnv();
+  const { addEnvironment } = useAccounts();
+
   const [envName, setEnvName] = useState('');
   const [envTheme, setEnvTheme] = useState<EnvThemes>('default');
   const [apiKey, setApiKey] = useState('');
   const [useEdgeContextId, setUseEdgeContextId] = useState(true);
+
+  const accountId = selectedAccount?.accountId;
+
+  const onCreateEnv = (env: CreateEnvInfo) => {
+    if (!selectedAccount) {
+      throw new Error('No account selected');
+    }
+    const existingEnv = selectedAccount.environments.find(
+      (x) => x.envName?.toLocaleLowerCase().trim() === env.envName.toLocaleLowerCase().trim()
+    );
+    if (existingEnv) {
+      setErrorMessage({
+        title: 'Environment already exists',
+        description: 'Cannot add duplicate Environment',
+      });
+      return;
+    }
+    const createdEnv = addEnvironment(env);
+    setSelectedEnv(createdEnv);
+    closeDialog();
+  };
 
   if (!accountId) {
     return;
@@ -41,7 +63,6 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
             accountId,
             envName,
             envTheme,
-            // graphQLEndpointUrl,
             apiKey,
             useEdgeContextId,
           });
@@ -53,17 +74,6 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
               <Label htmlFor="env">Envionment name (e.g. Dev, UAT, Prod)</Label>
               <Input id="env" value={envName} onChange={(e) => setEnvName(e.target.value)} />
             </div>
-            {/* <div className="space-y-2">
-              <Label htmlFor="graphQLEndpointUrl">
-                GraphQL Endpoint Url (Will use Experience Edge if blank)
-              </Label>
-              <Input
-                id="graphQLEndpointUrl"
-                placeholder={DefaultGraphQLEndpointUrl}
-                value={graphQLEndpointUrl}
-                onChange={(e) => setGraphQLEndpointUrl(e.target.value)}
-              />
-            </div> */}
             <div className="space-y-2">
               <Label htmlFor="useEdgeContextId">Use Edge Context Id </Label>
               <Switch
@@ -91,7 +101,7 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
           </div>
         </div>
         <DialogFooter>
-          <Button type="reset" variant="outline" onClick={() => onCancel()}>
+          <Button type="reset" variant="outline" onClick={() => closeDialog()}>
             Cancel
           </Button>
           <Button type="submit">Add Environment</Button>

@@ -2,39 +2,51 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import BaseEditDialog from './BaseEditDialog';
-import { EditAccountInfo } from '@/lib/hooks/use-accounts';
+import { EditAccountInfo, useAccounts } from '@/lib/hooks/use-accounts';
+import { EnvironmentDialogProps, useSelectedAccount, useSelectedEnv } from '../EnvironmentSwitcher';
 
-export type EditAccountDialogProps = {
-  account?: EditAccountInfo;
-  onCancel: () => void;
-  onSaveAccount: (account: EditAccountInfo) => void;
-  onDeleteAccount: (account: EditAccountInfo) => void;
-};
+export interface EditAccountDialogProps extends EnvironmentDialogProps {
+  selectedAccount?: EditAccountInfo;
+}
 
-const EditAccountDialog = ({
-  account,
-  onCancel,
-  onSaveAccount,
-  onDeleteAccount,
-}: EditAccountDialogProps) => {
-  const [accountName, setAccountName] = useState(account?.accountName ?? '');
+const EditAccountDialog = ({ selectedAccount, closeDialog }: EditAccountDialogProps) => {
+  const [accountName, setAccountName] = useState(selectedAccount?.accountName ?? '');
+  const { editAccount, removeAccount } = useAccounts();
 
-  if (!account) {
+  const [, setSelectedAccount] = useSelectedAccount();
+  const [, setSelectedEnv] = useSelectedEnv();
+
+  const onSaveAccount = (account: EditAccountInfo) => {
+    const result = editAccount(account);
+    setSelectedAccount(result);
+    closeDialog();
+  };
+
+  const onDeleteAccount = (account: EditAccountInfo) => {
+    if (account.accountId === selectedAccount?.accountId) {
+      setSelectedAccount(undefined);
+      setSelectedEnv(undefined);
+    }
+    removeAccount(account.accountId);
+    closeDialog();
+  };
+
+  if (!selectedAccount) {
     return <></>;
   }
   return (
     <BaseEditDialog
       title="Edit account"
       description="Edit account details"
-      onCancel={onCancel}
+      onCancel={closeDialog}
       onSave={() =>
         onSaveAccount({
-          accountId: account.accountId,
+          accountId: selectedAccount.accountId,
           accountName,
         })
       }
       saveButtonText="Save Account"
-      onDelete={() => onDeleteAccount(account)}
+      onDelete={() => onDeleteAccount(selectedAccount)}
       deleteButtonText="Delete Account"
       deleteConfirmTitle={`Delete ${accountName}`}
       deleteConfirmDescription={`Are you sure you want to delete ${accountName}?`}

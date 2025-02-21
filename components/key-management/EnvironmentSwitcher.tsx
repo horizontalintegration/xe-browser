@@ -20,7 +20,7 @@ import {
   EditEnvInfo,
   useAccounts,
 } from '@/lib/hooks/use-accounts';
-import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
+import { ComponentPropsWithoutRef, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import AddAccountDialog from './dialogs/AddAccountDialog';
 import AddEnvDialog from './dialogs/AddEnvDialog';
 import useLocalStorage from '@/lib/hooks/use-local-storage';
@@ -29,12 +29,21 @@ import { Alert } from '../helpers/Alert';
 import EditAccountDialog from './dialogs/EditAccountDialog';
 import EditEnvDialog from './dialogs/EditEnvDialog';
 import { useEnvTheme } from '../providers/ThemeProvider';
+import ExportAccountDialog from './dialogs/ExportAccountDialog';
+import ImportAccountDialog from './dialogs/ImportAccountDialog';
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
 
-type DialogType = 'create-account' | 'create-env' | 'edit-account' | 'edit-env' | undefined;
+type DialogType =
+  | 'create-account'
+  | 'create-env'
+  | 'edit-account'
+  | 'edit-env'
+  | 'export-account'
+  | 'import-account'
+  | undefined;
 
-type ErrorMessage = {
+export type ErrorMessage = {
   title: string;
   description: string;
 };
@@ -47,51 +56,16 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
   const [dialogType, setDialogType] = useState<DialogType>();
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>();
 
-  const { setConnectionInfo } = useGraphQLConnectionInfo();
-  const { setEnvTheme } = useEnvTheme();
+  const { accounts } = useAccounts();
 
-  const {
-    accounts,
-    addAccount,
-    editAccount,
-    removeAccount,
-    addEnvironment,
-    editEnvironment,
-    removeEnvironment,
-  } = useAccounts();
+  const [selectedAccount, setSelectedAccount] = useSelectedAccount();
+  const [selectedEnv, setSelectedEnv] = useSelectedEnv();
 
-  const [selectedAccount, setSelectedAccount] = useLocalStorage<Account | undefined>(
-    'selectedAccount',
-    undefined
-  );
+  useOnEnvChange(selectedEnv);
 
-  const [selectedEnv, setSelectedEnv] = useLocalStorage<AccountEnvironment | undefined>(
-    'selectedEnvironment',
-    undefined
-  );
-
+  const [exportAccount, setExportAccount] = useState<Account>();
   const [editingAccount, setEditingAccount] = useState<EditAccountInfo>();
   const [editingEnv, setEditingEnv] = useState<EditEnvInfo>();
-
-  useEffect(() => {
-    if (selectedEnv?.apiKey) {
-      setConnectionInfo({
-        apiKey: selectedEnv.apiKey,
-        graphQLEndpointUrl: selectedEnv.graphQLEndpointUrl,
-        useEdgeContextId: selectedEnv.useEdgeContextId,
-      });
-    }
-    if (selectedEnv?.envTheme) {
-      setEnvTheme(selectedEnv.envTheme);
-    }
-  }, [
-    selectedEnv?.envTheme,
-    selectedEnv?.apiKey,
-    selectedEnv?.graphQLEndpointUrl,
-    selectedEnv?.useEdgeContextId,
-    setEnvTheme,
-    setConnectionInfo,
-  ]);
 
   const openDialog = (dialogType: DialogType) => {
     setIsDropDownOpen(false);
@@ -110,14 +84,8 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
 
   const onEnvSelect = (env?: AccountEnvironment) => {
     setSelectedEnv(env);
-    setEnvTheme(env?.envTheme ?? 'default');
-
-    setConnectionInfo({
-      apiKey: env?.apiKey ?? '',
-      graphQLEndpointUrl: env?.graphQLEndpointUrl,
-      useEdgeContextId: env?.useEdgeContextId === true,
-    });
   };
+
   return (
     <Dialog open={isDialogVisible} onOpenChange={setIsDialogVisible}>
       <Popover open={isDropDownOpen} onOpenChange={setIsDropDownOpen} {...props}>
@@ -168,6 +136,17 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                           }}
                         >
                           Edit Account
+                        </Button>
+
+                        <Button
+                          size={'xs'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExportAccount(account);
+                            openDialog('export-account');
+                          }}
+                        >
+                          Export Account
                         </Button>
                       </div>
                     </div>
@@ -225,93 +204,46 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
                     Add Account
                   </CommandItem>
                 </DialogTrigger>
+
+                <DialogTrigger asChild>
+                  <CommandItem
+                    onSelect={() => {
+                      openDialog('import-account');
+                    }}
+                  >
+                    <PlusCircledIcon className="mr-2 h-5 w-5" />
+                    Import Account
+                  </CommandItem>
+                </DialogTrigger>
               </CommandGroup>
             </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
       {dialogType === 'create-account' ? (
-        <AddAccountDialog
-          onCancel={closeDialog}
-          onCreateAccount={(account) => {
-            const existingAccount = accounts.find(
-              (x) =>
-                x.accountName?.toLocaleLowerCase().trim() ===
-                account.accountName.toLocaleLowerCase().trim()
-            );
-            if (existingAccount) {
-              setErrorMessage({
-                title: 'Account already exists',
-                description: 'Cannot add duplicate Account',
-              });
-              return;
-            }
-            const createdAccount = addAccount(account);
-            onAccountSelect(createdAccount);
-            onEnvSelect(undefined);
-            closeDialog();
-          }}
-        />
+        <AddAccountDialog closeDialog={closeDialog} setErrorMessage={setErrorMessage} />
       ) : dialogType === 'create-env' ? (
-        <AddEnvDialog
-          accountId={selectedAccount?.accountId}
-          onCancel={closeDialog}
-          onCreateEnv={(env) => {
-            if (!selectedAccount) {
-              throw new Error('No account selected');
-            }
-            const existingEnv = selectedAccount.environments.find(
-              (x) =>
-                x.envName?.toLocaleLowerCase().trim() === env.envName.toLocaleLowerCase().trim()
-            );
-            if (existingEnv) {
-              setErrorMessage({
-                title: 'Environment already exists',
-                description: 'Cannot add duplicate Environment',
-              });
-              return;
-            }
-            const createdEnv = addEnvironment(env);
-            onEnvSelect(createdEnv);
-            closeDialog();
-          }}
-        />
+        <AddEnvDialog closeDialog={closeDialog} setErrorMessage={setErrorMessage} />
       ) : dialogType === 'edit-account' ? (
         <EditAccountDialog
-          account={editingAccount}
-          onCancel={closeDialog}
-          onSaveAccount={(account) => {
-            const result = editAccount(account);
-            onAccountSelect(result);
-            closeDialog();
-          }}
-          onDeleteAccount={(account) => {
-            if (account.accountId === selectedAccount?.accountId) {
-              onAccountSelect(undefined);
-              onEnvSelect(undefined);
-            }
-            removeAccount(account.accountId);
-            closeDialog();
-          }}
+          selectedAccount={editingAccount}
+          closeDialog={closeDialog}
+          setErrorMessage={setErrorMessage}
         />
       ) : dialogType === 'edit-env' ? (
         <EditEnvDialog
           envionment={editingEnv}
-          onCancel={closeDialog}
-          onSaveEnv={(env) => {
-            const result = editEnvironment(env);
-            onEnvSelect(result);
-            closeDialog();
-          }}
-          onDeleteEnv={(env) => {
-            if (env.accountId === selectedAccount?.accountId) {
-              onAccountSelect(undefined);
-              onEnvSelect(undefined);
-            }
-            removeEnvironment(env.accountId, env.envId);
-            closeDialog();
-          }}
+          closeDialog={closeDialog}
+          setErrorMessage={setErrorMessage}
         />
+      ) : dialogType === 'export-account' ? (
+        <ExportAccountDialog
+          selectedAccount={exportAccount}
+          closeDialog={closeDialog}
+          setErrorMessage={setErrorMessage}
+        />
+      ) : dialogType === 'import-account' ? (
+        <ImportAccountDialog closeDialog={closeDialog} setErrorMessage={setErrorMessage} />
       ) : null}
       <Alert
         alertType="alert"
@@ -323,3 +255,39 @@ export default function EnvironmentSwitcher(props: EnvironmentSwitcherProps) {
     </Dialog>
   );
 }
+
+function useOnEnvChange(selectedEnv?: AccountEnvironment) {
+  const { setEnvTheme } = useEnvTheme();
+  const { setConnectionInfo } = useGraphQLConnectionInfo();
+  useEffect(() => {
+    if (selectedEnv?.apiKey) {
+      setConnectionInfo({
+        apiKey: selectedEnv.apiKey,
+        graphQLEndpointUrl: selectedEnv.graphQLEndpointUrl,
+        useEdgeContextId: selectedEnv.useEdgeContextId,
+      });
+    }
+    if (selectedEnv?.envTheme) {
+      setEnvTheme(selectedEnv.envTheme);
+    }
+  }, [
+    selectedEnv?.envTheme,
+    selectedEnv?.apiKey,
+    selectedEnv?.graphQLEndpointUrl,
+    selectedEnv?.useEdgeContextId,
+    setEnvTheme,
+    setConnectionInfo,
+  ]);
+}
+
+export function useSelectedAccount() {
+  return useLocalStorage<Account | undefined>('selectedAccount', undefined);
+}
+export function useSelectedEnv() {
+  return useLocalStorage<AccountEnvironment | undefined>('selectedEnvironment', undefined);
+}
+
+export type EnvironmentDialogProps = {
+  closeDialog: () => void;
+  setErrorMessage: Dispatch<SetStateAction<ErrorMessage | undefined>>;
+};
