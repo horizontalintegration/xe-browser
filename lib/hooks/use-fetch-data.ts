@@ -16,7 +16,7 @@ export function useFetchData<TResult>(
 
   const abortController = useRef(new AbortController());
 
-  const querySettings = useQuerySettings(abortController.current.signal);
+  const querySettings = useQuerySettings(abortController);
 
   const getData = useCallback(async () => {
     if (!querySettings?.client) {

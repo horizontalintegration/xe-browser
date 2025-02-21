@@ -3,14 +3,14 @@
 import { gql } from '@apollo/client';
 
 import { LocaleInfo } from '@/lib/locale/utils';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageInfo, getPaginatedDataUtil } from '../graphql/util';
 import { useQuerySettings } from './use-query-settings';
 
 const GetAllLocales = gql`
   query GetAllLocales($nextCursor: String) {
     item(language: "en", path: "/sitecore/system/Languages") {
-      children(first: 100, after: $nextCursor) {
+      children(first: 50, after: $nextCursor) {
         pageInfo {
           hasNext
           endCursor
@@ -52,7 +52,7 @@ export function useAllLocales(): {
     setLocaleDisplayNames(displayNames);
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!querySettings?.client) {
       return;
     }
@@ -74,12 +74,15 @@ export function useAllLocales(): {
 
       setAllLocaleInfos(foundLocales);
     }
-  };
+  }, [localeDisplayNames, querySettings]);
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [querySettings, localeDisplayNames]);
+  }, [querySettings, localeDisplayNames, fetchData]);
 
-  return { allLocaleInfos, localeDisplayNames };
+  const result = useMemo(
+    () => ({ allLocaleInfos, localeDisplayNames }),
+    [allLocaleInfos, localeDisplayNames]
+  );
+  return result;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { groupBy } from 'lodash';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,10 +11,11 @@ import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
 import { useAllLocales } from '@/lib/hooks/use-all-locales';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import equal from 'fast-deep-equal/es6/react';
 
 export interface MultiLocaleSwitcherProps {
   locales: string[];
-  setLocales: (locales: string[]) => void;
+  setLocales: Dispatch<SetStateAction<string[]>>;
 }
 export function MultiLocaleSwitcher(props: MultiLocaleSwitcherProps) {
   const [open, setOpen] = useState(false);
@@ -44,6 +45,21 @@ export function MultiLocaleSwitcher(props: MultiLocaleSwitcherProps) {
 function LocaleStringInput({ locales, setLocales }: MultiLocaleSwitcherProps) {
   const [localeString, setLocaleString] = useState(locales.join(', '));
 
+  const updateLocales = useCallback(() => {
+    let localeArray = localeString.split(',').map((x) => x.trim());
+    if (localeArray.length === 0) {
+      localeArray = ['en'];
+    }
+    setLocales((locales) => {
+      // Only update if it's changed, otherwise return the original array
+      if (!equal(localeArray, locales)) {
+        return localeArray;
+      } else {
+        return locales;
+      }
+    });
+  }, [localeString, setLocales]);
+
   return (
     <div className="space-y-2">
       <Label htmlFor="locales">
@@ -54,11 +70,8 @@ function LocaleStringInput({ locales, setLocales }: MultiLocaleSwitcherProps) {
         id="locales"
         autoComplete="off"
         value={localeString}
-        onChange={(e) => {
-          setLocaleString(e.target.value);
-          const localeArray = e.target.value.split(',').map((x) => x.trim());
-          setLocales(localeArray);
-        }}
+        onBlur={updateLocales}
+        onChange={(e) => setLocaleString(e.target.value)}
       />
     </div>
   );

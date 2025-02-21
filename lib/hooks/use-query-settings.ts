@@ -1,10 +1,12 @@
 import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
 import { useLogQueries } from '@/components/providers/LogQueriesProvider';
 import { QuerySettings } from '../graphql/util';
-import { useMemo } from 'react';
+import { RefObject, useMemo } from 'react';
 import { useGraphQLConnectionInfo } from '@/components/providers/GraphQLConnectionInfoProvider';
 
-export function useQuerySettings(abortSignal?: AbortSignal): QuerySettings | null {
+export function useQuerySettings(
+  abortControllerRef?: RefObject<AbortController>
+): QuerySettings | null {
   const {
     client,
     connectionInfo: { apiKey: clientApiKey },
@@ -25,9 +27,8 @@ export function useQuerySettings(abortSignal?: AbortSignal): QuerySettings | nul
       client,
       apiKey: clientApiKey,
       logQueries,
-      abortSignal,
+      abortSignal: abortControllerRef?.current?.signal,
     };
     // We can't add abortSignal as a dependency because it changes every time.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, logQueries, clientApiKey, currentApiKey]);
+  }, [clientApiKey, currentApiKey, client, logQueries, abortControllerRef]);
 }

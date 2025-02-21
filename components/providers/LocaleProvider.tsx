@@ -2,13 +2,13 @@
 import { useAllLocales } from '@/lib/hooks/use-all-locales';
 import useLocalStorage from '@/lib/hooks/use-local-storage';
 import { LocaleInfo } from '@/lib/locale/utils';
-import { createContext, useContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 
 type LocaleContextType = {
   systemLocales: string[];
-  setSystemLocales: (systemLocales: string[]) => void;
+  setSystemLocales: Dispatch<SetStateAction<string[]>>;
   itemLocale: string;
-  setItemLocale: (itemLocale: string) => void;
+  setItemLocale: Dispatch<SetStateAction<string>>;
 };
 
 const LocaleContext = createContext<LocaleContextType>({
@@ -26,22 +26,23 @@ export function LocaleProvider({ children }: React.PropsWithChildren) {
 
   const { allLocaleInfos } = useAllLocales();
 
-  const validSystemLocales = getValidLocales(allLocaleInfos, systemLocales);
+  const validSystemLocales = useMemo(
+    () => getValidLocales(allLocaleInfos, systemLocales),
+    [allLocaleInfos, systemLocales]
+  );
 
   const [itemLocale, setItemLocale] = useState<string>('en');
 
-  return (
-    <LocaleContext.Provider
-      value={{
-        systemLocales: validSystemLocales,
-        setSystemLocales,
-        itemLocale,
-        setItemLocale,
-      }}
-    >
-      {children}
-    </LocaleContext.Provider>
+  const locale = useMemo(
+    () => ({
+      systemLocales: validSystemLocales,
+      setSystemLocales,
+      itemLocale,
+      setItemLocale,
+    }),
+    [itemLocale, setSystemLocales, validSystemLocales]
   );
+  return <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>;
 }
 
 function getValidLocales(allLocaleInfos: LocaleInfo[], localeValues: string[]) {

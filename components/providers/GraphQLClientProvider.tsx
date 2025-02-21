@@ -89,8 +89,7 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
     };
     getClient();
     return () => client.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectionInfo]);
+  }, [connectionInfo, querySettings, resolvedConnectionInfo]);
   return (
     <GraphQLClientContext.Provider value={client}>
       <React.Fragment key={connectionInfo?.apiKey}>{children}</React.Fragment>

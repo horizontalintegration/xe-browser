@@ -33,7 +33,7 @@ const useLocalStorage = <T>(key: string, initialValue: T): UseStateReturn<T> => 
   }, [initialValue, key, prefixedKey, state]);
 
   const setValue = useCallback(
-    (value: T | ((arg0: T) => T)) => {
+    (value: T | ((prevState: T) => T)) => {
       // If the passed value is a callback function,
       //  then call it with the existing state.
       const valueToStore = value instanceof Function ? value(state) : value;
@@ -42,9 +42,7 @@ const useLocalStorage = <T>(key: string, initialValue: T): UseStateReturn<T> => 
         setState(value);
       }
     },
-    // The setter shouldn't care what the state is
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [prefixedKey]
+    [prefixedKey, state]
   );
 
   return [state, setValue];

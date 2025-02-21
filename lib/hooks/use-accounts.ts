@@ -159,8 +159,7 @@ function useAccountState(): UseStateReturn<Account[]> {
     if (updated) {
       setAccounts(accounts);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accounts]);
+  }, [accounts, setAccounts]);
 
   return [accounts, setAccounts];
 }

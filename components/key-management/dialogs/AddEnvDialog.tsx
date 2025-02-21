@@ -23,9 +23,7 @@ const AddEnvDialog = ({ accountId, onCancel, onCreateEnv }: AddEnvDialogProps) =
   const [envName, setEnvName] = useState('');
   const [envTheme, setEnvTheme] = useState<EnvThemes>('default');
   const [apiKey, setApiKey] = useState('');
-  // const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState<string>();
-
-  const [useEdgeContextId, setUseEdgeContextId] = useState(false);
+  const [useEdgeContextId, setUseEdgeContextId] = useState(true);
 
   if (!accountId) {
     return;

@@ -21,7 +21,7 @@ const EditEnvDialog = ({ envionment, onCancel, onSaveEnv, onDeleteEnv }: EditEnv
   // const [graphQLEndpointUrl, setGraphQLEndpointUrl] = useState(
   //   envionment?.graphQLEndpointUrl ?? ''
   // );
-  const [useEdgeContextId, setUseEdgeContextId] = useState(envionment?.useEdgeContextId ?? false);
+  const [useEdgeContextId, setUseEdgeContextId] = useState(envionment?.useEdgeContextId ?? true);
   if (!envionment) {
     return <></>;
   }

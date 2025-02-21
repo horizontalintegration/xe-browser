@@ -15,7 +15,7 @@ const GetItems = gql`
       id
       name
       rendered
-      children(first: 100, after: $nextCursor) {
+      children(first: 10, after: $nextCursor) {
         pageInfo {
           hasNext
           endCursor
@@ -33,7 +33,7 @@ const GetItems = gql`
       }
       # Originally we just checked the "rendered" property of each child,
       # but that pulled way too much data, so this will just get the ID.
-      childrenWithLayout: children(first: 100, hasLayout: true, after: $nextCursor) {
+      childrenWithLayout: children(first: 10, hasLayout: true, after: $nextCursor) {
         results {
           id
         }
@@ -146,7 +146,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
 
       return item.children;
     },
-    [querySettings]
+    [querySettings, systemLocales]
   );
   const rootItem = useRootItem(site, fetchData);
 
@@ -154,7 +154,7 @@ const ItemTreeView = ({ onElementSelected }: ItemTreeViewProps) => {
     if (rootItem) {
       fetchData(rootItem).then((data) => (rootItem.children = data));
     }
-  }, [rootItem]);
+  }, [fetchData, rootItem]);
   return (
     <div>
       <SiteSwitcher onSiteSelected={setSite} allowNullSite />
@@ -214,7 +214,7 @@ function useRootItem(
       }
     };
     getLayoutData();
-  }, [site]);
+  }, [fetchData, querySettings, site, systemLocales]);
 
   return rootItem;
 }
