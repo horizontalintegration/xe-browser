@@ -69,22 +69,26 @@ interface ItemData {
   };
 }
 
-const GetSiteHomeId = gql`
-  query GetSiteHomeId($site: String!, $routePath: String = "/", $systemLocale: String!) {
+const GetSiteRootId = gql`
+  query GetSiteRootId($site: String!, $routePath: String = "/", $systemLocale: String!) {
     layout(site: $site, routePath: $routePath, language: $systemLocale) {
       item {
-        id
-        name
+        parent {
+          id
+          name
+        }
       }
     }
   }
 `;
 
-interface LayoutData {
+interface LayoutParentData {
   layout?: {
     item?: {
-      id: string;
-      name: string;
+      parent: {
+        id: string;
+        name: string;
+      };
     };
   };
 }
@@ -192,16 +196,16 @@ function useRootItem(
         setRootItem(undefined);
         for (let index = 0; index < systemLocales.length; index++) {
           const systemLocale = systemLocales[index];
-          const data = await getDataUtil<LayoutData>(querySettings, GetSiteHomeId, {
+          const data = await getDataUtil<LayoutParentData>(querySettings, GetSiteRootId, {
             site: site.siteName,
             routePath: '/',
             systemLocale,
           });
-          if (data?.layout?.item) {
+          if (data?.layout?.item?.parent) {
             const newRoot: ItemNode = {
-              id: data.layout.item.id,
-              name: data.layout.item.name,
-              hasLayout: true,
+              id: data.layout.item.parent.id,
+              name: data.layout.item.parent.name,
+              hasLayout: false,
               hasChildren: true,
             };
             newRoot.children = await fetchData(newRoot);
