@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import { useGraphQLClientContext } from '@/components/providers/GraphQLClientProvider';
@@ -43,11 +43,18 @@ export function ItemLocaleSwitcher({ itemId }: { itemId?: string }) {
     setOpen(false);
   };
 
+  const selectedLocaleInfo = allLocaleInfos.find((site) => site.isoCode === selectedLocale);
+
+  useEffect(() => {
+    if (!selectedLocaleInfo && allLocaleInfos[0]) {
+      setSelectedLocale(allLocaleInfos[0].isoCode);
+      setItemLocale(allLocaleInfos[0].isoCode);
+    }
+  }, [allLocaleInfos, selectedLocaleInfo, setSelectedLocale, setItemLocale]);
+
   if (!client) {
     return;
   }
-  const selectedLocaleInfo = allLocaleInfos.find((site) => site.isoCode === selectedLocale);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
