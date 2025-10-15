@@ -11,7 +11,7 @@ import { Metadata } from 'next';
 import { ProviderWrapper } from '@/components/helpers/ProviderWrapper';
 import { LogQueriesToggle } from './_components/LogQueriesToggle';
 import Link from 'next/link';
-import { HztlLogo } from '@/components/svg/horizontal-logo';
+// import { HztlLogo } from '@/components/svg/horizontal-logo';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Analytics } from '@vercel/analytics/react';
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const metadata: Metadata = {
-  title: 'Horizontal Experience Edge Browser',
+  title: 'Horizontal ExpEdge Browser',
   icons: '/favicon.png',
   description:
     'An interactive UI for browsing data on Sitecore Experience Edge.  Created by Horizontal Digital.',
@@ -42,12 +42,12 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                 <EnvironmentSwitcher />
                 <MainNav className="mx-6" />
               </div>
-              <div className="ml-auto flex items-center space-x-4">
+              {/* <div className="ml-auto flex items-center space-x-4">
                 <Link href={'https://horizontaldigital.com'} className="w-16 mr-2">
                   <HztlLogo />
                 </Link>
-                <span> XE Browser </span>
-              </div>
+                <span> ExpEdge Browser </span>
+              </div> */}
 
               <div className="ml-auto flex items-center space-x-4">
                 <LogQueriesToggle />
