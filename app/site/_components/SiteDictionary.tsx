@@ -32,8 +32,9 @@ export function SiteDictionary({ site }: { site: GetAllSiteInfoResult }) {
 
   const filteredDictionary = dictionary.filter(
     (x) =>
-      (!keySearch || x.key.toLowerCase().indexOf(keySearch) > -1) &&
-      (!valueSearch || (x.value ?? '')?.toString().toLowerCase().indexOf(valueSearch) > -1)
+      (!keySearch || x.key.toLowerCase().indexOf(keySearch.toLowerCase()) > -1) &&
+      (!valueSearch ||
+        (x.value ?? '')?.toString().toLowerCase().indexOf(valueSearch.toLowerCase()) > -1)
   );
   return (
     <WithLoader loading={loading}>
