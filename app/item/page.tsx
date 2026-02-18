@@ -1,6 +1,6 @@
 'use client';
 import { ItemLocaleSwitcher } from '../../components/switchers/ItemLangageSwitcher';
-import ItemDataJsonView from './_components/ItemDataJsonView';
+import ItemDataJsonView from '../../components/json-viewer/ItemDataJsonView';
 import ItemTreeView from './_components/ItemTreeView';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useState } from 'react';

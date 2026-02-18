@@ -6,11 +6,7 @@ export function MainNav(props: React.HTMLAttributes<HTMLElement>) {
   const links: NavLink[] = [
     {
       href: '/item',
-      content: 'Item Query',
-    },
-    {
-      href: '/layout',
-      content: 'Layout Query',
+      content: 'Item Tree',
     },
     {
       href: '/site',

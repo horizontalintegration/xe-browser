@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { getLayoutItemData } from '@/lib/graphql/get-layout-data';
 import { FieldResponse, getFieldData } from '@/lib/graphql/get-field-data';
 import { getItemMetaData } from '@/lib/graphql/get-meta-data';

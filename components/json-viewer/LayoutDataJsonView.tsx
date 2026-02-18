@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getLayoutData } from '@/lib/graphql/get-layout-data';
 import { deepSearch } from '@/lib/utils/object-utils';
 import { ComponentResponse } from '@/lib/graphql/types';
-import ComponentsJsonView from '../../../components/viewers/ComponentJsonView';
+import ComponentsJsonView from '../viewers/ComponentJsonView';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { JsonViewWrapper } from '@/components/viewers/JsonViewWrapper';
 import { useQuerySettings } from '@/lib/hooks/use-query-settings';

@@ -1,4 +1,4 @@
-import LayoutDataJsonView from '@/app/layout/_components/LayoutDataJsonView';
+import LayoutDataJsonView from '@/components/json-viewer/LayoutDataJsonView';
 import { Button } from '@/components/ui/button';
 import { GetAllSiteInfoResult } from '@/lib/graphql/types';
 import { ReactNode, useState } from 'react';
