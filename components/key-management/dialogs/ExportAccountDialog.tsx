@@ -17,11 +17,12 @@ export interface ExportAccountDialogProps extends EnvironmentDialogProps {
 
 const ExportAccountDialog = ({ selectedAccount, closeDialog }: ExportAccountDialogProps) => {
   return (
-    <DialogContent>
+    <DialogContent className="max-h-screen overflow-auto">
       <DialogHeader>
         <DialogTitle>Export account</DialogTitle>
         <DialogDescription>
-          This JSON can be used to quickly import for someone else or a different browser{' '}
+          This JSON can be used to quickly import for someone else or a different browser. Use the
+          copy icon in the JSON viewer to copy the JSON to the clipboard.
         </DialogDescription>
       </DialogHeader>
       <div>

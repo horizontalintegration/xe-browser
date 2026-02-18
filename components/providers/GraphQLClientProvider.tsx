@@ -64,6 +64,8 @@ export function GraphQLClientProvider({ children }: GraphQLClientProviderProps) 
           },
           query: {
             fetchPolicy: 'no-cache',
+            // Sometimes we get errors in data format from Sitecore, even though it's still fine.
+            errorPolicy: 'ignore',
           },
         },
       });
