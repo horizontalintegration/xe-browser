@@ -52,8 +52,8 @@ function LocaleStringInput({ locales, setLocales }: MultiLocaleSwitcherProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor="locales">
-        For Preview endpoints we cannot load the list of system locales. Type it in as a comma
-        separated list
+        Type it in as a comma separated list. This is needed because for Preview endpoints we cannot
+        load the list of system locales, and we cannot get content without specifying the locale.
       </Label>
       <Input
         id="locales"
